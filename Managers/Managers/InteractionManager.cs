@@ -29,13 +29,9 @@ namespace EmsPlus.Managers
             return Game.IsKeyDown(DefaultInteractionKey);
         }
 
-        private static bool IsAnyModifierDown()
-        {
-            return Game.IsKeyDown(Keys.ShiftKey) || Game.IsKeyDown(Keys.LShiftKey) || Game.IsKeyDown(Keys.RShiftKey) ||
-                   Game.IsKeyDown(Keys.ControlKey) || Game.IsKeyDown(Keys.LControlKey) || Game.IsKeyDown(Keys.RControlKey) ||
-                   Game.IsKeyDown(Keys.Menu) || Game.IsKeyDown(Keys.LMenu) || Game.IsKeyDown(Keys.RMenu);
-        }
-
+        /// <summary>
+        /// Returns true on the tick the key goes down, and whether it was a double-tap.
+        /// </summary>
         private static bool CheckDoubleTap()
         {
             if (!IsInteractionKeyDown()) return false;
@@ -47,6 +43,10 @@ namespace EmsPlus.Managers
             return elapsed <= DoubleTapWindowMs;
         }
 
+        /// <summary>
+        /// Finds the closest valid ped within <see cref="PatientMarkDistance"/> that
+        /// the player is roughly facing. Returns null if none found.
+        /// </summary>
         private static Ped GetFacedNearbyPed()
         {
             Ped player = Game.LocalPlayer.Character;
@@ -127,69 +127,47 @@ namespace EmsPlus.Managers
                 {
                     StretcherManager.Process();
 
-                    bool inVehicle = Game.LocalPlayer.Character.IsInAnyVehicle(false);
-                    bool inCabin = AmbulanceManager.IsPlayerInRearCabin;
+                    bool keyDown = IsInteractionKeyDown();
+                    if (!keyDown) continue;
 
-                    if (inVehicle && !inCabin) continue;
+                    bool isDoubleTap = CheckDoubleTap();
+
+                    if (isDoubleTap && !MenuCore.IsAnyMenuOpen)
+                    {
+                        Ped faced = GetFacedNearbyPed();
+                        if (faced != null)
+                        {
+                            MarkAsPatient(faced);
+                            continue;
+                        }
+                        continue;
+                    }
 
                     if (GameState.CurrentPatient != null && GameState.CurrentPatient.Character.Exists())
                     {
-                        var p = GameState.CurrentPatient;
-                        Ped patientPed = p.Character;
-
+                        Ped patientPed = GameState.CurrentPatient.Character;
                         float dist = Game.LocalPlayer.Character.DistanceTo(patientPed);
 
-                        if (dist < 3.5f)
+                        if (dist < PatientInteractDistance)
                         {
-                            if (p.IsOnStretcher && StretcherManager.IsAttachedToVehicle && !AmbulanceManager.IsPlayerInRearCabin)
+                            if (MenuCore.IsAnyMenuOpen) continue;
+
+                            if (EntryPoint.EmsPlusConfig.UseNativeUIPatientMenu.Value)
                             {
-                                continue;
+                                InventoryManager.PlaceKitOnGround(patientPed);
+                                PatientMenuBuilder.RefreshAll();
+                                PatientMenuBuilder.PatientMenu.Visible = true;
                             }
-
-                            if (!MenuCore.IsAnyMenuOpen && !UI.CustomMenus.InspectMenu.Managers.BodyInspectionManager.IsActive)
+                            else
                             {
-                            }
-
-                            if (IsInteractionKeyDown() && !IsAnyModifierDown())
-                            {
-                                if (MenuCore.IsAnyMenuOpen) continue;
-
-                                if (EntryPoint.EmsPlusConfig.UseNativeUIPatientMenu.Value)
+                                try
                                 {
-                                    InventoryManager.PlaceKitOnGround(patientPed);
-                                    PatientMenuBuilder.RefreshAll();
-                                    PatientMenuBuilder.PatientMenu.Visible = true;
+                                    UI.CustomMenus.InspectMenu.Managers.BodyInspectionManager.StartInspection(patientPed);
                                 }
-                                else
+                                catch (Exception ex)
                                 {
-                                    try
-                                    {
-                                        UI.CustomMenus.InspectMenu.Managers.BodyInspectionManager.StartInspection(patientPed);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Game.Console.Print($"[EmsPlus] CRITICAL ERROR starting Inspection Menu: {ex}");
-                                    }
-                                }
-                            }
-
-                            bool toggleCabinPressed = false;
-                            if (EntryPoint.KeyConfig.ToggleCabinKey != null)
-                            {
-                                toggleCabinPressed = EntryPoint.KeyConfig.ToggleCabinKey.Value.IsPressed;
-                            }
-
-                            if (toggleCabinPressed || NativeFunction.Natives.IS_DISABLED_CONTROL_JUST_PRESSED<bool>(0, 23))
-                            {
-                                if (AmbulanceManager.IsPlayerInRearCabin)
-                                {
-                                    AmbulanceManager.ExitRearCabin();
-                                    continue;
-                                }
-                                else if (!Game.LocalPlayer.Character.IsInAnyVehicle(false) && AmbulanceManager.IsPlayerAtRear() && AmbulanceManager.IsStretcherLoaded)
-                                {
-                                    AmbulanceManager.EnterRearCabin();
-                                    continue;
+                                    Game.Console.Print($"[EmsPlus] CRITICAL ERROR starting Inspection Menu: {ex}");
+                                    Game.DisplayNotification("~r~Error opening menu. Check Console (F4).");
                                 }
                             }
                         }
