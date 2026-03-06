@@ -43,21 +43,24 @@ namespace EmsPlus.Managers
 
             foreach (var hospital in EntryPoint.HospitalsConfig.Locations)
             {
-                float dist = drivingVeh.DistanceTo(hospital.Position);
+                float dist2D = drivingVeh.DistanceTo2D(hospital.Position);
 
-                if (dist < 50.0f)
+                float zDiff = System.Math.Abs(drivingVeh.Position.Z - hospital.Position.Z);
+
+                if (dist2D < 80.0f && zDiff < 15.0f)
                 {
                     NativeFunction.Natives.DRAW_MARKER(
                         1, hospital.Position.X, hospital.Position.Y, hospital.Position.Z - 1.0f,
                         0, 0, 0, 0, 0, 0,
-                        8.0f, 8.0f, 2.0f,
+                        12.0f, 12.0f, 2.0f,
                         0, 255, 0, 100,
                         false, false, 2, false, 0, 0, false
                     );
 
-                    if (dist < 6.0f)
+                    if (dist2D < 12.0f)
                     {
                         Game.DisplayHelp(Localization.Get("HELP_HANDOVER_PATIENT"));
+
                         if (Game.IsControlJustPressed(0, GameControl.Context))
                         {
                             CompleteTransport(drivingVeh);

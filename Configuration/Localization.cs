@@ -173,7 +173,7 @@ namespace EmsPlus
                 w.WriteLine("");
 
                 w.WriteLine("[Diagnostics]");
-                w.WriteLine("DIAG_CONDITION=CONDITION");
+                w.WriteLine("DIAG_DISPATCH_DIAGNOSIS=DISPATCH DIAGNOSIS");
                 w.WriteLine("DIAG_WITNESS_INFO=Witness Info");
                 w.WriteLine("DIAG_WITNESS_PRESENT=Person Nearby");
                 w.WriteLine("DIAG_WITNESS_ACTION=Question Witness");
@@ -185,6 +185,8 @@ namespace EmsPlus
                 w.WriteLine("DIAG_BP=Blood Pressure");
                 w.WriteLine("DIAG_HR=Heart Rate");
                 w.WriteLine("DIAG_SPO2=O2 Saturation");
+                w.WriteLine("DIAG_MONITOR=Monitor");
+                w.WriteLine("DIAG_MONITOR_NOT_CONNECTED=Not Connected");
                 w.WriteLine("DIAG_CONSCIOUSNESS=Consciousness");
                 w.WriteLine("DIAG_STATUS_REQUIRED=REQUIRED");
                 w.WriteLine("DIAG_STATUS_TREATED=TREATED");
@@ -193,9 +195,14 @@ namespace EmsPlus
                 w.WriteLine("DIAG_MINOR_BLEEDING=MINOR BLEEDING");
                 w.WriteLine("DIAG_MODERATE_BLEEDING=MODERATE BLEEDING");
                 w.WriteLine("DIAG_SEVERE_HEMORRHAGE=SEVERE HEMORRHAGE");
+                w.WriteLine("DIAG_STATUS_UNKNOWN=UNKNOWN STATUS");
+                w.WriteLine("DIAG_STATUS_CLEAR=CLEAR");
+                w.WriteLine("DIAG_STATUS_EQUIPMENT=MEDICAL EQUIPMENT");
                 w.WriteLine("");
 
                 w.WriteLine("[Actions]");
+                w.WriteLine("ACT_INSPECT_AREA=Inspect Area");
+                w.WriteLine("DESC_INSPECT_AREA=Examine this body part for injuries.");
                 w.WriteLine("ACT_TREAT_INJURY=Treat Injury");
                 w.WriteLine("ACT_APPLY_BANDAGE=Apply Bandage");
                 w.WriteLine("ACT_ESTABLISH_IV=ESTABLISH IV");
@@ -277,6 +284,7 @@ namespace EmsPlus
                 w.WriteLine("");
 
                 w.WriteLine("[Notifications]");
+                w.WriteLine("NOTIF_INSPECTING=Inspecting...");
                 w.WriteLine("NOTIF_TREATING=Treating injury...");
                 w.WriteLine("NOTIF_INJURY_TREATED=~g~Injury Treated.");
                 w.WriteLine("NOTIF_ADMINISTERED=~g~Administered:~w~ {0}");

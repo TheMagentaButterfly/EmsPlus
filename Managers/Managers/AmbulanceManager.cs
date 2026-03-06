@@ -429,7 +429,7 @@ namespace EmsPlus.Managers
             if (StretcherManager.CurrentState == StretcherManager.StretcherState.Sitting)
             {
                 StretcherManager.SwitchState(StretcherManager.StretcherState.Normal);
-                GameFiber.Sleep(50);
+                GameFiber.Sleep(200);
             }
 
             if (GameState.CurrentPatient != null && GameState.CurrentPatient.IsOnStretcher)

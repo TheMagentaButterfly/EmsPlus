@@ -1,5 +1,4 @@
 ﻿using EmsPlus.Managers.Actions;
-using EmsPlus.Framework;
 using System;
 using System.Collections.Generic;
 using EmsPlus.Core;
@@ -20,13 +19,17 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu
             if (p == null) return;
 
             string condition = p.DispatchDiagnosis;
-            newItems.Add(new DiagnosticItem("CONDITION", condition, true));
+            newItems.Add(new DiagnosticItem(Localization.Get("DIAG_DISPATCH_DIAGNOSIS"), condition, true));
 
             foreach (var cond in p.Conditions)
             {
+                if (cond is PhysicalInjury injury && !p.IsBoneInspected(injury.Bone))
+                {
+                    continue;
+                }
                 newItems.Add(new DiagnosticItem(
                     cond.Name,
-                    cond.IsTreated ? "TREATED" : "REQUIRED",
+                    cond.IsTreated ? Localization.Get("DIAG_STATUS_TREATED") : Localization.Get("DIAG_STATUS_REQUIRED"),
                     cond.IsTreated
                 ));
             }
@@ -36,30 +39,30 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu
                 // HR
                 string hrText = GetStateText(p.HeartRate);
                 bool hrOk = p.HeartRate == VitalState.Normal;
-                newItems.Add(new DiagnosticItem("Heart Rate", hrText, hrOk));
+                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_HR"), hrText, hrOk));
 
                 // SpO2
                 string oxyText = GetStateText(p.SpO2);
                 bool oxyOk = p.SpO2 == VitalState.Normal;
-                newItems.Add(new DiagnosticItem("SpO2", oxyText, oxyOk));
+                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_SPO2"), oxyText, oxyOk));
             }
             else
             {
-                newItems.Add(new DiagnosticItem("Monitor", "Not Connected", true));
+                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_MONITOR"), Localization.Get("DIAG_MONITOR_NOT_CONNECTED"), true));
             }
 
             if (p.IsBpCuffConnected)
             {
                 string bpText = GetStateText(p.BloodPressure);
                 bool bpOk = p.BloodPressure == VitalState.Normal;
-                newItems.Add(new DiagnosticItem("BP", bpText, bpOk));
+                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_BP"), bpText, bpOk));
             }
 
             if (p.IsBglChecked)
             {
                 string bglText = GetStateText(p.BloodGlucose);
                 bool bglOk = p.BloodGlucose == VitalState.Normal;
-                newItems.Add(new DiagnosticItem("Glucose", bglText, bglOk));
+                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_BGL"), bglText, bglOk));
             }
 
             // Witness

@@ -19,13 +19,37 @@ namespace EmsPlus.Callouts
         private bool hasArrivedAtScene = false;
         private Random rnd = new Random();
 
+        // ── All valid spawnable bones using InjuryBones ───────────────────────
+        private static readonly PedBoneId[] SpawnableBones =
+        {
+            InjuryBones.LeftThigh,    InjuryBones.RightThigh,
+            InjuryBones.LeftCalf,     InjuryBones.RightCalf,
+            InjuryBones.LeftUpperArm, InjuryBones.RightUpperArm,
+            InjuryBones.LeftForearm,  InjuryBones.RightForearm,
+            InjuryBones.LeftHand,     InjuryBones.RightHand,
+            InjuryBones.LeftFoot,     InjuryBones.RightFoot,
+            InjuryBones.Head,
+            InjuryBones.Chest,
+            InjuryBones.Abdomen,
+            InjuryBones.Pelvis,
+            InjuryBones.LumbarSpine,
+            InjuryBones.ThoracicSpine,
+        };
+
+        // ── Trauma themes ─────────────────────────────────────────────────────
+        private enum TraumaTheme { Blunt, Penetrating, Blast }
+
+        // =====================================================================
+        // CALLOUT LIFECYCLE
+        // =====================================================================
+
         public override bool OnBeforeCalloutDisplayed()
         {
             CalloutName = "Major Trauma";
             CalloutMessage = "High-velocity accident reported. Multiple traumatic injuries suspected.";
 
             Vector3 centerPoint = StationManager.ActiveStation?.Position
-                         ?? Game.LocalPlayer.Character.Position;
+                                  ?? Game.LocalPlayer.Character.Position;
 
             spawnPos = World.GetNextPositionOnStreet(centerPoint.Around(150f, 1000f));
             if (spawnPos == Vector3.Zero) return false;
@@ -46,10 +70,9 @@ namespace EmsPlus.Callouts
             patient.BlockPermanentEvents = true;
 
             GameState.CurrentPatient = new Patient(patient);
-            var p = GameState.CurrentPatient;
+            Patient p = GameState.CurrentPatient;
 
             GenerateRandomTrauma(p);
-
             CalculateVitalsFromInjuries(p);
 
             p.ApplyVisuals();
@@ -63,104 +86,6 @@ namespace EmsPlus.Callouts
             return true;
         }
 
-        private void GenerateRandomTrauma(Patient p)
-        {
-            int theme = rnd.Next(0, 3);
-            p.DispatchDiagnosis = theme == 0 ? "High Fall / MVC" : (theme == 1 ? "Assault / Penetrating" : "Blast / Industrial");
-
-            int injuryCount = rnd.Next(3, 6);
-            var usedBones = new List<PedBoneId>();
-
-            int failSafe = 0;
-
-            for (int i = 0; i < injuryCount; i++)
-            {
-                failSafe++;
-                if (failSafe > 50) break;
-
-                PedBoneId bone = GetRandomBone(exclude: usedBones);
-                PhysicalInjury injury = null;
-                int roll = rnd.Next(0, 100);
-
-                if (theme == 0) // BLUNT TRAUMA
-                {
-                    if (roll < 30) injury = InjuryFactory.CompoundFracture(bone);
-                    else if (roll < 60) injury = InjuryFactory.Laceration(bone);
-                    else if (roll < 80 && !p.Conditions.Any(c => c.Name == "Tension Pneumothorax"))
-                        injury = InjuryFactory.TensionPneumothorax();
-                    else injury = InjuryFactory.Laceration(bone);
-                }
-                else if (theme == 1) // PENETRATING TRAUMA
-                {
-                    if (roll < 40 && bone != PedBoneId.Head)
-                    {
-                        injury = InjuryFactory.ArterialBleed(bone);
-                    }
-                    else if (roll < 70) injury = InjuryFactory.GunshotWound(bone);
-                    else injury = InjuryFactory.Laceration(bone);
-                }
-                else // BLAST/BURN
-                {
-                    if (roll < 40) injury = InjuryFactory.ThirdDegreeBurn(bone);
-                    else injury = InjuryFactory.Laceration(bone);
-                }
-
-                if (injury == null)
-                {
-                    i--; continue;
-                }
-
-                bool boneAlreadyInjured = p.Conditions.OfType<PhysicalInjury>().Any(c => c.Bone == injury.Bone);
-
-                if (boneAlreadyInjured)
-                {
-                    i--;
-                    continue;
-                }
-
-                usedBones.Add(injury.Bone);
-                p.Conditions.Add(injury);
-            }
-        }
-
-        private void CalculateVitalsFromInjuries(Patient p)
-        {
-            float totalBleed = p.Conditions.OfType<PhysicalInjury>().Sum(i => i.BleedSeverity);
-            bool hasChestTrauma = p.Conditions.Any(c => c.Name.Contains("Chest") || c.Name.Contains("Pneumo"));
-
-            // Heart Rate
-            if (totalBleed > 3.0f) p.HeartRate = VitalState.CriticalHigh; // Compensating for shock
-            else if (totalBleed > 1.0f) p.HeartRate = VitalState.Elevated;
-
-            // Blood Pressure
-            if (totalBleed > 4.0f) p.BloodPressure = VitalState.CriticalLow; // Decompensating shock
-            else if (totalBleed > 2.0f) p.BloodPressure = VitalState.Low;
-
-            // SpO2
-            if (hasChestTrauma) p.SpO2 = VitalState.Low;
-
-            // Consciousness
-            if (totalBleed > 3.5f || hasChestTrauma) p.Consciousness = ConsciousnessLevel.Unresponsive;
-            else p.Consciousness = ConsciousnessLevel.Pain;
-        }
-
-        private PedBoneId GetRandomBone(List<PedBoneId> exclude)
-        {
-            var bones = new List<PedBoneId> {
-                PedBoneId.LeftThigh, PedBoneId.RightThigh,
-                PedBoneId.LeftCalf, PedBoneId.RightCalf,
-                PedBoneId.LeftUpperArm, PedBoneId.RightUpperArm,
-                PedBoneId.LeftForeArm, PedBoneId.RightForearm,
-                PedBoneId.Head,
-                PedBoneId.Spine3,
-                PedBoneId.Spine
-            };
-
-            var available = bones.Where(b => !exclude.Contains(b)).ToList();
-            if (available.Count == 0) return PedBoneId.Pelvis;
-
-            return available[rnd.Next(available.Count)];
-        }
         public override void Process()
         {
             base.Process();
@@ -178,12 +103,11 @@ namespace EmsPlus.Callouts
                 blip.IsRouteEnabled = false;
             }
 
-            if (hasArrivedAtScene && blip.Exists() && GameState.CurrentPatient != null)
+            if (hasArrivedAtScene && blip.Exists()
+                && GameState.CurrentPatient != null
+                && GameState.CurrentPatient.IsOnStretcher)
             {
-                if (GameState.CurrentPatient.IsOnStretcher)
-                {
-                    blip.Delete();
-                }
+                blip.Delete();
             }
         }
 
@@ -193,5 +117,238 @@ namespace EmsPlus.Callouts
             if (blip.Exists()) blip.Delete();
             if (patient.Exists()) patient.Dismiss();
         }
+
+        // =====================================================================
+        // TRAUMA GENERATION
+        // =====================================================================
+        private void GenerateRandomTrauma(Patient p)
+        {
+            TraumaTheme theme = (TraumaTheme)rnd.Next(0, 3);
+
+            switch (theme)
+            {
+                case TraumaTheme.Blunt: p.DispatchDiagnosis = "High Fall / MVC"; break;
+                case TraumaTheme.Penetrating: p.DispatchDiagnosis = "Assault / Penetrating"; break;
+                case TraumaTheme.Blast: p.DispatchDiagnosis = "Blast / Industrial"; break;
+            }
+
+            int injuryCount = rnd.Next(3, 6);
+            HashSet<PedBoneId> usedBones = new HashSet<PedBoneId>();
+            int failSafe = 0;
+
+            for (int i = 0; i < injuryCount; i++)
+            {
+                if (++failSafe > 50) break;
+
+                PedBoneId bone = PickUnusedBone(usedBones);
+                PhysicalInjury injury = null;
+
+                switch (theme)
+                {
+                    case TraumaTheme.Blunt: injury = RollBluntInjury(p, bone); break;
+                    case TraumaTheme.Penetrating: injury = RollPenetratingInjury(p, bone); break;
+                    case TraumaTheme.Blast: injury = RollBlastInjury(p, bone); break;
+                }
+
+                if (injury == null) { i--; continue; }
+                if (usedBones.Contains(injury.Bone)) { i--; continue; }
+
+                usedBones.Add(injury.Bone);
+                p.Conditions.Add(injury);
+            }
+        }
+
+        // ── Blunt trauma (MVC / fall) ─────────────────────────────────────────
+        private PhysicalInjury RollBluntInjury(Patient p, PedBoneId bone)
+        {
+            int roll = Roll();
+
+            if (bone == InjuryBones.LumbarSpine || bone == InjuryBones.ThoracicSpine)
+                return roll < 50
+                    ? InjuryFactory.Fracture.Spinal(bone)
+                    : InjuryFactory.SoftTissue.CrushInjury(bone);
+
+            if (bone == InjuryBones.Pelvis)
+                return roll < 60
+                    ? InjuryFactory.Fracture.Pelvic()
+                    : InjuryFactory.Fracture.PelvicCrush();
+
+            if ((bone == InjuryBones.LeftThigh || bone == InjuryBones.RightThigh) && roll < 40)
+                return InjuryFactory.Fracture.Femoral();
+
+            if (bone == InjuryBones.Chest)
+            {
+                bool chestFree = !HasCondition(p, "Tension Pneumothorax");
+                if (roll < 25 && chestFree) return InjuryFactory.Chest.TensionPneumothorax();
+                if (roll < 50) return InjuryFactory.Chest.PulmonaryContusion();
+                if (roll < 70) return InjuryFactory.Fracture.FlailChest();
+                return InjuryFactory.Fracture.Rib();
+            }
+
+            if (bone == InjuryBones.Abdomen)
+                return roll < 50
+                    ? InjuryFactory.Haemorrhage.Internal()
+                    : InjuryFactory.SoftTissue.PenetratingAbdominal();
+
+            if (bone == InjuryBones.Head)
+            {
+                if (roll < 30) return InjuryFactory.HeadAndNeuro.EpiduralHaematoma();
+                if (roll < 55) return InjuryFactory.HeadAndNeuro.SubduralHaematoma();
+                if (roll < 75) return InjuryFactory.Fracture.Skull();
+                return InjuryFactory.HeadAndNeuro.Concussion();
+            }
+
+            if (roll < 35) return InjuryFactory.Fracture.Compound(bone);
+            if (roll < 65) return InjuryFactory.SoftTissue.Laceration(bone);
+            if (roll < 80) return InjuryFactory.SoftTissue.CrushInjury(bone);
+            return InjuryFactory.SoftTissue.DeepLaceration(bone);
+        }
+
+        // ── Penetrating trauma (GSW / stab) ──────────────────────────────────
+        private PhysicalInjury RollPenetratingInjury(Patient p, PedBoneId bone)
+        {
+            int roll = Roll();
+
+            if (bone == InjuryBones.Chest)
+            {
+                if (roll < 35) return InjuryFactory.Gunshot.Chest();
+                if (roll < 65) return InjuryFactory.StabAndPuncture.StabChest();
+                if (roll < 80) return InjuryFactory.Chest.SuckingChestWound();
+                return InjuryFactory.Chest.Haemothorax();
+            }
+
+            if (bone == InjuryBones.Abdomen)
+            {
+                if (roll < 45) return InjuryFactory.Gunshot.Abdomen();
+                if (roll < 75) return InjuryFactory.StabAndPuncture.StabAbdomen();
+                return InjuryFactory.Haemorrhage.Internal();
+            }
+
+            if (bone == InjuryBones.Head)
+            {
+                if (roll < 50) return InjuryFactory.Gunshot.Head();
+                return InjuryFactory.HeadAndNeuro.IntracranialHaemorrhage();
+            }
+
+            if (bone == InjuryBones.Neck)
+            {
+                if (roll < 50) return InjuryFactory.Gunshot.Neck();
+                return InjuryFactory.StabAndPuncture.PenetratingNeck();
+            }
+
+            if (bone == InjuryBones.Pelvis)
+                return InjuryFactory.Gunshot.Pelvis();
+
+            bool isLimb = bone == InjuryBones.LeftThigh || bone == InjuryBones.RightThigh ||
+                          bone == InjuryBones.LeftCalf || bone == InjuryBones.RightCalf ||
+                          bone == InjuryBones.LeftUpperArm || bone == InjuryBones.RightUpperArm ||
+                          bone == InjuryBones.LeftForearm || bone == InjuryBones.RightForearm;
+
+            if (isLimb)
+            {
+                if (roll < 35) return InjuryFactory.Haemorrhage.Arterial(bone);
+                if (roll < 65) return InjuryFactory.Gunshot.ThroughAndThrough(bone);
+                if (roll < 80) return InjuryFactory.Gunshot.Wound(bone);
+                return InjuryFactory.StabAndPuncture.StabWound(bone);
+            }
+
+            return roll < 50
+                ? InjuryFactory.Gunshot.Wound(bone)
+                : InjuryFactory.SoftTissue.DeepLaceration(bone);
+        }
+
+        // ── Blast / industrial ────────────────────────────────────────────────
+        private PhysicalInjury RollBlastInjury(Patient p, PedBoneId bone)
+        {
+            int roll = Roll();
+
+            if (bone == InjuryBones.Chest)
+            {
+                if (roll < 30) return InjuryFactory.Blast.BlastInjury();
+                if (roll < 55) return InjuryFactory.Chest.HaemoPneumothorax();
+                if (roll < 75) return InjuryFactory.Fracture.FlailChest();
+                return InjuryFactory.Chest.PulmonaryContusion();
+            }
+
+            if (bone == InjuryBones.Head)
+            {
+                if (roll < 40) return InjuryFactory.Burns.Inhalation();
+                if (roll < 65) return InjuryFactory.Blast.EardrumRupture();
+                return InjuryFactory.HeadAndNeuro.Concussion();
+            }
+
+            if (bone == InjuryBones.Abdomen)
+                return InjuryFactory.Haemorrhage.Internal();
+
+            if (roll < 25) return InjuryFactory.Burns.FourthDegree(bone);
+            if (roll < 50) return InjuryFactory.Burns.ThirdDegree(bone);
+            if (roll < 70) return InjuryFactory.Burns.SecondDegree(bone);
+            if (roll < 85) return InjuryFactory.Blast.ShrapnelWounds(bone);
+            return InjuryFactory.SoftTissue.Laceration(bone);
+        }
+
+        // =====================================================================
+        // VITALS CALCULATION
+        // =====================================================================
+
+        private static void CalculateVitalsFromInjuries(Patient p)
+        {
+            List<PhysicalInjury> injuries = p.Conditions.OfType<PhysicalInjury>().ToList();
+            float totalBleed = injuries.Sum(i => i.BleedSeverity);
+
+            bool hasChestTrauma = injuries.Any(i =>
+                i.Bone == InjuryBones.Chest &&
+                (i.Name.Contains("Pneumo") || i.Name.Contains("Chest") ||
+                 i.Name.Contains("Haemo") || i.Name.Contains("Flail") ||
+                 i.Name.Contains("Contusion")));
+
+            bool hasTBI = injuries.Any(i =>
+                i.Bone == InjuryBones.Head &&
+                (i.Name.Contains("Haematoma") || i.Name.Contains("Haemorrhage")));
+
+            // ── Heart rate ────────────────────────────────────────────────────
+            if (totalBleed > 4.0f) p.HeartRate = VitalState.CriticalHigh;
+            else if (totalBleed > 2.5f) p.HeartRate = VitalState.Elevated;
+            else if (totalBleed > 1.0f) p.HeartRate = VitalState.Elevated;
+            else p.HeartRate = VitalState.Normal;
+
+            // ── Blood pressure ────────────────────────────────────────────────
+            if (totalBleed > 4.5f) p.BloodPressure = VitalState.CriticalLow;
+            else if (totalBleed > 3.0f) p.BloodPressure = VitalState.Low;
+            else if (totalBleed > 1.5f) p.BloodPressure = VitalState.Low;
+            else p.BloodPressure = VitalState.Normal;
+
+            // ── SpO2 ──────────────────────────────────────────────────────────
+            if (hasChestTrauma)
+                p.SpO2 = totalBleed > 2.0f ? VitalState.CriticalLow : VitalState.Low;
+            else
+                p.SpO2 = VitalState.Normal;
+
+            // ── Consciousness ─────────────────────────────────────────────────
+            if (totalBleed > 4.0f) p.Consciousness = ConsciousnessLevel.Unresponsive;
+            else if (totalBleed > 2.5f) p.Consciousness = ConsciousnessLevel.Pain;
+            else if (hasTBI) p.Consciousness = ConsciousnessLevel.Pain;
+            else p.Consciousness = ConsciousnessLevel.Verbal;
+        }
+
+        // =====================================================================
+        // HELPERS
+        // =====================================================================
+
+        private PedBoneId PickUnusedBone(HashSet<PedBoneId> used)
+        {
+            List<PedBoneId> available = new List<PedBoneId>();
+            foreach (PedBoneId b in SpawnableBones)
+                if (!used.Contains(b)) available.Add(b);
+
+            return available.Count > 0
+                ? available[rnd.Next(available.Count)]
+                : InjuryBones.Abdomen;
+        }
+
+        private static bool HasCondition(Patient p, string name) =>
+            p.Conditions.Any(c => c.Name == name);
+
+        private int Roll() => rnd.Next(0, 100);
     }
 }

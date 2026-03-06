@@ -4,6 +4,7 @@ using EmsPlus.Managers.Actions;
 using EmsPlus.Medical.Frameworks;
 using RAGENativeUI.Elements;
 using System.Linq;
+
 namespace EmsPlus.UI.NativeMenus.PatientMenu
 {
     public static partial class PatientMenuBuilder
@@ -18,7 +19,8 @@ namespace EmsPlus.UI.NativeMenus.PatientMenu
             bool hasTraumaKit = InventoryManager.IsKitAvailable("TraumaBag", p.Character.Position);
             bool anyInjuries = false;
 
-            var physicalInjuries = p.Conditions.OfType<PhysicalInjury>().Where(i => !i.IsTreated);
+            // ONLY get injuries that are on inspected bones!
+            var physicalInjuries = p.Conditions.OfType<PhysicalInjury>().Where(i => !i.IsTreated && p.IsBoneInspected(i.Bone));
 
             foreach (var injury in physicalInjuries)
             {

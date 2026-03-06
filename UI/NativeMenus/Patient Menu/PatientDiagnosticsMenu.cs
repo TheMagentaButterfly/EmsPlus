@@ -1,8 +1,10 @@
 ﻿using EmsPlus.Core;
-using EmsPlus.Framework;
 using EmsPlus.Managers;
 using EmsPlus.Managers.Actions;
+using Rage;
 using RAGENativeUI.Elements;
+using System;
+using System.Linq;
 
 namespace EmsPlus.UI.NativeMenus.PatientMenu
 {
@@ -26,6 +28,17 @@ namespace EmsPlus.UI.NativeMenus.PatientMenu
 
             bool hasTrauma = InventoryManager.IsKitAvailable("TraumaBag", p.Character.Position);
             AddInteractiveItem(DiagnosticsMenu, Localization.Get("ITEM_CHECK_BGL"), hasTrauma ? Localization.Get("DESC_CHECK_BGL") : Localization.Get("REQ_TRAUMA_BAG"), hasTrauma, () => { DiagnosticActions.CheckBGL(); MenuCore.CloseAll(); });
+
+            AddInteractiveItem(DiagnosticsMenu, Localization.Get("ACT_TRAUMA_SWEEP") ?? "Perform Trauma Sweep", Localization.Get("DESC_TRAUMA_SWEEP") ?? "Examine patient's entire body for injuries.", true, () => {
+                ActionsCore.Run(Localization.Get("NOTIF_INSPECTING") ?? "Inspecting...", 5000, EntryPoint.AnimationConfig.MedicAssessDict.Value, EntryPoint.AnimationConfig.MedicAssessName.Value, () => {
+                    foreach (var bone in Enum.GetValues(typeof(PedBoneId)).Cast<PedBoneId>())
+                    {
+                        p.MarkBoneInspected(bone);
+                    }
+                    Game.DisplayNotification(Localization.Get("NOTIF_SWEEP_COMPLETE") ?? "~g~Trauma sweep complete.");
+                });
+                MenuCore.CloseAll();
+            });
 
             DiagnosticsMenu.RefreshIndex();
         }

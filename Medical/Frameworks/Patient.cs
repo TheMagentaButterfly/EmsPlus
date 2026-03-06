@@ -25,8 +25,12 @@ namespace EmsPlus
         public VitalState BloodGlucose { get; set; } = VitalState.Normal;
 
         public List<MedicalCondition> Conditions { get; private set; } = new List<MedicalCondition>();
-        public bool IsStabilized => Conditions.All(c => c.IsTreated);
+        public HashSet<PedBoneId> InspectedBones { get; set; } = new HashSet<PedBoneId>();
 
+        public bool IsBoneInspected(PedBoneId bone) => InspectedBones.Contains(bone);
+        public void MarkBoneInspected(PedBoneId bone) => InspectedBones.Add(bone);
+
+        public bool IsStabilized => Conditions.All(c => c.IsTreated);
         public bool IsEcgsConnected { get; set; } = false;
         public bool IsBpCuffConnected { get; set; } = false;
         public bool IsOnStretcher { get; set; } = false;

@@ -112,7 +112,29 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Helpers
                 }
 
                 float size = 20f * scale;
-                Color markerColor = part.IsHovered ? Color.FromArgb(255, 0, 180, 255) : (selected ? Color.FromArgb(255, 0, 255, 150) : Color.FromArgb(255, 60, 70, 85));
+
+                // Set Dot Color Based on Inspection Status
+                Color markerColor;
+                if (part.LinkedEntity != null) // Kit on ground
+                {
+                    markerColor = part.IsHovered ? Color.FromArgb(255, 0, 180, 255) : (selected ? Color.FromArgb(255, 0, 255, 150) : Color.FromArgb(255, 200, 200, 200));
+                }
+                else
+                {
+                    if (p != null && p.IsBoneInspected(part.BoneId))
+                    {
+                        bool isInjured = p.Conditions.OfType<PhysicalInjury>().Any(i => i.Bone == part.BoneId && !i.IsTreated);
+                        markerColor = isInjured ? Color.FromArgb(255, 220, 60, 60) : Color.FromArgb(255, 0, 200, 100);
+                    }
+                    else
+                    {
+                        markerColor = Color.FromArgb(255, 80, 90, 100); // Uninspected Grey
+                    }
+
+                    if (selected) markerColor = Color.FromArgb(255, 0, 255, 150);
+                    else if (part.IsHovered) markerColor = Color.FromArgb(255, 0, 180, 255);
+                }
+
                 NativeUITools.DrawNativeRect(pos.X - size / 2, pos.Y - size / 2, size, size, Color.FromArgb(state.BaseAlpha, markerColor));
 
                 float innerSize = 12f * scale;
@@ -158,44 +180,45 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Helpers
             string statusText;
             Color statusColor;
 
-            float totalBleed = 0f;
-            var injuries = GameState.CurrentPatient?.Conditions.OfType<PhysicalInjury>().Where(i => i.Bone == part.BoneId).ToList();
-
-            if (injuries != null)
+            var p = GameState.CurrentPatient;
+            if (part.LinkedEntity != null)
             {
-                foreach (var inj in injuries) if (!inj.IsTreated) totalBleed += inj.BleedSeverity;
+                statusText = Localization.Get("DIAG_STATUS_EQUIPMENT") ?? "MEDICAL EQUIPMENT";
+                statusColor = Color.FromArgb(255, 0, 180, 255);
             }
-
-            if (totalBleed > 0.1f)
+            else if (part.LinkedEntity == null && p != null && !p.IsBoneInspected(part.BoneId))
             {
-                if (totalBleed < 1.0f) { statusText = Localization.Get("DIAG_MINOR_BLEEDING"); statusColor = Color.FromArgb(255, 255, 180, 100); }
-                else if (totalBleed < 3.0f) { statusText = Localization.Get("DIAG_MODERATE_BLEEDING"); statusColor = Color.FromArgb(255, 255, 100, 50); }
-                else { statusText = Localization.Get("DIAG_SEVERE_HEMORRHAGE"); statusColor = Color.FromArgb(255, 255, 50, 50); }
+                statusText = Localization.Get("DIAG_STATUS_UNKNOWN") ?? "UNKNOWN STATUS";
+                statusColor = Color.FromArgb(255, 150, 150, 150);
             }
             else
             {
-                var injury = injuries?.FirstOrDefault();
-                if (injury == null)
+                var injuries = p?.Conditions.OfType<PhysicalInjury>().Where(i => i.Bone == part.BoneId).ToList();
+                var primaryInjury = injuries?.FirstOrDefault(i => !i.IsTreated);
+                float totalBleed = injuries?.Where(i => !i.IsTreated).Sum(i => i.BleedSeverity) ?? 0f;
+
+                if (primaryInjury != null)
                 {
-                    statusText = Localization.Get("DIAG_STATUS_STABLE");
-                    statusColor = Color.FromArgb(255, 0, 255, 150);
+                    statusText = primaryInjury.Name.ToUpper();
+                    if (totalBleed > 2.0f) statusColor = Color.FromArgb(255, 255, 50, 50); // Severe
+                    else if (totalBleed > 0.5f) statusColor = Color.FromArgb(255, 255, 100, 50); // Moderate
+                    else statusColor = Color.FromArgb(255, 255, 180, 100); // Minor/Stable
                 }
-                else if (injuries.All(i => i.IsTreated))
+                else if (injuries != null && injuries.Any() && injuries.All(i => i.IsTreated))
                 {
                     statusText = Localization.Get("DIAG_STATUS_TREATED");
                     statusColor = Color.FromArgb(255, 255, 180, 0);
                 }
                 else
                 {
-                    statusText = injury.Name.ToUpper();
-                    statusColor = Color.FromArgb(255, 255, 100, 100);
+                    statusText = Localization.Get("DIAG_STATUS_CLEAR") ?? "CLEAR";
+                    statusColor = Color.FromArgb(255, 0, 255, 150);
                 }
             }
 
             NativeUITools.DrawNativeText("●", x + 15, y + 68, 0.3f, statusColor);
             NativeUITools.DrawNativeText(statusText, x + 30, y + 65, 0.4f, statusColor);
-            NativeUITools.DrawNativeText(Localization.Get("AVAILABLE ACTION"), x + 15, y + 100, 0.3f, Color.FromArgb(UI.Helpers.MathHelper.Clamp(pta - 80, 0, 255), 200, 200, 200));
-
+            NativeUITools.DrawNativeText(Localization.Get("AVAILABLE ACTION") ?? "AVAILABLE ACTIONS", x + 15, y + 100, 0.3f, Color.FromArgb(UI.Helpers.MathHelper.Clamp(pta - 80, 0, 255), 200, 200, 200));
 
             input.PanelActionButtons.Clear();
             float startY = y + 130f;
@@ -225,17 +248,14 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Helpers
                 startY += actionHeight;
             }
 
-            // --- SCROLLBAR ---
             if (count > MAX_VISIBLE_ACTIONS)
             {
                 float scrollBarX = x + w - 15f;
                 float scrollTrackY = y + 130f;
                 float scrollTrackH = listHeight;
 
-                // Track
                 NativeUITools.DrawNativeRect(scrollBarX, scrollTrackY, 4, scrollTrackH, Color.FromArgb(pa / 3, 255, 255, 255));
 
-                // Handle
                 float handleH = (scrollTrackH / count) * MAX_VISIBLE_ACTIONS;
                 float scrollProgress = (float)startIndex / (count - MAX_VISIBLE_ACTIONS);
                 float handleY = scrollTrackY + (scrollProgress * (scrollTrackH - handleH));
