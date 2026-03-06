@@ -39,7 +39,7 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Menus
                         Color.FromArgb(255, 0, 150, 255),
                         true,
                         () => {
-                            ActionsCore.Run(Localization.Get("NOTIF_INSPECTING") ?? "Inspecting...", 2500, EntryPoint.AnimationConfig.MedicAssessDict.Value, EntryPoint.AnimationConfig.MedicAssessName.Value, () => {
+                            ActionsCore.Run(Localization.Get("NOTIF_INSPECTING") ?? "Inspecting...", 1500, EntryPoint.AnimationConfig.MedicAssessDict.Value, EntryPoint.AnimationConfig.MedicAssessName.Value, () => {
                                 p.MarkBoneInspected(part.BoneId);
                                 BodyInspectionManager.RefreshActions();
                             });

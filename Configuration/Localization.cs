@@ -308,6 +308,7 @@ namespace EmsPlus
                 w.WriteLine("NOTIF_VEHICLE_DETECTED=~g~Vehicle Detected: {0}");
                 w.WriteLine("NOTIF_NO_AMBULANCE_NEARBY=~r~No Valid Vehicle Nearby");
                 w.WriteLine("HELP_HANDOVER_PATIENT=Press ~INPUT_CONTEXT~ to handover patient.");
+                w.WriteLine("NOTIF_MEDICALBAGS_RESTOCKED=~b~Dispatch:~w~ Medical bags ~g~restocked~w~.");
                 w.WriteLine("");
 
                 w.WriteLine("[Patient_States]");

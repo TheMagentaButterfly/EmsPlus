@@ -23,7 +23,7 @@ namespace EmsPlus.Managers
 
         static InventoryManager()
         {
-            RestockSupplies(false); // Silent restock
+            RestockSupplies(false);
         }
 
         public static void RestockSupplies(bool notify = true)
@@ -32,14 +32,14 @@ namespace EmsPlus.Managers
             // Trauma
             CurrentSupplies[EmsTreatment.Bandage] = 4;
             CurrentSupplies[EmsTreatment.WoundPacking] = 2;
-            CurrentSupplies[EmsTreatment.Tourniquet] = 1; // Only 1 TQ!
+            CurrentSupplies[EmsTreatment.Tourniquet] = 1;
             CurrentSupplies[EmsTreatment.JunctionalTourniquet] = 1;
             // Immobilize
             CurrentSupplies[EmsTreatment.Splint] = 1;
             CurrentSupplies[EmsTreatment.CervicalCollar] = 1;
             // IV / Meds
             CurrentSupplies[EmsTreatment.IVAccess] = 2;
-            CurrentSupplies[EmsTreatment.IVFluids] = 1; // Only 1 bag of Saline!
+            CurrentSupplies[EmsTreatment.IVFluids] = 1;
             CurrentSupplies[EmsTreatment.Adrenaline] = 3;
             CurrentSupplies[EmsTreatment.GiveNaloxone] = 2;
             // Airway / Chest
@@ -48,16 +48,13 @@ namespace EmsPlus.Managers
 
             if (notify)
             {
-                Game.DisplayNotification("~b~Dispatch:~w~ Medical bags ~g~restocked~w~.");
+                Game.DisplayNotification(Localization.Get("NOTIF_MEDICALBAGS_RESTOCKED"));
             }
         }
 
         public static bool HasSupply(EmsTreatment treatment)
         {
-            // Infinite supplies if treating inside the ambulance!
             if (AmbulanceManager.IsPlayerInRearCabin) return true;
-
-            // If the item isn't tracked in the dictionary (like CPR or Direct Pressure), it's infinite
             if (!CurrentSupplies.ContainsKey(treatment)) return true;
 
             return CurrentSupplies[treatment] > 0;
@@ -65,7 +62,7 @@ namespace EmsPlus.Managers
 
         public static void ConsumeSupply(EmsTreatment treatment)
         {
-            if (AmbulanceManager.IsPlayerInRearCabin) return; // Don't consume if inside
+            if (AmbulanceManager.IsPlayerInRearCabin) return;
             if (CurrentSupplies.ContainsKey(treatment) && CurrentSupplies[treatment] > 0)
             {
                 CurrentSupplies[treatment]--;
@@ -145,7 +142,6 @@ namespace EmsPlus.Managers
                 Vector3 bodyRightDir = Vector3.Cross(bodyUpDir, Vector3.WorldUp);
                 bodyRightDir.Normalize();
 
-                // Custom placement offsets based on Kit ID
                 if (CurrentKitID == "TRAUMABAG") targetPos = headPos - (bodyRightDir * 0.75f);
                 else if (CurrentKitID == "DEFIBRILLATOR") targetPos = headPos + (bodyRightDir * 0.75f);
                 else if (CurrentKitID == "OXYGENBAG") targetPos = headPos + (bodyUpDir * 0.55f);

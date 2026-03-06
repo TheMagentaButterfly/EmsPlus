@@ -95,7 +95,7 @@ namespace EmsPlus.Managers
             EmsService.SetStatus(EmsStatus.Available);
 
             Game.FadeScreenIn(1000);
-            Game.DisplayNotification("~g~Transport Complete:~w~ Patient handed over to hospital staff.");
+            Game.DisplayNotification(Localization.Get("NOTIF_PATIENT_HANDED_OVER"));
         }
 
         public static void CleanupBlip()

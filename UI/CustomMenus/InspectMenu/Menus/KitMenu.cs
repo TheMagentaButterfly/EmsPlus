@@ -16,7 +16,6 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Menus
             if (placedKit == null) return;
             string currentCat = BodyInspectionManager.CurrentMenuCategory;
 
-            // If we are in any bag sub-category, the back button goes to KIT_HOME
             if (currentCat == "KIT_TRAUMA" || currentCat == "KIT_IMMOBILIZE" || currentCat == "KIT_WOUNDCARE")
             {
                 BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
@@ -138,20 +137,18 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Menus
             bool inCabin = AmbulanceManager.IsPlayerInRearCabin;
             bool hasSupply = InventoryManager.HasSupply(tool);
             
-            // Check dictionary for quantity, default to 99 for infinite/hands-on items
             int count = InventoryManager.CurrentSupplies.ContainsKey(tool) ? InventoryManager.CurrentSupplies[tool] : 99;
             
             string displayLabel = (inCabin || count == 99) ? label : $"{label} [{count}]";
             string desc = hasSupply ? Localization.Get("BTN_TAKE_ITEM_DESC") : Localization.Get("BTN_ITEM_EMPTY_DESC");
 
             BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
-                $"TAKE {displayLabel}", 
+                $"{displayLabel}", 
                 desc, 
                 hasSupply ? Color.LightBlue : Color.FromArgb(255, 60, 60, 60), 
                 hasSupply, 
                 () => {
                     InventoryManager.ActiveTool = tool;
-                    //Rage.Game.DisplayNotification($"~b~Prepared:~w~ {label}. Select injured body part.");
                     BodyInspectionManager.RefreshActions();
             }));
         }
