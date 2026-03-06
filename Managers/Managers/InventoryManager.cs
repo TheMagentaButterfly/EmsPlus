@@ -34,17 +34,27 @@ namespace EmsPlus.Managers
             CurrentSupplies[EmsTreatment.WoundPacking] = 2;
             CurrentSupplies[EmsTreatment.Tourniquet] = 1;
             CurrentSupplies[EmsTreatment.JunctionalTourniquet] = 1;
+            CurrentSupplies[EmsTreatment.IcePack] = 2;
+            CurrentSupplies[EmsTreatment.StabiliseObject] = 1;
             // Immobilize
             CurrentSupplies[EmsTreatment.Splint] = 1;
+            CurrentSupplies[EmsTreatment.TractionSplint] = 1;
+            CurrentSupplies[EmsTreatment.PelvicBinder] = 1;
             CurrentSupplies[EmsTreatment.CervicalCollar] = 1;
             // IV / Meds
             CurrentSupplies[EmsTreatment.IVAccess] = 2;
-            CurrentSupplies[EmsTreatment.IVFluids] = 1;
+            CurrentSupplies[EmsTreatment.SalineBag] = 2;
             CurrentSupplies[EmsTreatment.Adrenaline] = 3;
-            CurrentSupplies[EmsTreatment.GiveNaloxone] = 2;
+            CurrentSupplies[EmsTreatment.Naloxone] = 2;
             // Airway / Chest
             CurrentSupplies[EmsTreatment.ChestSeal] = 2;
             CurrentSupplies[EmsTreatment.NeedleDecomp] = 2;
+            // Specialized
+            CurrentSupplies[EmsTreatment.WetDressing] = 1;
+            CurrentSupplies[EmsTreatment.BurnDressing] = 1;
+            CurrentSupplies[EmsTreatment.Irrigation] = 1;
+            CurrentSupplies[EmsTreatment.EyePatch] = 2;
+            CurrentSupplies[EmsTreatment.EyeShield] = 2;
 
             if (notify)
             {

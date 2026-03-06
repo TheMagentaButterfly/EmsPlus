@@ -40,9 +40,9 @@ namespace EmsPlus.Managers.Actions
                 var p = GameState.CurrentPatient;
                 if (p == null) return;
 
-                if (medName == "Epinephrine") p.ApplyTreatment(EmsTreatment.GiveEpinephrine);
-                else if (medName == "Naloxone") p.ApplyTreatment(EmsTreatment.GiveNaloxone);
-                else if (medName == "Dextrose") p.ApplyTreatment(EmsTreatment.GiveGlucose);
+                if (medName == "Epinephrine") p.ApplyTreatment(EmsTreatment.Adrenaline);
+                else if (medName == "Naloxone") p.ApplyTreatment(EmsTreatment.Naloxone);
+                else if (medName == "Dextrose") p.ApplyTreatment(EmsTreatment.Glucose);
                 else Game.DisplayNotification(string.Format(Localization.Get("NOTIF_ADMINISTERED"), medName));
             });
         }
@@ -79,7 +79,7 @@ namespace EmsPlus.Managers.Actions
                 () =>
                 {
                     GameState.CurrentPatient.IsReceivingFluids = true;
-                    GameState.CurrentPatient.ApplyTreatment(EmsTreatment.IVFluids);
+                    GameState.CurrentPatient.ApplyTreatment(EmsTreatment.SalineBag);
                 });
         }
 

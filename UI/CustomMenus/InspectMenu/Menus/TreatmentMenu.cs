@@ -47,7 +47,7 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Menus
                 // Fluids
                 if (!p.IsReceivingFluids)
                 {
-                    AddAction(hasTrauma, "TRAUMABAG", Localization.Get("ITEM_HANG_FLUIDS"), Localization.Get("DESC_HANG_FLUIDS"), EmsTreatment.IVFluids, part.BoneId);
+                    AddAction(hasTrauma, "TRAUMABAG", Localization.Get("ITEM_HANG_FLUIDS"), Localization.Get("DESC_HANG_FLUIDS"), EmsTreatment.SalineBag, part.BoneId);
                 }
                 else
                 {

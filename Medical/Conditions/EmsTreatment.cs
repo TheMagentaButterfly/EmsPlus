@@ -15,9 +15,7 @@
 
         // Advanced Trauma & Fluids
         IVAccess,
-        IVFluids,
-        Analgesia,
-        Adrenaline,
+        SalineBag,
 
         // Respiratory & Chest
         Oxygen,
@@ -47,10 +45,11 @@
 
         // Critical Care
         CPR,
-        GiveNaloxone,
-        GiveGlucose,
 
         // Medicine
-        GiveEpinephrine
+        Adrenaline,
+        Naloxone,
+        Glucose,
+        Analgesia
     }
 }

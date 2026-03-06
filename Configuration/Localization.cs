@@ -243,7 +243,7 @@ namespace EmsPlus
                 w.WriteLine("TRT_BAGVALVEMASK=BVM (Bag Valve)");
                 w.WriteLine("TRT_CPR=CPR");
                 w.WriteLine("TRT_IVACCESS=IV Start Kit");
-                w.WriteLine("TRT_IVFLUIDS=Saline Bag");
+                w.WriteLine("TRT_SALINEBAG=Saline Bag");
                 w.WriteLine("TRT_BURNDRESSING=Burn Dressing");
                 w.WriteLine("TRT_WETDRESSING=Wet Dressing");
                 w.WriteLine("TRT_ICEPACK=Ice Pack");
@@ -251,6 +251,10 @@ namespace EmsPlus
                 w.WriteLine("TRT_EYEPATCH=Eye Patch");
                 w.WriteLine("TRT_EYESHIELD=Eye Shield");
                 w.WriteLine("TRT_STABILISEOBJECT=Object Stabilizer");
+                w.WriteLine("TRT_IVACCESS=IV Start Kit");
+                w.WriteLine("TRT_NALOXONE=Naloxone");
+                w.WriteLine("TRT_GLUCOSE=Glucose");
+                w.WriteLine("TRT_ADRENALINE=Adrenaline");
                 w.WriteLine("");
 
                 w.WriteLine("[Injuries]");

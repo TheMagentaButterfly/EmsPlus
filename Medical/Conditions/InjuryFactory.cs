@@ -167,7 +167,7 @@ namespace EmsPlus.Medical.Conditions
                         EmsTreatment.WoundPacking, EmsTreatment.JunctionalTourniquet);
 
                 return new PhysicalInjury("Non-Compressible Haemorrhage", bone, 2.0f,
-                    EmsTreatment.WoundPacking, EmsTreatment.IVAccess, EmsTreatment.IVFluids);
+                    EmsTreatment.WoundPacking, EmsTreatment.IVAccess, EmsTreatment.SalineBag);
             }
 
             public static PhysicalInjury Venous(PedBoneId bone) =>
@@ -180,7 +180,7 @@ namespace EmsPlus.Medical.Conditions
 
             public static PhysicalInjury Internal() =>
                 new PhysicalInjury("Internal Haemorrhage", InjuryBones.Abdomen, 1.5f,
-                    EmsTreatment.IVAccess, EmsTreatment.IVFluids);
+                    EmsTreatment.IVAccess, EmsTreatment.SalineBag);
 
             public static PhysicalInjury Scalp() =>
                 new PhysicalInjury("Scalp Laceration", InjuryBones.Head, 0.7f,
@@ -200,7 +200,7 @@ namespace EmsPlus.Medical.Conditions
 
             public static PhysicalInjury AorticAneurysm() =>
                 new PhysicalInjury("Aortic Aneurysm Rupture", InjuryBones.Abdomen, 5.0f,
-                    EmsTreatment.IVAccess, EmsTreatment.IVFluids);
+                    EmsTreatment.IVAccess, EmsTreatment.SalineBag);
         }
 
         // =====================================================================
@@ -300,11 +300,11 @@ namespace EmsPlus.Medical.Conditions
 
             public static PhysicalInjury Pelvic() =>
                 new PhysicalInjury("Pelvic Fracture", InjuryBones.Pelvis, 2.5f,
-                    EmsTreatment.PelvicBinder, EmsTreatment.IVAccess, EmsTreatment.IVFluids);
+                    EmsTreatment.PelvicBinder, EmsTreatment.IVAccess, EmsTreatment.SalineBag);
 
             public static PhysicalInjury PelvicCrush() =>
                 new PhysicalInjury("Pelvic Crush Fracture", InjuryBones.Pelvis, 3.0f,
-                    EmsTreatment.PelvicBinder, EmsTreatment.IVAccess, EmsTreatment.IVFluids);
+                    EmsTreatment.PelvicBinder, EmsTreatment.IVAccess, EmsTreatment.SalineBag);
 
             public static PhysicalInjury Rib() =>
                 new PhysicalInjury("Rib Fracture", InjuryBones.Chest, 0.0f,
@@ -361,11 +361,11 @@ namespace EmsPlus.Medical.Conditions
 
             public static PhysicalInjury CardiacTamponade() =>
                 new PhysicalInjury("Cardiac Tamponade", InjuryBones.Chest, 0.0f,
-                    EmsTreatment.IVAccess, EmsTreatment.IVFluids);
+                    EmsTreatment.IVAccess, EmsTreatment.SalineBag);
 
             public static PhysicalInjury AorticTransection() =>
                 new PhysicalInjury("Aortic Transection", InjuryBones.Chest, 4.5f,
-                    EmsTreatment.IVAccess, EmsTreatment.IVFluids);
+                    EmsTreatment.IVAccess, EmsTreatment.SalineBag);
 
             public static PhysicalInjury PulmonaryContusion() =>
                 new PhysicalInjury("Pulmonary Contusion", InjuryBones.Chest, 0.0f,
@@ -427,11 +427,11 @@ namespace EmsPlus.Medical.Conditions
 
             public static PhysicalInjury ThirdDegree(PedBoneId bone) =>
                 new PhysicalInjury("3rd Degree Burn", bone, 0.2f,
-                    EmsTreatment.BurnDressing, EmsTreatment.IVAccess, EmsTreatment.IVFluids);
+                    EmsTreatment.BurnDressing, EmsTreatment.IVAccess, EmsTreatment.SalineBag);
 
             public static PhysicalInjury FourthDegree(PedBoneId bone) =>
                 new PhysicalInjury("4th Degree Burn", bone, 0.35f,
-                    EmsTreatment.BurnDressing, EmsTreatment.IVAccess, EmsTreatment.IVFluids);
+                    EmsTreatment.BurnDressing, EmsTreatment.IVAccess, EmsTreatment.SalineBag);
 
             public static PhysicalInjury Inhalation() =>
                 new PhysicalInjury("Inhalation Injury", InjuryBones.Head, 0.0f,
@@ -481,7 +481,7 @@ namespace EmsPlus.Medical.Conditions
 
             public static PhysicalInjury HeatStroke() =>
                 new PhysicalInjury("Heat Stroke", InjuryBones.Abdomen, 0.0f,
-                    EmsTreatment.ActiveCooling, EmsTreatment.IVAccess, EmsTreatment.IVFluids);
+                    EmsTreatment.ActiveCooling, EmsTreatment.IVAccess, EmsTreatment.SalineBag);
 
             public static PhysicalInjury CarbonMonoxidePoisoning() =>
                 new PhysicalInjury("Carbon Monoxide Poisoning", InjuryBones.Abdomen, 0.0f,
@@ -493,7 +493,7 @@ namespace EmsPlus.Medical.Conditions
 
             public static PhysicalInjury Rhabdomyolysis() =>
                 new PhysicalInjury("Rhabdomyolysis", InjuryBones.Abdomen, 0.0f,
-                    EmsTreatment.IVAccess, EmsTreatment.IVFluids, EmsTreatment.Monitoring);
+                    EmsTreatment.IVAccess, EmsTreatment.SalineBag, EmsTreatment.Monitoring);
         }
     }
 }

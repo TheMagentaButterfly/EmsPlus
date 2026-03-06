@@ -40,7 +40,7 @@ namespace EmsPlus.Medical.Conditions
                     return bone == PedBoneId.Pelvis || bone == PedBoneId.SpineRoot;
 
                 case EmsTreatment.IVAccess:
-                case EmsTreatment.IVFluids:
+                case EmsTreatment.SalineBag:
                 case EmsTreatment.Adrenaline:
                 case EmsTreatment.Analgesia:
                     return bone == PedBoneId.LeftForeArm || bone == PedBoneId.RightForearm ||
