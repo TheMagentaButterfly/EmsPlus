@@ -1,8 +1,9 @@
-﻿using EmsPlus.Managers.Actions;
+﻿using EmsPlus.Core;
+using EmsPlus.Managers.Actions;
+using EmsPlus.Medical.Conditions;
+using EmsPlus.Medical.Frameworks;
 using System;
 using System.Collections.Generic;
-using EmsPlus.Core;
-using EmsPlus.Medical.Frameworks;
 
 namespace EmsPlus.UI.CustomMenus.InspectMenu
 {
@@ -27,10 +28,19 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu
                 {
                     continue;
                 }
+                List<string> steps = new List<string>();
+                if (!cond.IsTreated)
+                {
+                    foreach (var req in cond.RequiredTreatments)
+                    {
+                        steps.Add($"• {GetLocalizedTreatmentName(req)}");
+                    }
+                }
                 newItems.Add(new DiagnosticItem(
                     cond.Name,
-                    cond.IsTreated ? Localization.Get("DIAG_STATUS_TREATED") : Localization.Get("DIAG_STATUS_REQUIRED"),
-                    cond.IsTreated
+                    cond.IsTreated ? (Localization.Get("DIAG_STATUS_TREATED") ?? "TREATED") : (Localization.Get("DIAG_STATUS_REQUIRED") ?? "REQUIRED"),
+                    cond.IsTreated,
+                    null, null, steps
                 ));
             }
 
@@ -80,6 +90,32 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu
             Items = newItems;
         }
 
+        private string GetLocalizedTreatmentName(EmsTreatment treatment)
+        {
+            string key = $"TRT_{treatment.ToString().ToUpperInvariant()}";
+            string localized = Localization.Get(key);
+
+            if (localized == key)
+            {
+                if (treatment == EmsTreatment.DirectPressure) return "Direct Pressure";
+                if (treatment == EmsTreatment.AirwayManagement) return "Manage Airway";
+                if (treatment == EmsTreatment.ChestSeal) return "Chest Seal";
+                if (treatment == EmsTreatment.NeedleDecomp) return "Needle Decomp.";
+                if (treatment == EmsTreatment.CervicalCollar) return "C-Collar";
+                if (treatment == EmsTreatment.PelvicBinder) return "Pelvic Binder";
+                if (treatment == EmsTreatment.TractionSplint) return "Traction Splint";
+                if (treatment == EmsTreatment.WoundPacking) return "Wound Packing";
+                if (treatment == EmsTreatment.JunctionalTourniquet) return "Junctional TQ";
+                if (treatment == EmsTreatment.BurnDressing) return "Burn Dressing";
+                if (treatment == EmsTreatment.WetDressing) return "Wet Dressing";
+                if (treatment == EmsTreatment.EyePatch) return "Eye Patch";
+                if (treatment == EmsTreatment.EyeShield) return "Eye Shield";
+                if (treatment == EmsTreatment.IcePack) return "Ice Pack";
+                return treatment.ToString();
+            }
+            return localized;
+        }
+
         private string GetStateText(VitalState state)
         {
             switch (state)
@@ -107,10 +143,16 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu
         public string ActionButtonText { get; }
         public Action OnAction { get; }
         public bool HasAction => OnAction != null && !string.IsNullOrEmpty(ActionButtonText);
+        public List<string> Details { get; } = new List<string>();
 
-        public DiagnosticItem(string label, string value, bool normal, string btnTxt = null, Action action = null)
+        public DiagnosticItem(string label, string value, bool normal, string btnTxt = null, Action action = null, List<string> details = null)
         {
-            Label = label; Value = value; IsNormal = normal; ActionButtonText = btnTxt; OnAction = action;
+            Label = label;
+            Value = value;
+            IsNormal = normal;
+            ActionButtonText = btnTxt;
+            OnAction = action;
+            if (details != null) Details = details;
         }
     }
 }

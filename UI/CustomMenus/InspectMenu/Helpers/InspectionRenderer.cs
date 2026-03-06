@@ -269,10 +269,16 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Helpers
             float offset = (1f - UI.Helpers.MathHelper.EaseOutCubic(state.DiagnosticSlide)) * -340f;
             float x = 20f + offset, y = 180f, w = 320f;
 
+            var currentItems = diagnostics.Items.ToList();
+
             float totalH = 80f;
-            foreach (var item in diagnostics.Items)
+            foreach (var item in currentItems)
             {
-                totalH += item.HasAction ? 75f : 50f;
+                float h = 45f;
+                if (item.Details != null && item.Details.Count > 0) h += item.Details.Count * 18f;
+                if (item.HasAction) h += 30f;
+
+                totalH += h;
             }
 
             int pa = UI.Helpers.MathHelper.Clamp((int)(220 * state.Alpha * state.DiagnosticSlide), 0, 255);
@@ -281,28 +287,38 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Helpers
             NativeUITools.DrawNativeRect(x, y, w, totalH, Color.FromArgb(pa, 12, 18, 28));
             NativeUITools.DrawNativeRect(x, y, 3, totalH, Color.FromArgb(255, 255, 180, 0));
             NativeUITools.DrawNativeRect(x, y, w, 50, Color.FromArgb(UI.Helpers.MathHelper.Clamp(pa / 2, 0, 255), 200, 100, 0));
-            NativeUITools.DrawNativeText(Localization.Get("TITLE_DIAGNOSTICS") ?? Localization.Get("TITLE_DIAGNOSTICS"), x + 15, y + 10, 0.5f, Color.FromArgb(pta, 255, 255, 255));
+            NativeUITools.DrawNativeText(Localization.Get("TITLE_DIAGNOSTICS") ?? "DIAGNOSTICS", x + 15, y + 10, 0.5f, Color.FromArgb(pta, 255, 255, 255));
 
             _input.DiagnosticActionButtons.Clear();
 
             float itemY = y + 65f;
-            for (int i = 0; i < diagnostics.Items.Count; i++)
+            for (int i = 0; i < currentItems.Count; i++)
             {
-                var diag = diagnostics.Items[i];
-                bool hasAction = diag.HasAction;
+                var diag = currentItems[i];
 
-                float thisItemH = hasAction ? 75f : 50f;
+                float thisItemH = 45f;
+                if (diag.Details != null && diag.Details.Count > 0) thisItemH += diag.Details.Count * 18f;
+                if (diag.HasAction) thisItemH += 30f;
 
                 Color dot = diag.IsNormal ? Color.FromArgb(255, 0, 255, 150) : Color.FromArgb(255, 255, 60, 60);
 
                 NativeUITools.DrawNativeText("●", x + 15, itemY + 3, 0.3f, dot);
                 NativeUITools.DrawNativeText(diag.Label, x + 32, itemY, 0.28f, Color.FromArgb(UI.Helpers.MathHelper.Clamp(pta - 60, 0, 255), 140, 150, 160));
-
                 NativeUITools.DrawNativeText(diag.Value, x + 32, itemY + 18, 0.35f, Color.FromArgb(pta, 210, 220, 230));
 
-                if (hasAction)
+                float currentYOffset = 38f;
+                if (diag.Details != null && diag.Details.Count > 0)
                 {
-                    float btnY = itemY + 42f;
+                    foreach (var step in diag.Details)
+                    {
+                        NativeUITools.DrawNativeText(step, x + 36, itemY + currentYOffset, 0.24f, Color.FromArgb(pta, 180, 190, 200));
+                        currentYOffset += 18f;
+                    }
+                }
+
+                if (diag.HasAction)
+                {
+                    float btnY = itemY + currentYOffset + 4f;
                     float btnW = w - 60f, btnH = 26f;
                     RectangleF btnRect = new RectangleF(x + 30, btnY, btnW, btnH);
                     _input.DiagnosticActionButtons.Add(btnRect);
@@ -313,7 +329,6 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Helpers
                     NativeUITools.DrawNativeRect(btnRect.X, btnRect.Y, btnRect.Width, btnRect.Height, btnColor);
                     if (isHovering) NativeUITools.DrawNativeRect(btnRect.X, btnRect.Y + btnRect.Height - 1, btnRect.Width, 1, Color.FromArgb(pta, 100, 200, 255));
 
-                    // Use Center Text for buttons
                     float centerX = btnRect.X + (btnRect.Width / 2f);
                     NativeUITools.DrawNativeText(diag.ActionButtonText, centerX, btnRect.Y + 3, 0.28f, Color.FromArgb(pta, 255, 255, 255), true);
                 }

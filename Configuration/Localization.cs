@@ -236,7 +236,7 @@ namespace EmsPlus
                 w.WriteLine("TRT_CERVICALCOLLAR=C-Collar");
                 w.WriteLine("TRT_SPINALIMMOBILISATION=Backboard");
                 w.WriteLine("TRT_CHESTSEAL=Chest Seal");
-                w.WriteLine("TRT_NEEDLEDECOMP=Needle Decomp.");
+                w.WriteLine("TRT_NEEDLEDECOMP=Needle Decompression");
                 w.WriteLine("TRT_MANAGE_AIRWAY=Manage Airway");
                 w.WriteLine("TRT_OXYGEN=O2 Mask");
                 w.WriteLine("TRT_HIGHFLOWOXYGEN=NRB Mask (High Flow)");
