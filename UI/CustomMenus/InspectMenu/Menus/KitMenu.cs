@@ -41,9 +41,9 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Menus
                 {
                     case "KIT_TRAUMA":
                         AddToolOption(Localization.Get("TRT_BANDAGE"), EmsTreatment.Bandage);
+                        AddToolOption(Localization.Get("TRT_WOUNDPACKING"), EmsTreatment.WoundPacking);
                         AddToolOption(Localization.Get("TRT_TOURNIQUET"), EmsTreatment.Tourniquet);
                         AddToolOption(Localization.Get("TRT_JUNCTIONALTOURNIQUET"), EmsTreatment.JunctionalTourniquet);
-                        AddToolOption(Localization.Get("TRT_WOUNDPACKING"), EmsTreatment.WoundPacking);
                         AddToolOption(Localization.Get("TRT_SUTURE"), EmsTreatment.Suture);
                         break;
 
@@ -62,22 +62,22 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Menus
                         AddToolOption(Localization.Get("TRT_TRACTIONSPLINT"), EmsTreatment.TractionSplint);
                         AddToolOption(Localization.Get("TRT_PELVICBINDER"), EmsTreatment.PelvicBinder);
                         AddToolOption(Localization.Get("TRT_CERVICALCOLLAR"), EmsTreatment.CervicalCollar);
-                        AddToolOption(Localization.Get("TRT_SPINALIMMOBILISATION"), EmsTreatment.SpinalImmobilisation);
+                        //AddToolOption(Localization.Get("TRT_SPINALIMMOBILISATION"), EmsTreatment.SpinalImmobilisation);
                         break;
 
-                    case "KIT_CIRCULATION":
-                        AddToolOption(Localization.Get("TRT_IVACCESS"), EmsTreatment.IVAccess);
-                        AddToolOption(Localization.Get("TRT_SALINEBAG"), EmsTreatment.SalineBag);
-                        AddToolOption(Localization.Get("TRT_NALOXONE"), EmsTreatment.Naloxone);
-                        AddToolOption(Localization.Get("TRT_GLUCOSE"), EmsTreatment.Glucose);
-                        AddToolOption(Localization.Get("TRT_ADRENALINE"), EmsTreatment.Adrenaline);
-                        break;
+                    //case "KIT_CIRCULATION":
+                        //AddToolOption(Localization.Get("TRT_IVACCESS"), EmsTreatment.IVAccess);
+                        //AddToolOption(Localization.Get("TRT_SALINEBAG"), EmsTreatment.SalineBag);
+                        //AddToolOption(Localization.Get("TRT_NALOXONE"), EmsTreatment.Naloxone);
+                        //AddToolOption(Localization.Get("TRT_GLUCOSE"), EmsTreatment.Glucose);
+                        //AddToolOption(Localization.Get("TRT_ADRENALINE"), EmsTreatment.Adrenaline);
+                        //break;
 
                     default:
                         AddCategoryBtn(Localization.Get("CAT_TRAUMA"), Localization.Get("CAT_TRAUMA_DESC"), "KIT_TRAUMA");
                         AddCategoryBtn(Localization.Get("CAT_WOUNDCARE"), Localization.Get("CAT_WOUNDCARE_DESC"), "KIT_WOUNDCARE");
                         AddCategoryBtn(Localization.Get("CAT_IMMOBILIZE"), Localization.Get("CAT_IMMOBILIZE_DESC"), "KIT_IMMOBILIZE");
-                        AddCategoryBtn(Localization.Get("CAT_CIRCULATION"), Localization.Get("CAT_CIRCULATION_DESC"), "KIT_CIRCULATION");
+                        //AddCategoryBtn(Localization.Get("CAT_CIRCULATION"), Localization.Get("CAT_CIRCULATION_DESC"), "KIT_CIRCULATION");
                         break;
                 }
             }

@@ -42,10 +42,11 @@ namespace EmsPlus.Managers
             CurrentSupplies[EmsTreatment.PelvicBinder] = 1;
             CurrentSupplies[EmsTreatment.CervicalCollar] = 1;
             // IV / Meds
-            CurrentSupplies[EmsTreatment.IVAccess] = 2;
-            CurrentSupplies[EmsTreatment.SalineBag] = 2;
-            CurrentSupplies[EmsTreatment.Adrenaline] = 3;
-            CurrentSupplies[EmsTreatment.Naloxone] = 2;
+            //CurrentSupplies[EmsTreatment.IVAccess] = 4;
+            //CurrentSupplies[EmsTreatment.SalineBag] = 2;
+            //CurrentSupplies[EmsTreatment.Adrenaline] = 2;
+            //CurrentSupplies[EmsTreatment.Naloxone] = 2;
+            //CurrentSupplies[EmsTreatment.Glucose] = 2;
             // Airway / Chest
             CurrentSupplies[EmsTreatment.ChestSeal] = 2;
             CurrentSupplies[EmsTreatment.NeedleDecomp] = 2;

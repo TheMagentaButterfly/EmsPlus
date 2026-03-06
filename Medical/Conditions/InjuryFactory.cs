@@ -314,13 +314,9 @@ namespace EmsPlus.Medical.Conditions
                 new PhysicalInjury("Flail Chest", InjuryBones.Chest, 0.1f,
                     EmsTreatment.BagValveMask, EmsTreatment.Oxygen);
 
-            public static PhysicalInjury Spinal(PedBoneId bone) =>
-                new PhysicalInjury("Suspected Spinal Fracture", bone, 0.0f,
-                    EmsTreatment.SpinalImmobilisation, EmsTreatment.CervicalCollar);
+            //public static PhysicalInjury Spinal(PedBoneId bone) => new PhysicalInjury("Suspected Spinal Fracture", bone, 0.0f, EmsTreatment.SpinalImmobilisation, EmsTreatment.CervicalCollar);
 
-            public static PhysicalInjury CervicalSpine() =>
-                new PhysicalInjury("Cervical Spinal Fracture", InjuryBones.CervicalSpine, 0.0f,
-                    EmsTreatment.CervicalCollar, EmsTreatment.SpinalImmobilisation);
+            //public static PhysicalInjury CervicalSpine() => new PhysicalInjury("Cervical Spinal Fracture", InjuryBones.CervicalSpine, 0.0f, EmsTreatment.CervicalCollar, EmsTreatment.SpinalImmobilisation);
 
             public static PhysicalInjury Ankle() =>
                 new PhysicalInjury("Ankle Fracture", InjuryBones.LeftAnkle, 0.1f,

@@ -163,10 +163,10 @@ namespace EmsPlus.Callouts
         {
             int roll = Roll();
 
-            if (bone == InjuryBones.LumbarSpine || bone == InjuryBones.ThoracicSpine)
-                return roll < 50
-                    ? InjuryFactory.Fracture.Spinal(bone)
-                    : InjuryFactory.SoftTissue.CrushInjury(bone);
+            //if (bone == InjuryBones.LumbarSpine || bone == InjuryBones.ThoracicSpine)
+                //return roll < 50
+                    //? InjuryFactory.Fracture.Spinal(bone)
+                    //: InjuryFactory.SoftTissue.CrushInjury(bone);
 
             if (bone == InjuryBones.Pelvis)
                 return roll < 60
