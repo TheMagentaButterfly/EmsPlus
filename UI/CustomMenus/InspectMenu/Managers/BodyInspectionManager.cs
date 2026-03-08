@@ -168,14 +168,12 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Managers
             var p = GameState.CurrentPatient;
             if (part == null || p == null) return;
 
-            // KIT INTERACTION
             if (part.LinkedEntity != null)
             {
                 KitMenu.Build(part, p);
                 return;
             }
 
-            // BACK BUTTON
             if (CurrentMenuCategory != "MAIN" && !CurrentMenuCategory.StartsWith("KIT_"))
             {
                 CurrentPanelActions.Add(new InspectionAction(
@@ -249,7 +247,6 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Managers
 
                 DisableControls();
 
-                // Mouse Camera Control
                 NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 24, true);
                 NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 25, true);
 
@@ -284,7 +281,6 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Managers
 
                 _bodyParts.Update(_patient, _input.MousePosition);
 
-                // Zooming
                 if (!_input.IsHoveringPanel)
                 {
                     if (NativeFunction.Natives.IS_DISABLED_CONTROL_PRESSED<bool>(0, 15)) _orbitRadius -= 0.1f;
@@ -371,7 +367,6 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Managers
                                     else
                                     {
                                         AudioHelper.PlayError();
-                                        Game.DisplayNotification("~r~Invalid Target:~w~ That body part doesn't need this tool.");
                                     }
                                 }
                                 else
