@@ -4,13 +4,6 @@ using System.IO;
 
 namespace EmsPlus.Configuration
 {
-    public enum DifficultyLevel
-    {
-        Easy,   // No Death, Hints Enabled, Slow Degradation
-        Normal, // Slow Death, Hints based on skill, Normal Degradation
-        Hard    // Fast Death, No Hints, Fast Degradation
-    }
-
     public class EmsPlusConfig : IPT.Common.User.Configuration
     {
         private const string IniFilePath = "Plugins/EmsPlus/EmsPlus.ini";
@@ -27,24 +20,14 @@ namespace EmsPlus.Configuration
         public SettingInt CalloutMultiplier { get; set; } = new SettingInt("Callout Settings", "CalloutMultiplier", "Enables or disables callout difficulty multiplier based on player count.", 1, 0, 50, 1);
 
         // Difficulty Settings
-        //public SettingString SimulationMode = new SettingString("Difficulty", "SimulationMode", "Advanced or Simplified medical logic", "Simplified");
-        public SettingString Difficulty = new SettingString("Difficulty", "Level", "Easy, Normal, or Hard", "Normal");
-        public SettingBool EnablePatientDeath = new SettingBool("Difficulty", "EnablePatientDeath", "If true, patients can die if vitals reach critical levels.", true);
-        public SettingBool ShowTreatmentHints = new SettingBool("Difficulty", "ShowTreatmentHints", "If true, the menu will suggest treatments.", true);
-        public SettingInt DegradationSpeed = new SettingInt("Difficulty", "DegradationSpeed", "How fast the patient worsens (1-5, 5 is fastest).", 2, 1, 5, 2);
-
-        public DifficultyLevel CurrentDifficulty { get; private set; }
+        //public SettingBool EnablePatientDeath = new SettingBool("Difficulty", "EnablePatientDeath", "If true, patients can die if vitals reach critical levels.", true);
+        //public SettingBool ShowTreatmentHints = new SettingBool("Difficulty", "ShowTreatmentHints", "If true, the menu will suggest treatments.", true);
+        //public SettingInt DegradationSpeed = new SettingInt("Difficulty", "DegradationSpeed", "How fast the patient worsens (1-5, 5 is fastest).", 2, 1, 5, 2);
 
         public override void Load()
         {
             if (!File.Exists(IniFilePath)) CreateDefaultFile();
             LoadINI(IniFilePath);
-
-            if (System.Enum.TryParse(Difficulty.Value, true, out DifficultyLevel level))
-                CurrentDifficulty = level;
-            else
-                CurrentDifficulty = DifficultyLevel.Normal;
-
             ParseAllowedVehicles();
         }
 
@@ -134,17 +117,14 @@ namespace EmsPlus.Configuration
                     writer.WriteLine("");
 
                     writer.WriteLine("[Difficulty]");
-                    //writer.WriteLine("; Options: Simplified, Advanced");
-                    //writer.WriteLine($"SimulationMode={SimulationMode.Value}");
+                    //writer.WriteLine("; If true, patients can die if vitals reach critical levels.");
+                    //writer.WriteLine($"EnablePatientDeath={EnablePatientDeath.Value}");
                     //writer.WriteLine("");
-                    writer.WriteLine("; If true, patients can die if vitals reach critical levels.");
-                    writer.WriteLine($"EnablePatientDeath={EnablePatientDeath.Value}");
-                    writer.WriteLine("");
-                    writer.WriteLine("; If true, the menu will suggest treatments based on diagnostics.");
-                    writer.WriteLine($"ShowTreatmentHints={ShowTreatmentHints.Value}");
-                    writer.WriteLine("");
-                    writer.WriteLine("; How fast the patient condition worsens (1 = Slow, 5 = Fast).");
-                    writer.WriteLine($"DegradationSpeed={DegradationSpeed.Value}");
+                    //writer.WriteLine("; If true, the menu will suggest treatments based on diagnostics.");
+                    //writer.WriteLine($"ShowTreatmentHints={ShowTreatmentHints.Value}");
+                    //writer.WriteLine("");
+                    //writer.WriteLine("; How fast the patient condition worsens (1 = Slow, 5 = Fast).");
+                    //writer.WriteLine($"DegradationSpeed={DegradationSpeed.Value}");
                 }
             }
             catch (System.Exception ex)
