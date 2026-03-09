@@ -94,6 +94,8 @@
     <Compile Include="Configuration\VehicleConfig.cs" />
     <Compile Include="Framework\EmsPlusAPI.cs" />
     <Compile Include="Managers\Managers\AddonManager.cs" />
+    <Compile Include="Managers\Managers\AudioManager.cs" />
+    <Compile Include="Managers\Managers\DispatchManager.cs" />
     <Compile Include="Managers\Managers\InteriorManager.cs" />
     <Compile Include="Managers\Managers\SceneManager.cs" />
     <Compile Include="Managers\Managers\TreatmentManager.cs" />

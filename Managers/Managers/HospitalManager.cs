@@ -52,12 +52,12 @@ namespace EmsPlus.Managers
                     NativeFunction.Natives.DRAW_MARKER(
                         1, hospital.Position.X, hospital.Position.Y, hospital.Position.Z - 1.0f,
                         0, 0, 0, 0, 0, 0,
-                        12.0f, 12.0f, 2.0f,
+                        6.0f, 6.0f, 2.0f,
                         0, 255, 0, 100,
                         false, false, 2, false, 0, 0, false
                     );
 
-                    if (dist2D < 12.0f)
+                    if (dist2D < 6.0f)
                     {
                         Game.DisplayHelp(Localization.Get("HELP_HANDOVER_PATIENT"));
 

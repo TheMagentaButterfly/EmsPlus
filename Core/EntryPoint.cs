@@ -65,8 +65,14 @@ namespace EmsPlus
         private static void InitializeDirectories()
         {
             string basePlugin = Path.Combine(Application.StartupPath, "Plugins", "EmsPlus");
+            string audioBase = Path.Combine(basePlugin, "Audio", "Dispatch");
             string[] paths = {
                 basePlugin,
+                audioBase,
+                Path.Combine(audioBase, "STREETS"),
+                Path.Combine(audioBase, "ZONES"),
+                Path.Combine(audioBase, "CALLOUTS"),
+                Path.Combine(audioBase, "GENERAL"),
                 Path.Combine(basePlugin, "Assets"),
                 Path.Combine(basePlugin, "Plugins"),
                 Path.Combine(basePlugin, "Settings"),

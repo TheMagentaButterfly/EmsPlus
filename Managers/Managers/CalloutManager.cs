@@ -146,8 +146,8 @@ namespace EmsPlus.Framework
 
                     GameFiber.StartNew(delegate {
                         NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "Radio_Chatter_01", "MPC_RADIO_CHIPS_SOUNDSET", true);
-                        GameFiber.Sleep(500);
-                        NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "Scanner_Resident_Report_Sec_01", "General_Resident_Scanner_Alarms", true);
+                        GameFiber.Sleep(800);
+                        DispatchManager.PlayCalloutAudio(callout);
                     });
 
                     NativeFunction.Natives.GET_STREET_NAME_AT_COORD(callout.CalloutPosition.X, callout.CalloutPosition.Y, callout.CalloutPosition.Z, out uint sHash, out uint cHash);
