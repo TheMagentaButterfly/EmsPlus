@@ -24,6 +24,8 @@ namespace EmsPlus.Configuration
         //public SettingBool ShowTreatmentHints = new SettingBool("Difficulty", "ShowTreatmentHints", "If true, the menu will suggest treatments.", true);
         //public SettingInt DegradationSpeed = new SettingInt("Difficulty", "DegradationSpeed", "How fast the patient worsens (1-5, 5 is fastest).", 2, 1, 5, 2);
 
+        public SettingBool AdvancedDebugging = new SettingBool("Debug", "AdvancedDebugging", "If true, enables advanced debugging features.", false);
+
         public override void Load()
         {
             if (!File.Exists(IniFilePath)) CreateDefaultFile();
@@ -116,7 +118,7 @@ namespace EmsPlus.Configuration
                     writer.WriteLine($"CalloutMultiplier={CalloutMultiplier.Value}");
                     writer.WriteLine("");
 
-                    writer.WriteLine("[Difficulty]");
+                    //writer.WriteLine("[Difficulty]");
                     //writer.WriteLine("; If true, patients can die if vitals reach critical levels.");
                     //writer.WriteLine($"EnablePatientDeath={EnablePatientDeath.Value}");
                     //writer.WriteLine("");
@@ -125,6 +127,11 @@ namespace EmsPlus.Configuration
                     //writer.WriteLine("");
                     //writer.WriteLine("; How fast the patient condition worsens (1 = Slow, 5 = Fast).");
                     //writer.WriteLine($"DegradationSpeed={DegradationSpeed.Value}");
+                    //writer.WriteLine("");
+
+                    //writer.WriteLine("[Debug]");
+                    //writer.WriteLine("; If true, enables advanced debugging features.");
+                    //writer.WriteLine($"AdvancedDebugging={AdvancedDebugging.Value}");
                 }
             }
             catch (System.Exception ex)
