@@ -201,8 +201,6 @@ namespace EmsPlus
                 w.WriteLine("");
 
                 w.WriteLine("[Actions]");
-                w.WriteLine("ACT_INSPECT_AREA=Inspect Area");
-                w.WriteLine("DESC_INSPECT_AREA=Examine this body part for injuries.");
                 w.WriteLine("ACT_TREAT_INJURY=Treat Injury");
                 w.WriteLine("ACT_APPLY_BANDAGE=Apply Bandage");
                 w.WriteLine("ACT_ESTABLISH_IV=ESTABLISH IV");

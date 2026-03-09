@@ -14,7 +14,7 @@ namespace EmsPlus.Configuration
             public string Name { get; set; }
         }
 
-        private const string FilePath = "Plugins/EmsPlus/Settings/Hospitals.xml";
+        private const string FilePath = "Plugins/EmsPlus/Settings/Data/Hospitals.xml";
 
         public List<HospitalLocation> Locations { get; private set; } = new List<HospitalLocation>();
 

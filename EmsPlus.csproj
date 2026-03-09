@@ -77,11 +77,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\Functions.cs" />
+    <Compile Include="Callouts\HomeEmergencyCallout.cs" />
     <Compile Include="Callouts\PaletoRescueCallout.cs" />
     <Compile Include="Callouts\ProceduralTraumaCallout.cs" />
     <Compile Include="Configuration\AnimationConfig.cs" />
     <Compile Include="Configuration\EmsPlusConfig.cs" />
-    <Compile Include="Configuration\KitConfig.cs" />
+    <Compile Include="Configuration\InteriorConfig.cs" />
     <Compile Include="Configuration\Localization.cs" />
     <Compile Include="Configuration\MedicationConfig.cs" />
     <Compile Include="Configuration\StationsConfig.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Configuration\VehicleConfig.cs" />
     <Compile Include="Framework\EmsPlusAPI.cs" />
     <Compile Include="Managers\Managers\AddonManager.cs" />
+    <Compile Include="Managers\Managers\InteriorManager.cs" />
     <Compile Include="Managers\Managers\SceneManager.cs" />
     <Compile Include="Managers\Managers\TreatmentManager.cs" />
     <Compile Include="Medical\Conditions\AnatomicalRegistry.cs" />

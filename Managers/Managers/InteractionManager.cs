@@ -5,7 +5,6 @@ using EmsPlus.UI.NativeMenus.PatientMenu;
 using Rage;
 using Rage.Native;
 using System;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace EmsPlus.Managers
@@ -36,6 +35,7 @@ namespace EmsPlus.Managers
                 GameFiber.Yield();
 
                 StationManager.Process();
+                InteriorManager.Process();
 
                 if (Game.LocalPlayer.Character.IsInAnyVehicle(false))
                 {

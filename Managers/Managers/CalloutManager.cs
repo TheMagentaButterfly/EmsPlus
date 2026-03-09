@@ -44,7 +44,6 @@ namespace EmsPlus.Framework
 
                 if (CurrentCallout != null && Game.IsKeyDown(System.Windows.Forms.Keys.End))
                 {
-                    //Game.DisplayNotification("~b~Dispatch:~w~ Callout terminated by user.");
                     EndCurrent();
                 }
 
@@ -113,17 +112,10 @@ namespace EmsPlus.Framework
                 bool isEligible = tempCallout.AllowedStationIDs.Any(id =>
                     id.Equals(currentStationID, StringComparison.OrdinalIgnoreCase));
 
-                if (!isEligible)
-                    Game.Console.Print($"[EmsPlus] Skipping {type.Name}: Requires {string.Join(",", tempCallout.AllowedStationIDs)}");
-
                 return isEligible;
             }).ToList();
 
-            if (eligibleTypes.Count == 0)
-            {
-                Game.Console.Print("[EmsPlus] Warning: No eligible callouts found for this district!");
-                return;
-            }
+            if (eligibleTypes.Count == 0) return;
 
             var selectedType = eligibleTypes[Rnd.Next(eligibleTypes.Count)];
             CreateCallout(selectedType);
@@ -136,15 +128,7 @@ namespace EmsPlus.Framework
                 x.Name.Equals(calloutName + "Callout", StringComparison.OrdinalIgnoreCase)
             );
 
-            if (type != null)
-            {
-                CreateCallout(type);
-            }
-            else
-            {
-                Game.Console.Print($"[EmsPlus] Callout '{calloutName}' not found in registered pool.");
-                Game.Console.Print("[EmsPlus] Registered Callouts: " + string.Join(", ", RegisteredCallouts.Select(c => c.Name)));
-            }
+            if (type != null) CreateCallout(type);
         }
 
         private static void CreateCallout(Type type)
@@ -166,7 +150,6 @@ namespace EmsPlus.Framework
                         NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "Scanner_Resident_Report_Sec_01", "General_Resident_Scanner_Alarms", true);
                     });
 
-                    // Dispatch UI Logic
                     NativeFunction.Natives.GET_STREET_NAME_AT_COORD(callout.CalloutPosition.X, callout.CalloutPosition.Y, callout.CalloutPosition.Z, out uint sHash, out uint cHash);
                     string street = NativeFunction.Natives.GET_STREET_NAME_FROM_HASH_KEY<string>(sHash);
                     string zone = NativeFunction.Natives.GET_NAME_OF_ZONE<string>(callout.CalloutPosition.X, callout.CalloutPosition.Y, callout.CalloutPosition.Z);
@@ -200,6 +183,7 @@ namespace EmsPlus.Framework
 
             InventoryManager.Cleanup();
             HospitalManager.CleanupBlip();
+            InteriorManager.DisableTargetEntrance();
 
             UI.CustomMenus.InspectMenu.Managers.BodyInspectionManager.Cleanup();
 

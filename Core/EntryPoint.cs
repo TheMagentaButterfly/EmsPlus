@@ -28,7 +28,7 @@ namespace EmsPlus
         public static HospitalsConfig HospitalsConfig;
         public static StationsConfig StationsConfig;
         public static MedicationConfig MedicationConfig;
-        public static KitConfig KitConfig;
+        public static InteriorConfig InteriorConfig;
 
         private static InputHandler _inputHandler;
         private static GameFiber _mainLogicFiber, _uiLogicFiber, _simulationFiber, _calloutFiber, _stationFiber;
@@ -70,6 +70,7 @@ namespace EmsPlus
                 Path.Combine(basePlugin, "Assets"),
                 Path.Combine(basePlugin, "Plugins"),
                 Path.Combine(basePlugin, "Settings"),
+                Path.Combine(basePlugin, "Settings", "Data"),
                 Path.Combine(basePlugin, "Settings", "Localization"),
                 Path.Combine(basePlugin, "Settings", "Vehicles")
             };
@@ -91,7 +92,7 @@ namespace EmsPlus
             HospitalsConfig = new HospitalsConfig(); HospitalsConfig.Load();
             StationsConfig = new StationsConfig(); StationsConfig.Load();
             MedicationConfig = new MedicationConfig(); MedicationConfig.Load();
-            KitConfig = new KitConfig(); KitConfig.Load();
+            InteriorConfig = new InteriorConfig(); InteriorConfig.Load();
             Localization.Load();
         }
 
@@ -111,6 +112,7 @@ namespace EmsPlus
             CalloutManager.Initialize();
             CalloutManager.RegisterCallout(typeof(Callouts.PaletoRescueCallout));
             CalloutManager.RegisterCallout(typeof(Callouts.ProceduralTraumaCallout));
+            CalloutManager.RegisterCallout(typeof(Callouts.HomeEmergencyCallout));
             AddonManager.LoadAddons();
 
             MenuCore.Initialize();
@@ -164,6 +166,7 @@ namespace EmsPlus
             GameState.Clear();
             UI.CustomMenus.InspectMenu.Managers.BodyInspectionManager.Cleanup();
             AmbulanceManager.Cleanup();
+            InteriorManager.ForceClearInterior();
 
             if (abortFibers)
             {

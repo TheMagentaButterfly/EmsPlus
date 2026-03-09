@@ -9,7 +9,7 @@ namespace EmsPlus.Configuration
 {
     public class MedicationConfig
     {
-        private const string FilePath = "Plugins/EmsPlus/Settings/Medications.xml";
+        private const string FilePath = "Plugins/EmsPlus/Settings/Data/Medications.xml";
         public List<MedicationDefinition> Definitions { get; private set; } = new List<MedicationDefinition>();
 
         public void Load()

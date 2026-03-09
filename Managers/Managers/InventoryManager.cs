@@ -105,14 +105,18 @@ namespace EmsPlus.Managers
             player.Tasks.PlayAnimation(animDict, animName, 2.0f, AnimationFlags.None);
             GameFiber.Wait(1000);
 
-            var kitDef = EntryPoint.KitConfig.Definitions.Find(k => k.ID.Equals(kitID, System.StringComparison.OrdinalIgnoreCase));
-            if (kitDef == null) return;
+            string modelName = "";
+            if (kitID == "TRAUMABAG") modelName = EntryPoint.PropConfig.TraumaBagModel;
+            else if (kitID == "OXYGENBAG") modelName = EntryPoint.PropConfig.OxygenBagModel;
+            else if (kitID == "DEFIBRILLATOR") modelName = EntryPoint.PropConfig.DefibrillatorModel;
+
+            if (string.IsNullOrEmpty(modelName)) return;
 
             if (CurrentKitID == kitID) { StowKit(); return; }
             StowKit();
 
             CurrentKitID = kitID;
-            SpawnAndAttach(kitDef.Model);
+            SpawnAndAttach(modelName);
 
             string localizedKitName = Localization.Get($"KIT_NAME_{kitID.ToUpperInvariant()}");
         }
@@ -135,9 +139,12 @@ namespace EmsPlus.Managers
         public static void PlaceKitOnGround(Ped targetPed = null)
         {
             if (CurrentKitID == "NONE") return;
+            string modelName = "";
+            if (CurrentKitID == "TRAUMABAG") modelName = EntryPoint.PropConfig.TraumaBagModel;
+            else if (CurrentKitID == "OXYGENBAG") modelName = EntryPoint.PropConfig.OxygenBagModel;
+            else if (CurrentKitID == "DEFIBRILLATOR") modelName = EntryPoint.PropConfig.DefibrillatorModel;
 
-            var kitDef = EntryPoint.KitConfig.Definitions.Find(k => k.ID == CurrentKitID);
-            if (kitDef == null) return;
+            if (string.IsNullOrEmpty(modelName)) return;
 
             Vector3 targetPos;
             float heading;
@@ -172,7 +179,7 @@ namespace EmsPlus.Managers
             if (_equippedProp != null && _equippedProp.Exists()) _equippedProp.Delete();
             _equippedProp = null;
 
-            Model m = new Model(kitDef.Model);
+            Model m = new Model(modelName);
             m.LoadAndWait();
             Rage.Object newProp = new Rage.Object(m, new Vector3(targetPos.X, targetPos.Y, groundZ));
             newProp.Heading = heading;

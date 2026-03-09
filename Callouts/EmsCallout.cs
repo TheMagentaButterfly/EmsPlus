@@ -1,8 +1,9 @@
-﻿using Rage;
+﻿using EmsPlus.Configuration;
+using Rage;
 using Rage.Native;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System;
 
 namespace EmsPlus.Framework
 {
@@ -12,7 +13,6 @@ namespace EmsPlus.Framework
         public string CalloutMessage { get; set; }
         public string CalloutName { get; set; }
         public Blip AreaBlip { get; private set; }
-
         public bool Accepted { get; private set; } = false;
         public bool Finished { get; private set; } = false;
 

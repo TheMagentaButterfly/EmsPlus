@@ -12,15 +12,12 @@ namespace EmsPlus.UI.NativeMenus.ConfigMenu
 
         private static void BuildPropPosMenu()
         {
-            var definitions = EntryPoint.KitConfig.Definitions;
-            var listKits = new List<dynamic>();
-
-            foreach (var kit in definitions)
+            var listKits = new List<dynamic>
             {
-                listKits.Add($"{C_HEADER}{kit.Name}");
-            }
-
-            if (listKits.Count == 0) listKits.Add(Localization.Get("ITEM_NO_KITS_LOADED"));
+                $"{C_HEADER}{EntryPoint.PropConfig.TraumaBagName}",
+                $"{C_HEADER}{EntryPoint.PropConfig.OxygenBagName}",
+                $"{C_HEADER}{EntryPoint.PropConfig.DefibrillatorName}"
+            };
 
             var itemKit = new UIMenuListItem($"{C_HIGHLIGHT}{Localization.Get("ITEM_SELECT_KIT")}", listKits, 0, Localization.Get("ITEM_SELECT_KIT_DESC_PROP"));
             PropPosMenu.AddItem(itemKit);

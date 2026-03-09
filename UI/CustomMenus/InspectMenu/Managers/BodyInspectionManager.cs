@@ -331,6 +331,10 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Managers
                             if (_bodyParts.HoveredPart != null)
                             {
                                 var activeTool = InventoryManager.ActiveTool;
+                                if (_bodyParts.HoveredPart.LinkedEntity == null)
+                                {
+                                    GameState.CurrentPatient?.MarkBoneInspected(_bodyParts.HoveredPart.BoneId);
+                                }
 
                                 if (_bodyParts.HoveredPart.LinkedEntity != null)
                                 {

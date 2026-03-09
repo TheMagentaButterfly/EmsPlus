@@ -13,7 +13,7 @@ namespace EmsPlus.Configuration
     }
     public class StationsConfig
     {
-        private const string FilePath = "Plugins/EmsPlus/Settings/Stations.xml";
+        private const string FilePath = "Plugins/EmsPlus/Settings/Data/Stations.xml";
 
         public List<StationLocation> Locations { get; private set; } = new List<StationLocation>();
 

@@ -11,7 +11,8 @@ namespace EmsPlus.UI.NativeMenus
         private static UIMenuItem itemDoors, itemLoad, itemUnload, itemStore, itemCabinToggle;
         private static UIMenuListItem itemEquipment;
 
-        private static List<KitDefinition> _cachedKits = new List<KitDefinition>();
+        private static List<string> _cachedKitIDs = new List<string> { "TRAUMABAG", "OXYGENBAG", "DEFIBRILLATOR" };
+        private static List<string> _cachedKitDescs = new List<string>();
 
         public static void Build()
         {
@@ -24,24 +25,29 @@ namespace EmsPlus.UI.NativeMenus
             itemStore = new UIMenuItem($"~r~{Localization.Get("ITEM_STORE_CURRENT")}", Localization.Get("DESC_STORE_CURRENT"));
             itemCabinToggle = new UIMenuItem(Localization.Get("ITEM_ENTER_CABIN"), Localization.Get("DESC_ENTER_CABIN"));
 
-            _cachedKits = EntryPoint.KitConfig.Definitions;
-            List<dynamic> kitNames = new List<dynamic>();
-
-            foreach (var kit in _cachedKits)
+            List<dynamic> kitNames = new List<dynamic>
             {
-                kitNames.Add(kit.Name);
-            }
+                EntryPoint.PropConfig.TraumaBagName,
+                EntryPoint.PropConfig.OxygenBagName,
+                EntryPoint.PropConfig.DefibrillatorName
+            };
 
-            if (kitNames.Count == 0) kitNames.Add(Localization.Get("ITEM_NONE_FOUND"));
-            string initialDesc = _cachedKits.Count > 0 ? _cachedKits[0].Description : Localization.Get("DESC_NO_EQUIPMENT");
+            _cachedKitDescs = new List<string>
+            {
+                EntryPoint.PropConfig.TraumaBagDesc,
+                EntryPoint.PropConfig.OxygenBagDesc,
+                EntryPoint.PropConfig.DefibrillatorDesc
+            };
 
-            itemEquipment = new UIMenuListItem(Localization.Get("ITEM_MEDICAL_EQUIPMENT"), kitNames, 0, initialDesc);
+            string initialDesc = _cachedKitDescs[0];
+
+            itemEquipment = new UIMenuListItem(Localization.Get("ITEM_MEDICAL_EQUIPMENT") ?? "Medical Equipment", kitNames, 0, initialDesc);
 
             MenuCore.AmbulanceMenu.OnListChange += (s, item, index) =>
             {
-                if (item == itemEquipment && index < _cachedKits.Count)
+                if (item == itemEquipment && index < _cachedKitDescs.Count)
                 {
-                    itemEquipment.Description = _cachedKits[index].Description;
+                    itemEquipment.Description = _cachedKitDescs[index];
                 }
             };
 
@@ -69,10 +75,10 @@ namespace EmsPlus.UI.NativeMenus
                 }
                 else if (item == itemEquipment)
                 {
-                    if (itemEquipment.Index < _cachedKits.Count)
+                    if (itemEquipment.Index < _cachedKitIDs.Count)
                     {
-                        var selectedKit = _cachedKits[itemEquipment.Index];
-                        InventoryManager.EquipKit(selectedKit.ID);
+                        var selectedKit = _cachedKitIDs[itemEquipment.Index];
+                        InventoryManager.EquipKit(selectedKit);
                         RefreshState();
                     }
                 }

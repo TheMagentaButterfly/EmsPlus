@@ -31,57 +31,39 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Menus
 
             if (part.LinkedEntity == null)
             {
-                if (!p.IsBoneInspected(part.BoneId))
+                if (injury != null)
                 {
-                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
-                        Localization.Get("ACT_INSPECT_AREA") ?? "INSPECT AREA",
-                        Localization.Get("DESC_INSPECT_AREA") ?? "Examine this body part for injuries.",
-                        Color.FromArgb(255, 0, 150, 255),
-                        true,
-                        () => {
-                            ActionsCore.Run(Localization.Get("NOTIF_INSPECTING") ?? "Inspecting...", 1500, EntryPoint.AnimationConfig.MedicAssessDict.Value, EntryPoint.AnimationConfig.MedicAssessName.Value, () => {
-                                p.MarkBoneInspected(part.BoneId);
-                                BodyInspectionManager.RefreshActions();
-                            });
-                        }
-                    ));
-                }
-                else
-                {
-                    if (injury != null)
+                    var directActions = injury.RequiredTreatments.Where(t => HandsOnTreatments.Contains(t)).ToList();
+                    foreach (var action in directActions)
                     {
-                        var directActions = injury.RequiredTreatments.Where(t => HandsOnTreatments.Contains(t)).ToList();
-                        foreach (var action in directActions)
-                        {
-                            string label = FormatTreatmentName(action.ToString());
-                            BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
-                                Localization.Get("BTN_PERFORM_ACTION", label), Localization.Get("DESC_HANDS_ON"), Color.Orange, true, () => {
-                                    BodyInspectionManager.HandleTreatmentLogic(action, injury.Bone);
-                                }
-                            ));
-                        }
-
-                        var toolActions = injury.RequiredTreatments.Where(t => !HandsOnTreatments.Contains(t) && AnatomicalRegistry.IsLocalizedTreatment(t)).ToList();
-                        if (toolActions.Count > 0)
-                        {
-                            if (inCabin)
-                            {
-                                foreach (var action in toolActions)
-                                {
-                                    string label = FormatTreatmentName(action.ToString());
-                                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
-                                        Localization.Get("BTN_APPLY_ACTION", label), string.Format(Localization.Get("DESC_FROM_CABINET"), label), Color.LightBlue, true, () => {
-                                            BodyInspectionManager.HandleTreatmentLogic(action, injury.Bone);
-                                        }
-                                    ));
-                                }
+                        string label = FormatTreatmentName(action.ToString());
+                        BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
+                            Localization.Get("BTN_PERFORM_ACTION", label), Localization.Get("DESC_HANDS_ON"), Color.Orange, true, () => {
+                                BodyInspectionManager.HandleTreatmentLogic(action, injury.Bone);
                             }
-                            else
+                        ));
+                    }
+
+                    var toolActions = injury.RequiredTreatments.Where(t => !HandsOnTreatments.Contains(t) && AnatomicalRegistry.IsLocalizedTreatment(t)).ToList();
+                    if (toolActions.Count > 0)
+                    {
+                        if (inCabin)
+                        {
+                            foreach (var action in toolActions)
                             {
+                                string label = FormatTreatmentName(action.ToString());
                                 BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
-                                    Localization.Get("DIAG_INJURY_DETECTED"), Localization.Get("HINT_OPEN_BAG"), Color.FromArgb(255, 100, 100, 100), false, null
+                                    Localization.Get("BTN_APPLY_ACTION", label), string.Format(Localization.Get("DESC_FROM_CABINET"), label), Color.LightBlue, true, () => {
+                                        BodyInspectionManager.HandleTreatmentLogic(action, injury.Bone);
+                                    }
                                 ));
                             }
+                        }
+                        else
+                        {
+                            BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
+                                Localization.Get("DIAG_INJURY_DETECTED"), Localization.Get("HINT_OPEN_BAG"), Color.FromArgb(255, 100, 100, 100), false, null
+                            ));
                         }
                     }
                 }

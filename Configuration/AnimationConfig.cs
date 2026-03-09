@@ -30,7 +30,6 @@ namespace EmsPlus.Configuration
 
         public SettingString PatientStretcherDict = new SettingString("Patient", "OnStretcherAnimationDictionary", "Patient laying on stretcher", "amb@world_human_sunbathe@female@back@base");
         public SettingString PatientStretcherName = new SettingString("Patient", "OnStretcherAnimationName", "Patient laying on stretcher", "base");
-
         public SettingString PatientSittingStretcherDict = new SettingString("Patient", "SittingOnStretcherAnimationDictionary", "Patient sitting on stretcher", "anim@amb@business@bgen@bgen_no_work@");
         public SettingString PatientSittingStretcherName = new SettingString("Patient", "SittingOnStretcherAnimationName", "Patient sitting on stretcher", "sit_phone_phoneputdown_idle_nowork");
 

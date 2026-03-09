@@ -98,8 +98,11 @@ namespace EmsPlus.UI.CustomMenus.InspectMenu.Managers
                 {
                     if (!_activeKitParts.Any(bp => bp.LinkedEntity != null && bp.LinkedEntity.Handle == kit.Prop.Handle))
                     {
-                        var def = EntryPoint.KitConfig.Definitions.Find(d => d.ID == kit.KitID);
-                        string kitName = def != null ? def.Name : kit.KitID;
+                        // Pull the name directly from the new PropConfig variables
+                        string kitName = kit.KitID;
+                        if (kit.KitID == "TRAUMABAG") kitName = EntryPoint.PropConfig.TraumaBagName;
+                        else if (kit.KitID == "OXYGENBAG") kitName = EntryPoint.PropConfig.OxygenBagName;
+                        else if (kit.KitID == "DEFIBRILLATOR") kitName = EntryPoint.PropConfig.DefibrillatorName;
 
                         var newPart = new BodyPart(kitName, kit.Prop);
 
