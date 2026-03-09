@@ -81,7 +81,7 @@ namespace EmsPlus
                 w.WriteLine("; =========================================================");
                 w.WriteLine("");
 
-                w.WriteLine("[Duty_Status]");
+                w.WriteLine("[Duty Status]");
                 w.WriteLine("NOTIF_ON_DUTY=~b~EmsPlus:~w~ You are now ~g~On Duty~w~.");
                 w.WriteLine("NOTIF_OFF_DUTY=~b~EmsPlus:~w~ You are now ~r~Off Duty~w~.");
                 w.WriteLine("NOTIF_STATUS_UPDATE=~b~Status Update:~w~ {0}");
@@ -105,6 +105,15 @@ namespace EmsPlus
                 w.WriteLine("NOTIF_USER_TERMINATED=~b~Dispatch:~w~ Callout terminated by user.");
                 w.WriteLine("");
 
+                w.WriteLine("[Kit Localization]");
+                w.WriteLine("TRAUMABAG_NAME=~r~Trauma Bag");
+                w.WriteLine("TRAUMABAG_DESC=Contains Drugs, IVs, and advanced diagnostic tools.");
+                w.WriteLine("OXYGENBAG_NAME=~b~Oxygen Bag");
+                w.WriteLine("OXYGENBAG_DESC=Contains Oxygen tank and masks.");
+                w.WriteLine("DEFIBRILLATOR_NAME=~g~Defibrillator");
+                w.WriteLine("DEFIBRILLATOR_DESC=ECG, DEFIB, SpO2, NIBP.");
+                w.WriteLine("");
+
                 w.WriteLine("[Stretcher Prompts]");
                 w.WriteLine("PROMPT_RELEASE_STRETCHER=[G] Release Stretcher");
                 w.WriteLine("PROMPT_GRAB_STRETCHER=[G] Grab Stretcher");
@@ -113,14 +122,14 @@ namespace EmsPlus
                 w.WriteLine("PROMPT_SITTING_STRETCHER=[J] Toggle Sitting");
                 w.WriteLine("");
 
-                w.WriteLine("[Menu_Titles]");
+                w.WriteLine("[Menu Titles]");
                 w.WriteLine("TITLE_INSPECTION=PATIENT INSPECTION");
                 w.WriteLine("SUBTITLE_INSPECTION=Select area to inspect");
                 w.WriteLine("TITLE_DIAGNOSTICS=DIAGNOSTICS");
                 w.WriteLine("TITLE_ACTIONS=AVAILABLE ACTIONS");
                 w.WriteLine("");
 
-                w.WriteLine("[Menu_Buttons]");
+                w.WriteLine("[Menu Buttons]");
                 w.WriteLine("BTN_DIAGNOSTICS=[TAB] Diagnostics");
                 w.WriteLine("BTN_EXIT=[ESC] Exit");
                 w.WriteLine("BTN_BACK=◄ BACK");
@@ -314,7 +323,7 @@ namespace EmsPlus
                 w.WriteLine("NOTIF_MEDICALBAGS_RESTOCKED=~b~Dispatch:~w~ Medical bags ~g~restocked~w~.");
                 w.WriteLine("");
 
-                w.WriteLine("[Patient_States]");
+                w.WriteLine("[Patient States]");
                 w.WriteLine("CONSC_ALERT=Alert");
                 w.WriteLine("CONSC_VERBAL=Verbal");
                 w.WriteLine("CONSC_PAIN=Pain");
@@ -327,7 +336,7 @@ namespace EmsPlus
                 w.WriteLine("VITAL_CRITICAL_HIGH=CRITICAL HIGH");
                 w.WriteLine("");
 
-                w.WriteLine("[Ambulance_Menu]");
+                w.WriteLine("[Ambulance Menu]");
                 w.WriteLine("MENU_AMBULANCE_TITLE=Ambulance");
                 w.WriteLine("MENU_AMBULANCE_SUBTITLE=~b~Interaction");
                 w.WriteLine("HELP_OPEN_AMBULANCE_MENU=Press {0} to open the ambulance menu.");
@@ -355,7 +364,7 @@ namespace EmsPlus
                 w.WriteLine("DESC_EXIT_VEHICLE=~r~Exit vehicle to use this menu.");
                 w.WriteLine("");
 
-                w.WriteLine("[Config_Menus]");
+                w.WriteLine("[Config Menus]");
                 w.WriteLine("MENU_CONFIG_TITLE=EmsPlus");
                 w.WriteLine("MENU_CONFIG_SUBTITLE=~b~Configuration");
                 w.WriteLine("MENU_OFFSETS_ROOT_TITLE=Offsets Configuration");
@@ -443,7 +452,7 @@ namespace EmsPlus
                 w.WriteLine("NOTIF_VEHICLE_REMOVED=Removed {0} from allowed vehicles.");
                 w.WriteLine("");
 
-                w.WriteLine("[Patient_Menu]");
+                w.WriteLine("[Patient Menu]");
                 w.WriteLine("MENU_PATIENT_TITLE=Patient");
                 w.WriteLine("MENU_PATIENT_SUBTITLE=~b~Medical Interaction");
                 w.WriteLine("MENU_DIAGNOSTICS_TITLE=Diagnostics");
@@ -520,14 +529,14 @@ namespace EmsPlus
                 w.WriteLine("DESC_IM_PAIN_RELIEF=IM Pain Relief");
                 w.WriteLine("");
 
-                w.WriteLine("[Station_Manager]");
+                w.WriteLine("[Station Manager]");
                 w.WriteLine("BLIP_STATION_NAME=Fire/EMS Station");
                 w.WriteLine("TEXT_ON_DUTY=~g~On Duty");
                 w.WriteLine("TEXT_OFF_DUTY=~r~Off Duty");
                 w.WriteLine("HELP_TOGGLE_DUTY=Press ~INPUT_CONTEXT~ to go {0}.");
                 w.WriteLine("");
 
-                w.WriteLine("[Interactive_Tasks]");
+                w.WriteLine("[Interactive Tasks]");
                 w.WriteLine("TASK_HELP_TEXT=Drag items to complete the procedure");
                 w.WriteLine("TASK_BGL_TITLE=BLOOD GLUCOSE TEST");
                 w.WriteLine("TASK_BGL_STEP_PRICK=Prick the finger");
@@ -543,7 +552,6 @@ namespace EmsPlus
                 w.WriteLine("TASK_IV_STEP_COMPLETE=Complete!");
                 w.WriteLine("TASK_SKILL_CHECK_PASS=~g~Pass!");
                 w.WriteLine("TASK_SKILL_CHECK_FAIL=~r~Fail!");
-                w.WriteLine("");
             }
         }
     }

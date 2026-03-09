@@ -14,9 +14,9 @@ namespace EmsPlus.UI.NativeMenus.ConfigMenu
         {
             var listKits = new List<dynamic>
             {
-                $"{C_HEADER}{EntryPoint.PropConfig.TraumaBagName}",
-                $"{C_HEADER}{EntryPoint.PropConfig.OxygenBagName}",
-                $"{C_HEADER}{EntryPoint.PropConfig.DefibrillatorName}"
+                $"{C_HEADER}{Localization.Get("TRAUMABAG_NAME")}",
+                $"{C_HEADER}{Localization.Get("OXYGENBAG_NAME")}",
+                $"{C_HEADER}{Localization.Get("DEFIBRILLATOR_NAME")}"
             };
 
             var itemKit = new UIMenuListItem($"{C_HIGHLIGHT}{Localization.Get("ITEM_SELECT_KIT")}", listKits, 0, Localization.Get("ITEM_SELECT_KIT_DESC_PROP"));

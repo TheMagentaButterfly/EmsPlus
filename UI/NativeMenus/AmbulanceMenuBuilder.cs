@@ -27,16 +27,16 @@ namespace EmsPlus.UI.NativeMenus
 
             List<dynamic> kitNames = new List<dynamic>
             {
-                EntryPoint.PropConfig.TraumaBagName,
-                EntryPoint.PropConfig.OxygenBagName,
-                EntryPoint.PropConfig.DefibrillatorName
+                Localization.Get("TRAUMABAG_NAME"),
+                Localization.Get("OXYGENBAG_NAME"),
+                Localization.Get("DEFIBRILLATOR_NAME")
             };
 
             _cachedKitDescs = new List<string>
             {
-                EntryPoint.PropConfig.TraumaBagDesc,
-                EntryPoint.PropConfig.OxygenBagDesc,
-                EntryPoint.PropConfig.DefibrillatorDesc
+                Localization.Get("TRAUMABAG_DESC"),
+                Localization.Get("OXYGENBAG_DESC"),
+                Localization.Get("DEFIBRILLATOR_DESC")
             };
 
             string initialDesc = _cachedKitDescs[0];
