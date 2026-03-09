@@ -20,6 +20,9 @@ namespace EmsPlus.Configuration
         public SettingString MedicSitDict = new SettingString("Medic", "SittingAnimationDictionary", "Sitting animation dictionary", "anim@heists@fleeca_bank@hostages@intro");
         public SettingString MedicSitName = new SettingString("Medic", "SittingAnimationName", "Sitting animation name", "intro_loop_ped_a");
 
+        public SettingString MedicStretcherCarryDict = new SettingString("Medic", "StretcherCarryingAnimationDictionary", "Stretcher carrying animation dictionary", "anim@heists@box_carry@");
+        public SettingString MedicStretcherCarryName = new SettingString("Medic", "StretcherCarryingAnimationName", "Stretcher carrying animation name", "idle");
+
         public SettingString InteractDict = new SettingString("Medic", "InteractionAnimationDictionary", "Interaction animation dictionary", "anim@narcotics@trash");
         public SettingString InteractName = new SettingString("Medic", "InteractionAnimationName", "Interaction animation name", "drop_front");
 
@@ -88,6 +91,11 @@ namespace EmsPlus.Configuration
                     w.WriteLine("; Sitting animation (in ambulance)");
                     w.WriteLine($"SittingAnimationDictionary={MedicSitDict.Value}");
                     w.WriteLine($"SittingAnimationName={MedicSitName.Value}");
+                    w.WriteLine("");
+
+                    w.WriteLine("; Stretcher carrying animation");
+                    w.WriteLine($"StretcherCarryingAnimationDictionary={MedicStretcherCarryDict.Value}");
+                    w.WriteLine($"StretcherCarryingAnimationName={MedicStretcherCarryName.Value}");
                     w.WriteLine("");
 
                     w.WriteLine("; General Interaction animation");

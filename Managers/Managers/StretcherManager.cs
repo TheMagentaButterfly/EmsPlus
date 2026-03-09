@@ -71,7 +71,7 @@ namespace EmsPlus.Managers
             }
         }
 
-        // --- THE MAGIC SWAP FUNCTION ---
+        // --- SWAP FUNCTION ---
         public static void SwitchState(StretcherState newState)
         {
             if (CurrentState == newState) return;
@@ -108,7 +108,6 @@ namespace EmsPlus.Managers
             {
                 AttachPatientToStretcher(patient, newState);
             }
-            //InventoryManager.AttachKitsToStretcher(Prop);
             if (wasHolding)
             {
                 AttachToPlayer();
@@ -219,8 +218,8 @@ namespace EmsPlus.Managers
 
             GameFiber.StartNew(delegate
             {
-                string animDict = "anim@heists@box_carry@";
-                string animName = "idle";
+                string animDict = EntryPoint.AnimationConfig.MedicStretcherCarryDict.Value;
+                string animName = EntryPoint.AnimationConfig.MedicStretcherCarryName.Value;
                 NativeFunction.Natives.REQUEST_ANIM_DICT(animDict);
                 while (!NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>(animDict)) GameFiber.Yield();
 
@@ -297,7 +296,6 @@ namespace EmsPlus.Managers
                 CurrentState = StretcherState.Normal;
             }
         }
-
         public static void SpawnAtLocation(Vector3 pos, Rotator rot)
         {
             if (Prop != null && Prop.Exists()) return;
@@ -382,7 +380,6 @@ namespace EmsPlus.Managers
 
             if (!obj.Exists()) return null;
 
-            // obj.Opacity = 0;
             obj.IsPositionFrozen = true;
             obj.IsCollisionEnabled = false;
 
@@ -401,7 +398,6 @@ namespace EmsPlus.Managers
 
             obj.IsCollisionEnabled = true;
             obj.IsPersistent = true;
-            // obj.Opacity = 255;
 
             model.Dismiss();
             return obj;

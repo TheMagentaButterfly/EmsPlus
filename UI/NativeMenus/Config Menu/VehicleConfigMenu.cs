@@ -122,8 +122,14 @@ namespace EmsPlus.UI.NativeMenus.ConfigMenu
                 refreshGhost();
             };
 
-            VehiclePosMenu.OnMenuOpen += (s) => syncVehicleMenu();
-            VehiclePosMenu.OnMenuClose += (s) => StretcherGhostManager.DeleteGhosts();
+            VehiclePosMenu.OnMenuOpen += (s) =>
+            {
+                syncVehicleMenu();
+            };
+            VehiclePosMenu.OnMenuClose += (s) =>
+            {
+                StretcherGhostManager.DeleteGhosts();
+            };
 
             chkAllowed.CheckboxEvent += (s, c) =>
             {

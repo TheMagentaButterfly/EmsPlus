@@ -200,11 +200,12 @@ namespace EmsPlus.Managers
 
                 _ghostMedic.AttachTo(v, -1, cfg.MedicPos, cfg.MedicRot);
 
-                string dict = "anim@heists@fleeca_bank@hostages@intro";
+                string dict = EntryPoint.AnimationConfig.MedicSitDict.Value;
+                string name = EntryPoint.AnimationConfig.MedicSitName.Value;
                 NativeFunction.Natives.REQUEST_ANIM_DICT(dict);
                 if (NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>(dict))
                 {
-                    _ghostMedic.Tasks.PlayAnimation(dict, "intro_loop_ped_a", 8.0f, AnimationFlags.Loop);
+                    _ghostMedic.Tasks.PlayAnimation(dict, name, 8.0f, AnimationFlags.Loop);
                 }
             }
             // MODE 0 / 1: STRETCHER
