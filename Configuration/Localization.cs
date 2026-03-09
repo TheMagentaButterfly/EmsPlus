@@ -286,6 +286,7 @@ namespace EmsPlus
                 w.WriteLine("");
 
                 w.WriteLine("[Notifications]");
+                w.WriteLine("NOTIF_CONFIGSRELOADED=~b~EmsPlus~w~: All configurations reloaded!");
                 w.WriteLine("NOTIF_INSPECTING=Inspecting...");
                 w.WriteLine("NOTIF_TREATING=Treating injury...");
                 w.WriteLine("NOTIF_INJURY_TREATED=~g~Injury Treated.");

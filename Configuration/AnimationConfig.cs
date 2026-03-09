@@ -17,6 +17,9 @@ namespace EmsPlus.Configuration
         public SettingString MedicNoteDict = new SettingString("Medic", "NoteAnimationDictionary", "Writing notes/checking history dictionary", "amb@medic@standing@timeofdeath@base");
         public SettingString MedicNoteName = new SettingString("Medic", "NoteAnimationName", "Writing notes/checking history name", "base");
 
+        public SettingString MedicSitDict = new SettingString("Medic", "SittingAnimationDictionary", "Sitting animation dictionary", "anim@heists@fleeca_bank@hostages@intro");
+        public SettingString MedicSitName = new SettingString("Medic", "SittingAnimationName", "Sitting animation name", "intro_loop_ped_a");
+
         public SettingString InteractDict = new SettingString("Medic", "InteractionAnimationDictionary", "Interaction animation dictionary", "anim@narcotics@trash");
         public SettingString InteractName = new SettingString("Medic", "InteractionAnimationName", "Interaction animation name", "drop_front");
 
@@ -80,6 +83,11 @@ namespace EmsPlus.Configuration
                     w.WriteLine("; Writing notes animation");
                     w.WriteLine($"NoteAnimationDictionary={MedicNoteDict.Value}");
                     w.WriteLine($"NoteAnimationName={MedicNoteName.Value}");
+                    w.WriteLine("");
+
+                    w.WriteLine("; Sitting animation (in ambulance)");
+                    w.WriteLine($"SittingAnimationDictionary={MedicSitDict.Value}");
+                    w.WriteLine($"SittingAnimationName={MedicSitName.Value}");
                     w.WriteLine("");
 
                     w.WriteLine("; General Interaction animation");

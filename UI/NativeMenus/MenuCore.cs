@@ -66,8 +66,10 @@ namespace EmsPlus.UI.NativeMenus
 
         public static void OnUserInputChanged(GenericCombo combo)
         {
+            bool inVehicle = Game.LocalPlayer.Character.IsInAnyVehicle(false);
+
             if (CustomMenus.InspectMenu.Managers.BodyInspectionManager.IsActive) return;
-            // 1. Settings Menu Logic
+            // Settings Menu Logic
             if (EntryPoint.KeyConfig.OpenMenuKey != null && combo == EntryPoint.KeyConfig.OpenMenuKey.Value)
             {
                 if (combo.IsPressed)
@@ -87,12 +89,27 @@ namespace EmsPlus.UI.NativeMenus
                 return;
             }
 
-            // 2. Ambulance Menu Logic
+            // Ambulance Menu Logic
             if (EntryPoint.KeyConfig.OpenAmbulanceMenuKey != null && combo == EntryPoint.KeyConfig.OpenAmbulanceMenuKey.Value)
             {
                 if (combo.IsPressed)
                 {
-                    if (AmbulanceManager.IsPlayerNearAmbulance())
+                    bool canInteract = false;
+
+                    if (AmbulanceManager.IsPlayerInRearCabin)
+                    {
+                        canInteract = true;
+                    }
+                    else if (EntryPoint.EmsPlusConfig.UseCustomInteractionPoints.Value)
+                    {
+                        canInteract = AmbulanceManager.IsPlayerNearInteractionPoint();
+                    }
+                    else
+                    {
+                        canInteract = AmbulanceManager.IsPlayerNearAmbulance();
+                    }
+
+                    if (canInteract)
                     {
                         CloseAll();
                         AmbulanceMenuBuilder.RefreshState();

@@ -96,6 +96,31 @@ namespace EmsPlus
             Localization.Load();
         }
 
+        public static void ReloadAllConfigs()
+        {
+            Game.Console.Print("[EmsPlus] Reloading all configurations...");
+
+            LoadConfigurations();
+
+            StationManager.Initialize();
+
+            if (IsRunning)
+            {
+                if (_inputHandler != null)
+                {
+                    _inputHandler.Stop();
+                    Events.OnUserInputChanged -= MenuCore.OnUserInputChanged;
+                    _inputHandler = new InputHandler(KeyConfig);
+                    _inputHandler.Start();
+                    Events.OnUserInputChanged += MenuCore.OnUserInputChanged;
+                }
+
+                MenuCore.Initialize();
+            }
+
+            Game.DisplayNotification(Localization.Get("NOTIF_CONFIGSRELOADED"));
+        }
+
         private static void OnUnload()
         {
             Cleanup(false);

@@ -5,6 +5,7 @@ using EmsPlus.UI.NativeMenus;
 using EmsPlus.UI.NativeMenus.ConfigMenu;
 using Rage;
 using Rage.Native;
+using RAGENativeUI;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,9 +19,7 @@ namespace EmsPlus.Managers
         private static Dictionary<string, VehicleConfig> ConfigCache = new Dictionary<string, VehicleConfig>();
         public static bool IsPlayerInRearCabin { get; private set; } = false;
         public static event Action OnStateUpdate;
-
         public static bool AreDoorsOpen { get; private set; } = false;
-
         private static HashSet<uint> VehiclesWithStretcher = new HashSet<uint>();
         private static HashSet<uint> KnownVehicles = new HashSet<uint>();
 
@@ -43,8 +42,8 @@ namespace EmsPlus.Managers
 
                 player.AttachTo(CurrentVehicle, -1, CurrentConfig.MedicPos, CurrentConfig.MedicRot);
 
-                string dict = "anim@heists@fleeca_bank@hostages@intro";
-                string anim = "intro_loop_ped_a";
+                string dict = EntryPoint.AnimationConfig.MedicSitDict.Value;
+                string anim = EntryPoint.AnimationConfig.MedicSitName.Value;
 
                 NativeFunction.Natives.REQUEST_ANIM_DICT(dict);
                 while (!NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>(dict)) GameFiber.Yield();
@@ -113,7 +112,7 @@ namespace EmsPlus.Managers
                 }
             }
 
-            if (isPlayerNearAnyPoint)
+            if (isPlayerNearAnyPoint && !MenuCore.IsAnyMenuOpen)
             {
                 string keyName = EntryPoint.KeyConfig.OpenAmbulanceMenuKey.Value.ToString();
                 string formattedKey = $"~w~[~y~{keyName}~w~]";
