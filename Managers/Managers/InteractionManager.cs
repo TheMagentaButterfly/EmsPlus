@@ -14,7 +14,6 @@ namespace EmsPlus.Managers
         private static Keys DefaultInteractionKey => Keys.E;
 
         private static DateTime _lastKeyPressTime = DateTime.MinValue;
-        private static readonly double DoubleTapWindowMs = 400.0;
 
         private const float PatientInteractDistance = 2.5f;
         private const float PatientMarkDistance = 6.0f;

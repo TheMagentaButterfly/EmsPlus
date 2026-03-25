@@ -25,11 +25,11 @@ namespace EmsPlus.UI.NativeMenus
             MenuHelpers.Initialize();
 
             PatientMenuBuilder.Build();
-            AmbulanceMenuBuilder.Build();
+            NativeMenus.AmbulanceMenu.Build();
             ConfigMenuBuilder.Build();
 
-            AmbulanceManager.OnStateUpdate += AmbulanceMenuBuilder.RefreshState;
-            StretcherManager.OnUpdate += AmbulanceMenuBuilder.RefreshState;
+            AmbulanceManager.OnStateUpdate += NativeMenus.AmbulanceMenu.RefreshState;
+            StretcherManager.OnUpdate += NativeMenus.AmbulanceMenu.RefreshState;
         }
 
         public static void Process()
@@ -112,7 +112,7 @@ namespace EmsPlus.UI.NativeMenus
                     if (canInteract)
                     {
                         CloseAll();
-                        AmbulanceMenuBuilder.RefreshState();
+                        NativeMenus.AmbulanceMenu.RefreshState();
                         if (AmbulanceMenu != null) AmbulanceMenu.Visible = true;
                     }
                     else

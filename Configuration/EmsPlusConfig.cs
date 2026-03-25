@@ -20,9 +20,9 @@ namespace EmsPlus.Configuration
         public SettingInt CalloutMultiplier { get; set; } = new SettingInt("Callout Settings", "CalloutMultiplier", "Enables or disables callout difficulty multiplier based on player count.", 1, 0, 50, 1);
 
         // Difficulty Settings
-        //public SettingBool EnablePatientDeath = new SettingBool("Difficulty", "EnablePatientDeath", "If true, patients can die if vitals reach critical levels.", true);
+        public SettingBool EnablePatientDeath = new SettingBool("Difficulty", "EnablePatientDeath", "If true, patients can die if vitals reach critical levels.", true);
+        public SettingInt DegradationSpeed = new SettingInt("Difficulty", "DegradationSpeed", "How fast the patient worsens (1-5, 5 is fastest).", 2, 1, 5, 2);
         //public SettingBool ShowTreatmentHints = new SettingBool("Difficulty", "ShowTreatmentHints", "If true, the menu will suggest treatments.", true);
-        //public SettingInt DegradationSpeed = new SettingInt("Difficulty", "DegradationSpeed", "How fast the patient worsens (1-5, 5 is fastest).", 2, 1, 5, 2);
 
         public SettingBool AdvancedDebugging = new SettingBool("Debug", "AdvancedDebugging", "If true, enables advanced debugging features.", false);
 
@@ -118,15 +118,15 @@ namespace EmsPlus.Configuration
                     writer.WriteLine($"CalloutMultiplier={CalloutMultiplier.Value}");
                     writer.WriteLine("");
 
-                    //writer.WriteLine("[Difficulty]");
-                    //writer.WriteLine("; If true, patients can die if vitals reach critical levels.");
-                    //writer.WriteLine($"EnablePatientDeath={EnablePatientDeath.Value}");
-                    //writer.WriteLine("");
+                    writer.WriteLine("[Difficulty]");
+                    writer.WriteLine("; If true, patients can die if vitals reach critical levels.");
+                    writer.WriteLine($"EnablePatientDeath={EnablePatientDeath.Value}");
+                    writer.WriteLine("");
+                    writer.WriteLine("; How fast the patient condition worsens (1 = Slow, 5 = Fast).");
+                    writer.WriteLine($"DegradationSpeed={DegradationSpeed.Value}");
+                    writer.WriteLine("");
                     //writer.WriteLine("; If true, the menu will suggest treatments based on diagnostics.");
                     //writer.WriteLine($"ShowTreatmentHints={ShowTreatmentHints.Value}");
-                    //writer.WriteLine("");
-                    //writer.WriteLine("; How fast the patient condition worsens (1 = Slow, 5 = Fast).");
-                    //writer.WriteLine($"DegradationSpeed={DegradationSpeed.Value}");
                     //writer.WriteLine("");
 
                     //writer.WriteLine("[Debug]");

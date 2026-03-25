@@ -77,6 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\Functions.cs" />
+    <Compile Include="Callouts\CardiacArrestCallout.cs" />
     <Compile Include="Callouts\HomeEmergencyCallout.cs" />
     <Compile Include="Callouts\PaletoRescueCallout.cs" />
     <Compile Include="Callouts\ProceduralTraumaCallout.cs" />
@@ -99,12 +100,15 @@
     <Compile Include="Managers\Managers\InteriorManager.cs" />
     <Compile Include="Managers\Managers\SceneManager.cs" />
     <Compile Include="Managers\Managers\TreatmentManager.cs" />
+    <Compile Include="Medical\Conditions\AnaphylaxisCallout.cs" />
     <Compile Include="Medical\Conditions\AnatomicalRegistry.cs" />
     <Compile Include="Medical\Conditions\ChronicConditions.cs" />
     <Compile Include="Medical\Conditions\EmsTreatment.cs" />
+    <Compile Include="Medical\Conditions\FallFromHeightCallout.cs" />
     <Compile Include="Medical\Conditions\HeartConditions.cs" />
     <Compile Include="Medical\Conditions\InjuryFactory.cs" />
     <Compile Include="Medical\Conditions\MedicalCondition.cs" />
+    <Compile Include="Medical\Conditions\PenetratingTraumaCallout.cs" />
     <Compile Include="Medical\Conditions\PhysicalInjury.cs" />
     <Compile Include="UI\Helpers\NativeUITools.cs" />
     <Compile Include="UI\CustomMenus\InspectMenu\Managers\BodyPartManager.cs" />
@@ -161,7 +165,7 @@
     <Compile Include="UI\NativeMenus\Patient Menu\PatientMenuBuilder.cs" />
     <Compile Include="Managers\Managers\StretcherGhostManager.cs" />
     <Compile Include="Managers\Managers\StretcherManager.cs" />
-    <Compile Include="UI\NativeMenus\AmbulanceMenuBuilder.cs" />
+    <Compile Include="UI\NativeMenus\AmbulanceMenu.cs" />
     <Compile Include="UI\NativeMenus\Config Menu\ConfigMenuBuilder.cs" />
     <Compile Include="UI\NativeMenus\MenuCore.cs" />
     <Compile Include="UI\NativeMenus\MenuHelpers.cs" />

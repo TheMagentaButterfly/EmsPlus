@@ -45,6 +45,7 @@
 
         // Critical Care
         CPR,
+        Defibrillation,
 
         // Medicine
         Adrenaline,

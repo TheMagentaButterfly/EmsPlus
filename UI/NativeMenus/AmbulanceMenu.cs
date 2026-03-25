@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace EmsPlus.UI.NativeMenus
 {
-    public static class AmbulanceMenuBuilder
+    public static class AmbulanceMenu
     {
         private static UIMenuItem itemDoors, itemLoad, itemUnload, itemStore, itemCabinToggle;
         private static UIMenuListItem itemEquipment;
