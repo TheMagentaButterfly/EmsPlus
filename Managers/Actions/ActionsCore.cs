@@ -1,5 +1,5 @@
 ﻿using EmsPlus.Core;
-using EmsPlus.UI.NativeMenus;
+using EmsPlus.UI.Native;
 using Rage;
 using Rage.Native;
 using System;

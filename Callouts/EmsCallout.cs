@@ -1,11 +1,10 @@
-﻿using EmsPlus.Configuration;
-using Rage;
+﻿using Rage;
 using Rage.Native;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace EmsPlus.Framework
+namespace EmsPlus.Callouts
 {
     public abstract class EmsCallout
     {

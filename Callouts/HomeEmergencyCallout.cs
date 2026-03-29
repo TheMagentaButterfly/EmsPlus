@@ -1,9 +1,7 @@
 ﻿using EmsPlus.Configuration;
 using EmsPlus.Core;
-using EmsPlus.Framework;
 using EmsPlus.Managers;
-using EmsPlus.Medical.Conditions;
-using EmsPlus.Medical.Frameworks;
+using EmsPlus.Medical;
 using Rage;
 using System;
 using System.Drawing;

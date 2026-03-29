@@ -1,6 +1,4 @@
-﻿using EmsPlus;
-using EmsPlus.Core;
-using EmsPlus.Framework;
+﻿using EmsPlus.Core;
 using EmsPlus.Managers;
 using Rage;
 using Rage.Attributes;

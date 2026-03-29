@@ -1,9 +1,8 @@
 ﻿using EmsPlus.Core;
-using EmsPlus.Medical.Conditions;
-using EmsPlus.Medical.Frameworks;
-using EmsPlus.Medical.Tasks;
-using EmsPlus.UI.CustomMenus.InspectMenu.Managers;
-using EmsPlus.UI.NativeMenus;
+using EmsPlus.Medical;
+using EmsPlus.UI.Tasks;
+using EmsPlus.UI.Custom.InspectMenu;
+using EmsPlus.UI.Native;
 using Rage;
 
 namespace EmsPlus.Managers.Actions

@@ -1,0 +1,130 @@
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\API
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\bin
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Callouts
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Configuration
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Core
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\EmsPlus.csproj
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\EmsPlus.csproj.user
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\EmsPlus.sln
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Framework
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\obj
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Properties
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\README.md
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Callouts\CardiacArrestCallout.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Callouts\EmsCallout.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Callouts\HomeEmergencyCallout.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Callouts\PaletoRescueCallout.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Callouts\ProceduralTraumaCallout.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Configuration\AnimationConfig.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Configuration\EmsPlusConfig.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Configuration\HospitalsConfig.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Configuration\InteriorConfig.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Configuration\KeyConfig.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Configuration\LoadoutConfig.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Configuration\Localization.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Configuration\MedicationConfig.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Configuration\OffsetConfig.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Configuration\PropConfig.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Configuration\StationsConfig.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Configuration\VehicleConfig.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Core\Assets.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Core\Commands.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Core\EntryPoint.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Core\GameState.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Framework\EmsPlusAPI.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Framework\EmsService.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Framework\EmsStatus.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Actions
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Actions\ActionsCore.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Actions\DiagnosticActions.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Actions\StretcherActions.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Actions\TreatmentActions.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\AddonManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\AmbulanceManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\AudioManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\CalloutManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\DispatchManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\HospitalManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\InjuryGenerator.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\InteractionManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\InteriorManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\InventoryManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\LoadoutManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\SceneManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\StationManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\StretcherGhostManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\StretcherManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\TreatmentManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Managers\Managers\UpdateManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Conditions
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Frameworks
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Tasks
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Conditions\AnaphylaxisCallout.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Conditions\AnatomicalRegistry.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Conditions\ChronicConditions.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Conditions\EmsTreatment.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Conditions\FallFromHeightCallout.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Conditions\HeartConditions.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Conditions\InjuryFactory.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Conditions\MedicalCondition.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Conditions\PenetratingTraumaCallout.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Conditions\PhysicalInjury.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Frameworks\BodyPart.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Frameworks\Bystander.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Frameworks\Injury.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Frameworks\Patient.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Frameworks\PatientEnums.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Frameworks\PatientHistory.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Frameworks\PatientVisuals.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Tasks\BglTask.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Tasks\IvTask.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\Medical\Tasks\SkillCheckTask.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\Helpers
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\InspectMenu
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\TaskMenu
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\InspectMenu\Helpers
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\InspectMenu\Managers
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\InspectMenu\Menus
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\InspectMenu\Helpers\InspectionInput.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\InspectMenu\Helpers\InspectionRenderer.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\InspectMenu\Helpers\InspectionState.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\InspectMenu\Helpers\UITheme.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\InspectMenu\Managers\BodyInspectionManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\InspectMenu\Managers\BodyPartManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\InspectMenu\Managers\DiagnosticManager.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\InspectMenu\Managers\InspectionAction.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\InspectMenu\Menus\KitMenu.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\InspectMenu\Menus\MainMenu.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\InspectMenu\Menus\TreatmentMenu.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\TaskMenu\InteractiveTask.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\CustomMenus\TaskMenu\UIElement.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\Helpers\AudioHelper.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\Helpers\MathHelper.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\Helpers\NativeUITools.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\Helpers\RenderHelper.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\AmbulanceMenu.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Config Menu
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\MenuCore.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\MenuHelpers.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Patient Menu
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Config Menu\ConfigMenuBuilder.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Config Menu\DoorSetupMenu.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Config Menu\InteractionspointsMenu.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Config Menu\OffsetsRootMenu.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Config Menu\PatientPositionMenu.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Config Menu\PropPositionMenu.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Config Menu\SettingsMenu.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Config Menu\StretcherCarryMenu.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Config Menu\VehicleConfigMenu.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Patient Menu\PatientDiagnosticsMenu.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Patient Menu\PatientIvMenu.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Patient Menu\PatientKitMenu.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Patient Menu\PatientMedicationMenus.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Patient Menu\PatientMenuBuilder.cs
+E:\Documents 4TB\Visual Studio\EmsPlus\EmsPlus\UI\NativeMenus\Patient Menu\PatientTraumaMenu.cs

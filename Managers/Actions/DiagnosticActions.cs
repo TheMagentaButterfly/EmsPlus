@@ -1,8 +1,8 @@
-﻿using EmsPlus.UI.NativeMenus;
-using EmsPlus.Medical.Tasks;
+﻿using EmsPlus.UI.Native;
+using EmsPlus.UI.Tasks;
 using Rage;
 using EmsPlus.Core;
-using EmsPlus.Medical.Frameworks;
+using EmsPlus.Medical;
 
 namespace EmsPlus.Managers.Actions
 {

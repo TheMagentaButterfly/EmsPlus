@@ -1,4 +1,4 @@
-﻿using EmsPlus.Medical.Frameworks;
+﻿using EmsPlus.Medical;
 using System.Collections.Generic;
 
 namespace EmsPlus.Core

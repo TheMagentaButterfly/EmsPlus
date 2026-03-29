@@ -1,8 +1,8 @@
 ﻿using EmsPlus.Configuration;
 using EmsPlus.Core;
-using EmsPlus.Framework;
 using EmsPlus.Managers;
-using EmsPlus.UI.NativeMenus;
+using EmsPlus.UI.Native;
+using EmsPlus.UI.Custom.InspectMenu;
 using IPT.Common.API;
 using IPT.Common.Handlers;
 using Rage;
@@ -199,7 +199,7 @@ namespace EmsPlus
             InventoryManager.Cleanup();
             MenuCore.CloseAll();
             GameState.Clear();
-            UI.CustomMenus.InspectMenu.Managers.BodyInspectionManager.Cleanup();
+            BodyInspectionManager.Cleanup();
             AmbulanceManager.Cleanup();
             InteriorManager.ForceClearInterior();
 
