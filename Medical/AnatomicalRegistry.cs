@@ -51,7 +51,6 @@ namespace EmsPlus.Medical
             }
         }
 
-        // Helper to determine if a tool goes ON a specific bone, or treats the whole body.
         public static bool IsLocalizedTreatment(EmsTreatment t)
         {
             return t == EmsTreatment.Bandage || t == EmsTreatment.Tourniquet || t == EmsTreatment.JunctionalTourniquet ||

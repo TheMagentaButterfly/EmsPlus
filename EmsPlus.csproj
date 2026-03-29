@@ -102,12 +102,12 @@
     <Compile Include="Managers\TreatmentManager.cs" />
     <Compile Include="Callouts\AnaphylaxisCallout.cs" />
     <Compile Include="Medical\AnatomicalRegistry.cs" />
+    <Compile Include="Medical\Conditions.cs" />
     <Compile Include="Medical\EmsTreatment.cs" />
     <Compile Include="Callouts\FallFromHeightCallout.cs" />
     <Compile Include="Medical\InjuryFactory.cs" />
-    <Compile Include="Medical\MedicalCondition.cs" />
     <Compile Include="Callouts\PenetratingTraumaCallout.cs" />
-    <Compile Include="Medical\PhysicalInjury.cs" />
+    <Compile Include="Medical\PatientData.cs" />
     <Compile Include="UI\Helpers\NativeUITools.cs" />
     <Compile Include="UI\Custom\Inspect Menu\BodyPartManager.cs" />
     <Compile Include="UI\Custom\Inspect Menu\DiagnosticManager.cs" />
@@ -126,10 +126,8 @@
     <Compile Include="UI\Custom\Task Menu\InteractiveTask.cs" />
     <Compile Include="UI\Helpers\RenderHelper.cs" />
     <Compile Include="UI\Custom\Task Menu\UIElement.cs" />
-    <Compile Include="Medical\BodyPart.cs" />
     <Compile Include="Core\Commands.cs" />
     <Compile Include="Medical\Injury.cs" />
-    <Compile Include="Medical\PatientEnums.cs" />
     <Compile Include="Medical\PatientVisuals.cs" />
     <Compile Include="Managers\Actions\ActionsCore.cs" />
     <Compile Include="Managers\Actions\DiagnosticActions.cs" />
@@ -168,12 +166,10 @@
     <Compile Include="UI\Native\MenuCore.cs" />
     <Compile Include="UI\Native\MenuHelpers.cs" />
     <Compile Include="Managers\UpdateManager.cs" />
-    <Compile Include="Medical\Bystander.cs" />
     <Compile Include="Core\EntryPoint.cs" />
     <Compile Include="UI\Tasks\BglTask.cs" />
     <Compile Include="UI\Tasks\IvTask.cs" />
     <Compile Include="Medical\Patient.cs" />
-    <Compile Include="Medical\PatientHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\Tasks\SkillCheckTask.cs" />
   </ItemGroup>
