@@ -24,6 +24,7 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
         public static void Build(BodyPart part, Patient p)
         {
             bool inCabin = AmbulanceManager.IsPlayerInRearCabin;
+            bool hasTrauma = InventoryManager.IsKitAvailable("TRAUMABAG", p.Character.Position);
             var injury = p.Conditions.OfType<PhysicalInjury>().FirstOrDefault(i => i.Bone == part.BoneId && !i.IsTreated);
             if (part.LinkedEntity != null) return;
 
@@ -64,6 +65,18 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
                             ));
                         }
                     }
+                }
+            }
+
+            if (part.BoneId == PedBoneId.Spine3)
+            {
+                if (p.Conditions.Any(c => !c.IsTreated && c.RequiredTreatments.Contains(EmsTreatment.CPR)))
+                {
+                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
+                        Localization.Get("TRT_CPR"), "", Color.Orange, true, () => {
+                            BodyInspectionManager.HandleTreatmentLogic(EmsTreatment.CPR, part.BoneId);
+                        }
+                    ));
                 }
             }
 
@@ -132,17 +145,20 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
             {
                 AddBtn(Localization.Get("CAT_AIRWAY"), Localization.Get("CAT_AIRWAY_DESC"), Color.FromArgb(255, 0, 180, 255), "AIRWAY");
             }
-            if (part.BoneId == PedBoneId.Head)
+            if (hasTrauma || inCabin)
             {
-                AddBtn(Localization.Get("CAT_MEDS"), Localization.Get("CAT_MEDS_DESC"), Color.FromArgb(255, 255, 50, 50), "ORAL");
-            }
-            if (part.BoneId == PedBoneId.LeftUpperArm || part.BoneId == PedBoneId.RightUpperArm || part.BoneId == PedBoneId.LeftThigh || part.BoneId == PedBoneId.RightThigh)
-            {
-                AddBtn(Localization.Get("CAT_IM"), Localization.Get("CAT_IM_DESC"), Color.FromArgb(255, 255, 50, 50), "IM");
-            }
-            if (part.BoneId == PedBoneId.LeftForeArm || part.BoneId == PedBoneId.RightForearm || part.BoneId == PedBoneId.LeftHand || part.BoneId == PedBoneId.RightHand)
-            {
-                AddBtn(Localization.Get("CAT_IV"), Localization.Get("CAT_IV_DESC"), Color.FromArgb(255, 255, 100, 0), "IV");
+                if (part.BoneId == PedBoneId.Head)
+                {
+                    AddBtn(Localization.Get("CAT_MEDS"), Localization.Get("CAT_MEDS_DESC"), Color.FromArgb(255, 255, 50, 50), "ORAL");
+                }
+                if (part.BoneId == PedBoneId.LeftUpperArm || part.BoneId == PedBoneId.RightUpperArm || part.BoneId == PedBoneId.LeftThigh || part.BoneId == PedBoneId.RightThigh)
+                {
+                    AddBtn(Localization.Get("CAT_IM"), Localization.Get("CAT_IM_DESC"), Color.FromArgb(255, 255, 50, 50), "IM");
+                }
+                if (part.BoneId == PedBoneId.LeftForeArm || part.BoneId == PedBoneId.RightForearm || part.BoneId == PedBoneId.LeftHand || part.BoneId == PedBoneId.RightHand)
+                {
+                    AddBtn(Localization.Get("CAT_IV"), Localization.Get("CAT_IV_DESC"), Color.FromArgb(255, 255, 100, 0), "IV");
+                }
             }
         }
 

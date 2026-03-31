@@ -13,10 +13,14 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
         {
             bool hasO2 = InventoryManager.IsKitAvailable("OXYGENBAG", p.Character.Position);
 
-            AddAction(hasO2, "OXYGENBAG", Localization.Get("ACT_APPLY_OXYGEN_MASK"), Localization.Get("DESC_STANDARD_O2"), EmsTreatment.Oxygen, part.BoneId);
-            AddAction(hasO2, "OXYGENBAG", Localization.Get("ACT_APPLY_NRB_MASK"), Localization.Get("DESC_HIGH_FLOW_O2"), EmsTreatment.HighFlowOxygen, part.BoneId);
-            AddAction(hasO2, "OXYGENBAG", Localization.Get("ACT_USE_BVM"), Localization.Get("DESC_ASSIST_VENTILATIONS"), EmsTreatment.BagValveMask, part.BoneId);
             AddAction(true, "NONE", Localization.Get("ACT_MANUAL_AIRWAY"), Localization.Get("DESC_HEAD_TILT"), EmsTreatment.AirwayManagement, part.BoneId);
+
+            if (hasO2)
+            {
+                AddAction(hasO2, "OXYGENBAG", Localization.Get("ACT_APPLY_OXYGEN_MASK"), Localization.Get("DESC_STANDARD_O2"), EmsTreatment.Oxygen, part.BoneId);
+                AddAction(hasO2, "OXYGENBAG", Localization.Get("ACT_APPLY_NRB_MASK"), Localization.Get("DESC_HIGH_FLOW_O2"), EmsTreatment.HighFlowOxygen, part.BoneId);
+                AddAction(hasO2, "OXYGENBAG", Localization.Get("ACT_USE_BVM"), Localization.Get("DESC_ASSIST_VENTILATIONS"), EmsTreatment.BagValveMask, part.BoneId);
+            }
         }
 
         public static void BuildOral(BodyPart part, Patient p)
@@ -58,9 +62,8 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
                         }
                     ));
                 }
+                BuildDynamicMedicationMenu(part, p, "IV");
             }
-
-            BuildDynamicMedicationMenu(part, p, "IV");
         }
 
         public static void BuildIM(BodyPart part, Patient p)
