@@ -69,35 +69,6 @@ namespace EmsPlus.Medical
                 condition.Update(this);
             }
 
-            float bleedRate = Conditions.OfType<PhysicalInjury>().Where(i => !i.IsTreated).Sum(i => i.BleedSeverity);
-
-            if (bleedRate > 0)
-            {
-                BloodVolume -= (bleedRate * degSpeed);
-            }
-            if (IsReceivingFluids)
-            {
-                BloodVolume += 2.0f;
-                if (BloodVolume > 100f) BloodVolume = 100f;
-            }
-
-            if (BloodVolume <= 0f && !IsCardiacArrest)
-            {
-                IsCardiacArrest = true;
-                Game.DisplayNotification("~r~Monitor indicates patient has flatlined. Start CPR!");
-            }
-            else if (BloodVolume < 30f)
-            {
-                BloodPressure = VitalState.CriticalLow;
-                HeartRate = VitalState.CriticalLow;
-                Consciousness = ConsciousnessLevel.Unresponsive;
-            }
-            else if (BloodVolume < 60f)
-            {
-                BloodPressure = VitalState.Low;
-                HeartRate = VitalState.CriticalHigh;
-            }
-
             if (IsCardiacArrest || SpO2 == VitalState.None || SpO2 == VitalState.CriticalLow)
             {
                 HeartRate = VitalState.None;
@@ -110,7 +81,7 @@ namespace EmsPlus.Medical
                 {
                     IsDead = true;
                     Consciousness = ConsciousnessLevel.Unresponsive;
-                    Game.DisplayNotification("~black~TIME OF DEATH:~w~ Patient has died.");
+                    Game.DisplayNotification("~b~Patient has ~r~died~b~.");
 
                     if (Character.Exists() && Character.IsAlive) Character.Kill();
                 }
@@ -170,17 +141,11 @@ namespace EmsPlus.Medical
             if (treatmentWasEffective)
             {
                 InventoryManager.ConsumeSupply(treatment);
-                //Game.DisplayNotification($"~g~Treatment Successful:~w~ Applied {treatment}");
 
                 if (IsStabilized)
                 {
-                    //Game.DisplayNotification("~g~PATIENT STABILIZED! ~w~Ready for transport.");
                     if (Consciousness != ConsciousnessLevel.Alert && !IsCardiacArrest) RevivePatient();
                 }
-            }
-            else
-            {
-                //Game.DisplayNotification($"~y~Treatment Ineffective:~w~ {treatment} had no positive effect.");
             }
         }
 
@@ -222,7 +187,7 @@ namespace EmsPlus.Medical
                 string animDict = EntryPoint.AnimationConfig.PatientReviveDict.Value;
                 string animName = EntryPoint.AnimationConfig.PatientReviveName.Value;
 
-                if (IsOnStretcher && Managers.StretcherManager.Prop != null && Managers.StretcherManager.Prop.Exists())
+                if (IsOnStretcher && StretcherManager.Prop != null && StretcherManager.Prop.Exists())
                 {
                     Character.IsCollisionEnabled = false;
                     animDict = EntryPoint.AnimationConfig.PatientStretcherDict.Value;

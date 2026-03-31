@@ -6,7 +6,7 @@ namespace EmsPlus.UI.Custom.InspectMenu
     public class InspectionAction
     {
         public string Label { get; set; }
-        public string SubLabel { get; set; } // e.g. "Requires Trauma Bag"
+        public string SubLabel { get; set; }
         public Color Color { get; set; }
         public bool Enabled { get; set; }
         public Action OnExecute { get; set; }

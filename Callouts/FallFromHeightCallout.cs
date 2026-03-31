@@ -32,7 +32,7 @@ namespace EmsPlus.Callouts
             p.Consciousness = ConsciousnessLevel.Pain;
 
             p.Conditions.Add(InjuryFactory.Fracture.Compound(PedBoneId.RightThigh));
-            p.Conditions.Add(new PhysicalInjury("Suspected Spinal Trauma", PedBoneId.Neck, 0f, EmsTreatment.CervicalCollar, EmsTreatment.SpinalImmobilisation));
+            p.Conditions.Add(new PhysicalInjury("Suspected Spinal Trauma", PedBoneId.Neck, 0f, EmsTreatment.CervicalCollar));
 
             patient.Tasks.PlayAnimation("misschinese2_crystalmaze", "2int_loop_a_taocheng", 8.0f, AnimationFlags.Loop);
             p.ApplyVisuals();
