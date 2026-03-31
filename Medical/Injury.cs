@@ -2,17 +2,6 @@
 
 namespace EmsPlus.Medical
 {
-    public static class InjuryTypes
-    {
-        public const string Bruising = "Bruising";
-        public const string Laceration = "Laceration";
-        public const string Fracture = "Fracture";
-        public const string GunshotWound = "GunshotWound";
-        public const string Burn1 = "Burn1";
-        public const string Burn2 = "Burn2";
-        public const string Burn3 = "Burn3";
-    }
-
     public class Injury
     {
         public string Type { get; set; }

@@ -137,7 +137,6 @@
     <Compile Include="Callouts\EmsCallout.cs" />
     <Compile Include="Core\EmsService.cs" />
     <Compile Include="Core\EmsStatus.cs" />
-    <Compile Include="Managers\InjuryGenerator.cs" />
     <Compile Include="Managers\InventoryManager.cs" />
     <Compile Include="Managers\LoadoutManager.cs" />
     <Compile Include="Managers\AmbulanceManager.cs" />
