@@ -74,7 +74,10 @@ namespace EmsPlus.Configuration
                     writer.WriteLine($"LucasPropModelName={LucasPropModel}");
                 }
             }
-            catch { }
+            catch (System.Exception ex)
+            {
+                Game.Console.Print($"[EmsPlus] Error: {ex.Message}");
+            }
         }
     }
 }

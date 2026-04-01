@@ -1,4 +1,5 @@
 ﻿using IPT.Common.User.Settings;
+using Rage;
 using System.IO;
 
 namespace EmsPlus.Configuration
@@ -142,7 +143,10 @@ namespace EmsPlus.Configuration
                     w.WriteLine($"BystanderWaveAnimationName={BystanderWaveName.Value}");
                 }
             }
-            catch { }
+            catch (System.Exception ex)
+            {
+                Game.Console.Print($"[EmsPlus] Error: {ex.Message}");
+            }
         }
     }
 }

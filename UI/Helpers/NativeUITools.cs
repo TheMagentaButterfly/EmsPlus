@@ -33,13 +33,13 @@ namespace EmsPlus.UI.Helpers
                 if (centered)
                     NativeFunction.Natives.SET_TEXT_CENTRE(true);
 
-                // This sequence is the only way to correctly display Thai/Unicode in the game world
-                NativeFunction.CallByHash<uint>(0x25FBB336DF1804CB, "STRING"); // BEGIN_TEXT_COMMAND_DISPLAY_TEXT
+                NativeFunction.CallByHash<uint>(0x25FBB336DF1804CB, "STRING");
                 NativeFunction.Natives.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME(text);
-                NativeFunction.CallByHash<uint>(0xCD015E5BB0D96A57, x / resX, y / resY); // END_TEXT_COMMAND_DISPLAY_TEXT
+                NativeFunction.CallByHash<uint>(0xCD015E5BB0D96A57, x / resX, y / resY);
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
+                Game.Console.Print($"[EmsPlus] Error: {ex.Message}");
             }
         }
 

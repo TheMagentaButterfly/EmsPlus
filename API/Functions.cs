@@ -4,9 +4,6 @@ using EmsPlus.Managers;
 
 namespace EmsPlus.API
 {
-    /// <summary>
-    /// The official EmsPlus API for third-party developers.
-    /// </summary>
     public static class Functions
     {
         public delegate void DutyStateChangedEventHandler(bool onDuty);

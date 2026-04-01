@@ -16,7 +16,7 @@ namespace EmsPlus.UI.Native.PatientMenu
             var p = GameState.CurrentPatient;
             if (p == null) return;
 
-            bool hasTraumaKit = InventoryManager.IsKitAvailable("TraumaBag", p.Character.Position);
+            bool hasTraumaKit = InventoryManager.IsKitAvailable("TRAUMABAG", p.Character.Position);
             bool anyInjuries = false;
 
             // ONLY get injuries that are on inspected bones!

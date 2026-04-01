@@ -44,23 +44,18 @@ namespace EmsPlus.Managers
 
             if (Game.LocalPlayer.Character.DistanceTo(Prop) < radius)
             {
-                string prompt = IsAttachedToPlayer ? "[G] Drop" : "[G] Grab";
-
-                prompt += " | [H] ";
-                prompt += (CurrentState == StretcherState.Low) ? "Raise" : "Lower";
-
-                if (Game.IsKeyDown(Keys.G))
+                if (EntryPoint.KeyConfig.StretcherGrabKey.Value.IsPressed)
                 {
                     if (IsAttachedToPlayer) DetachFromPlayer(); else AttachToPlayer();
                 }
-                if (Game.IsKeyDown(Keys.H))
+                if (EntryPoint.KeyConfig.StretcherHeightKey.Value.IsPressed)
                 {
                     if (CurrentState == StretcherState.Low)
                         SwitchState(StretcherState.Normal);
                     else
                         SwitchState(StretcherState.Low);
                 }
-                if (Game.IsKeyDown(Keys.J) && CurrentState != StretcherState.Low)
+                if (EntryPoint.KeyConfig.StretcherSitKey.Value.IsPressed && CurrentState != StretcherState.Low)
                 {
                     if (CurrentState == StretcherState.Sitting)
                         SwitchState(StretcherState.Normal);
@@ -415,20 +410,14 @@ namespace EmsPlus.Managers
                 Vector3 promptPos = Prop.GetOffsetPosition(new Vector3(0, 0, max.Z + 0.35f));
 
                 string text = IsAttachedToPlayer ? Localization.Get("PROMPT_RELEASE_STRETCHER") : Localization.Get("PROMPT_GRAB_STRETCHER");
+                if (CurrentState == StretcherState.Low) text += " | " + Localization.Get("PROMPT_RAISE_STRETCHER");
+                else text += " | " + Localization.Get("PROMPT_LOWER_STRETCHER");
+                if (CurrentState != StretcherState.Low) text += " | " + Localization.Get("PROMPT_SITTING_STRETCHER");
 
-                if (CurrentState == StretcherState.Low)
-                {
-                    text += " | " + Localization.Get("PROMPT_RAISE_STRETCHER");
-                }
-                else
-                {
-                    text += " | " + Localization.Get("PROMPT_LOWER_STRETCHER");
-                }
-
-                if (CurrentState != StretcherState.Low)
-                {
-                    text += " | " + Localization.Get("PROMPT_SITTING_STRETCHER");
-                }
+                // Inject Custom Keys
+                text = text.Replace("[G]", $"[{EntryPoint.KeyConfig.StretcherGrabKey.Value}]")
+                           .Replace("[H]", $"[{EntryPoint.KeyConfig.StretcherHeightKey.Value}]")
+                           .Replace("[J]", $"[{EntryPoint.KeyConfig.StretcherSitKey.Value}]");
 
                 UI.Helpers.RenderHelper.Draw3DPrompt(g, text, promptPos, Color.Blue);
             }

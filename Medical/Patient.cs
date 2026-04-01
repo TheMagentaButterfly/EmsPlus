@@ -69,7 +69,7 @@ namespace EmsPlus
                 }
             }
 
-            float degSpeed = EntryPoint.EmsPlusConfig.DegradationSpeed.Value * 0.5f;
+            float degSpeed = EntryPoint.EmsPlusConfig.DegradationSpeed.Value * 0.05f;
 
             foreach (var condition in Conditions.Where(c => !c.IsTreated))
             {
@@ -77,6 +77,26 @@ namespace EmsPlus
             }
 
             float bleedRate = Conditions.OfType<PhysicalInjury>().Where(i => !i.IsTreated).Sum(i => i.BleedSeverity);
+
+            BloodVolume -= (bleedRate * degSpeed);
+
+            if (IsCardiacArrest)
+            {
+                BrainOxygen -= (degSpeed * 1.5f);
+            }
+
+            if (BloodVolume <= 0f || BrainOxygen <= 0f)
+            {
+                BloodVolume = System.Math.Max(0f, BloodVolume);
+                BrainOxygen = System.Math.Max(0f, BrainOxygen);
+                IsDead = true;
+                HeartRate = VitalState.None;
+                BloodPressure = VitalState.None;
+                SpO2 = VitalState.None;
+                Consciousness = ConsciousnessLevel.Unresponsive;
+
+                Game.DisplayNotification("~r~Dispatch:~w~ Patient has flatlined. Time of death recorded.");
+            }
         }
 
         public void ApplyTreatment(EmsTreatment treatment, PedBoneId? targetBone = null)
