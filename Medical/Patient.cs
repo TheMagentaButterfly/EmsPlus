@@ -77,50 +77,6 @@ namespace EmsPlus
             }
 
             float bleedRate = Conditions.OfType<PhysicalInjury>().Where(i => !i.IsTreated).Sum(i => i.BleedSeverity);
-
-            if (bleedRate > 0)
-            {
-                BloodVolume -= (bleedRate * degSpeed);
-            }
-            if (IsReceivingFluids)
-            {
-                BloodVolume += 2.0f;
-                if (BloodVolume > 100f) BloodVolume = 100f;
-            }
-
-            if (BloodVolume <= 0f && !IsCardiacArrest)
-            {
-                IsCardiacArrest = true;
-                Game.DisplayNotification("DISPATCH: Monitor indicates patient has flatlined. Start CPR!");
-            }
-            else if (BloodVolume < 30f)
-            {
-                BloodPressure = VitalState.CriticalLow;
-                HeartRate = VitalState.CriticalLow;
-                Consciousness = ConsciousnessLevel.Unresponsive;
-            }
-            else if (BloodVolume < 60f)
-            {
-                BloodPressure = VitalState.Low;
-                HeartRate = VitalState.CriticalHigh;
-            }
-
-            if (IsCardiacArrest || SpO2 == VitalState.None || SpO2 == VitalState.CriticalLow)
-            {
-                HeartRate = VitalState.None;
-                BloodPressure = VitalState.None;
-                SpO2 = VitalState.None;
-
-                BrainOxygen -= (1.5f * degSpeed);
-
-                if (BrainOxygen <= 0f)
-                {
-                    IsDead = true;
-                    Consciousness = ConsciousnessLevel.Unresponsive;
-                    Game.DisplayNotification("Dispatch: Patient has died. Code 4.");
-                    if (Character.Exists() && Character.IsAlive) Character.Kill();
-                }
-            }
         }
 
         public void ApplyTreatment(EmsTreatment treatment, PedBoneId? targetBone = null)
@@ -172,8 +128,6 @@ namespace EmsPlus
             if (treatmentWasEffective)
             {
                 Managers.InventoryManager.ConsumeSupply(treatment);
-
-                ApplyVisuals();
 
                 if (IsStabilized)
                 {
