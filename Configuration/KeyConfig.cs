@@ -15,12 +15,16 @@ namespace EmsPlus.Configuration
         public SettingKeyCombo OpenAmbulanceMenuKey = new SettingKeyCombo("Ambulance Menu", "OpenAmbulanceMenu", "The key used to open the Ambulance Interaction menu.");
         public SettingKeyCombo OpenAmbulanceMenuKeyModifier = new SettingKeyCombo("Ambulance Menu", "OpenAmbulanceMenuModifier", "The Modifier key used to open the Ambulance Interaction menu.");
 
-        public SettingKeyCombo ToggleCabinKey = new SettingKeyCombo("Ambulance Menu", "ToggleCabinKey", "The key used to quickly enter or exit the patient cabin.");
-        public SettingKeyCombo ToggleCabinKeyModifier = new SettingKeyCombo("Ambulance Menu", "ToggleCabinKeyModifier", "Modifier for cabin toggle.");
-
         public SettingKeyCombo StretcherGrabKey = new SettingKeyCombo("Stretcher", "StretcherGrabKey", "Key to grab or release the stretcher.");
         public SettingKeyCombo StretcherHeightKey = new SettingKeyCombo("Stretcher", "StretcherHeightKey", "Key to raise or lower the stretcher.");
         public SettingKeyCombo StretcherSitKey = new SettingKeyCombo("Stretcher", "StretcherSitKey", "Key to toggle patient sitting.");
+
+
+        public SettingKeyCombo ToggleCabinKey = new SettingKeyCombo("Cabin Toggle", "ToggleCabinKey", "The key used to quickly enter or exit the patient cabin.");
+        public SettingKeyCombo ToggleCabinKeyModifier = new SettingKeyCombo("Cabin Toggle", "ToggleCabinKeyModifier", "Modifier for cabin toggle.");
+
+        public SettingKeyCombo ToggleStretcherKey = new SettingKeyCombo("Stretcher Toggle", "ToggleStretcherKey", "The key used to quickly load or unload the stretcher.");
+        public SettingKeyCombo ToggleStretcherKeyModifier = new SettingKeyCombo("Stretcher Toggle", "ToggleStretcherKeyModifier", "Modifier for stretcher toggle.");
 
         public override void Load()
         {
@@ -70,9 +74,10 @@ namespace EmsPlus.Configuration
                     w.WriteLine("; =========================================================");
                     w.WriteLine("; Stretcher Controls");
                     w.WriteLine("; =========================================================");
-                    w.WriteLine($"StretcherGrabKey={StretcherGrabKey.Value}");
-                    w.WriteLine($"StretcherHeightKey={StretcherHeightKey.Value}");
-                    w.WriteLine($"StretcherSitKey={StretcherSitKey.Value}");
+                    w.WriteLine("[Stretcher]");
+                    w.WriteLine($"StretcherGrabKey=G");
+                    w.WriteLine($"StretcherHeightKey=H");
+                    w.WriteLine($"StretcherSitKey=J");
                     w.WriteLine("");
 
                     w.WriteLine("; =========================================================");
@@ -80,8 +85,13 @@ namespace EmsPlus.Configuration
                     w.WriteLine("; =========================================================");
                     w.WriteLine("[Cabin Toggle]");
                     w.WriteLine("; This key combo allows you to quickly enter or exit the patient cabin of your ambulance.");
-                    w.WriteLine($"ToggleCabinKey={ToggleCabinKey.Value}");
-                    w.WriteLine($"ToggleCabinKeyModifier={ToggleCabinKeyModifier.Value}");
+                    w.WriteLine($"ToggleCabinKey=X");
+                    w.WriteLine($"ToggleCabinKeyModifier=LMenu");
+
+                    w.WriteLine("[Stretcher Toggle]");
+                    w.WriteLine("; This key combo allows you to quickly load or unload the stretcher. (Will open doors automatically)");
+                    w.WriteLine($"ToggleStretcherKey=C");
+                    w.WriteLine($"ToggleStretcherKeyModifier=LMenu");
                 }
             }
             catch { }

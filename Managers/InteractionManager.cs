@@ -14,6 +14,8 @@ namespace EmsPlus.Managers
         private static Keys DefaultInteractionKey => Keys.E;
 
         private static DateTime _lastKeyPressTime = DateTime.MinValue;
+        private static uint _lastCabinToggleTime = 0;
+        private static uint _lastStretcherToggleTime = 0;
 
         private const float PatientInteractDistance = 2.5f;
         private const float PatientMarkDistance = 6.0f;
@@ -25,6 +27,22 @@ namespace EmsPlus.Managers
                 return EntryPoint.KeyConfig.InteractionKey.Value.IsPressed;
 
             return Game.IsKeyDown(DefaultInteractionKey);
+        }
+
+        private static bool IsCabinToggleKeyDown()
+        {
+            if (EntryPoint.KeyConfig.ToggleCabinKey != null)
+                return EntryPoint.KeyConfig.ToggleCabinKey.Value.IsPressed;
+
+            return Game.IsKeyDown(Keys.X);
+        }
+
+        private static bool IsStretcherToggleKeyDown()
+        {
+            if (EntryPoint.KeyConfig.ToggleStretcherKey != null)
+                return EntryPoint.KeyConfig.ToggleStretcherKey.Value.IsPressed;
+
+            return Game.IsKeyDown(Keys.C);
         }
 
         public static void MainLoop()
@@ -60,6 +78,42 @@ namespace EmsPlus.Managers
                 {
                     StretcherManager.Process();
 
+                    // =======================================================
+                    // QUICK ACTION: CABIN TOGGLE LOGIC
+                    // =======================================================
+                    if (IsCabinToggleKeyDown() && Game.GameTime > _lastCabinToggleTime + 1000)
+                    {
+                        _lastCabinToggleTime = Game.GameTime;
+
+                        if (AmbulanceManager.IsPlayerInRearCabin)
+                        {
+                            AmbulanceManager.ExitRearCabin();
+                        }
+                        else
+                        {
+                            if (AmbulanceManager.TryGetClosestAmbulance(out Vehicle veh))
+                            {
+                                if (AmbulanceManager.IsStretcherLoaded)
+                                {
+                                    MenuCore.CloseAll();
+                                    AmbulanceManager.EnterRearCabin();
+                                }
+                                //else { Game.DisplayNotification("~r~Cannot enter cabin.~w~ The stretcher must be loaded first."); }
+                            }
+                        }
+                    }
+                    // =======================================================
+                    // QUICK ACTION: STRETCHER TOGGLE LOGIC
+                    // =======================================================
+                    if (IsStretcherToggleKeyDown() && Game.GameTime > _lastStretcherToggleTime + 1000)
+                    {
+                        _lastStretcherToggleTime = Game.GameTime;
+                        AmbulanceManager.QuickToggleStretcher();
+                    }
+
+                    // =======================================================
+                    // MAIN INTERACTION LOGIC
+                    // =======================================================
                     bool keyDown = IsInteractionKeyDown();
                     if (!keyDown) continue;
 

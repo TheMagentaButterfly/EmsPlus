@@ -15,6 +15,14 @@ namespace EmsPlus.Managers
         public enum StretcherState { Normal, Low, Sitting }
         public static StretcherState CurrentState { get; private set; } = StretcherState.Normal;
 
+        private static uint _lastGrabTime = 0;
+        private static uint _lastHeightTime = 0;
+        private static uint _lastSitTime = 0;
+
+        private static bool IsGrabPressed() => EntryPoint.KeyConfig.StretcherGrabKey?.Value?.IsPressed ?? Game.IsKeyDown(Keys.G);
+        private static bool IsHeightPressed() => EntryPoint.KeyConfig.StretcherHeightKey?.Value?.IsPressed ?? Game.IsKeyDown(Keys.H);
+        private static bool IsSitPressed() => EntryPoint.KeyConfig.StretcherSitKey?.Value?.IsPressed ?? Game.IsKeyDown(Keys.J);
+
         // --- PROPERTIES ---
         public static bool IsAttachedToVehicle
         {
@@ -44,19 +52,24 @@ namespace EmsPlus.Managers
 
             if (Game.LocalPlayer.Character.DistanceTo(Prop) < radius)
             {
-                if (EntryPoint.KeyConfig.StretcherGrabKey.Value.IsPressed)
+                if (IsGrabPressed() && Game.GameTime > _lastGrabTime + 500)
                 {
+                    _lastGrabTime = Game.GameTime;
                     if (IsAttachedToPlayer) DetachFromPlayer(); else AttachToPlayer();
                 }
-                if (EntryPoint.KeyConfig.StretcherHeightKey.Value.IsPressed)
+
+                if (IsHeightPressed() && Game.GameTime > _lastHeightTime + 500)
                 {
+                    _lastHeightTime = Game.GameTime;
                     if (CurrentState == StretcherState.Low)
                         SwitchState(StretcherState.Normal);
                     else
                         SwitchState(StretcherState.Low);
                 }
-                if (EntryPoint.KeyConfig.StretcherSitKey.Value.IsPressed && CurrentState != StretcherState.Low)
+
+                if (IsSitPressed() && Game.GameTime > _lastSitTime + 500 && CurrentState != StretcherState.Low)
                 {
+                    _lastSitTime = Game.GameTime;
                     if (CurrentState == StretcherState.Sitting)
                         SwitchState(StretcherState.Normal);
                     else
@@ -64,6 +77,7 @@ namespace EmsPlus.Managers
                 }
             }
         }
+
 
         // --- SWAP FUNCTION ---
         public static void SwitchState(StretcherState newState)
@@ -409,15 +423,29 @@ namespace EmsPlus.Managers
             {
                 Vector3 promptPos = Prop.GetOffsetPosition(new Vector3(0, 0, max.Z + 0.35f));
 
-                string text = IsAttachedToPlayer ? Localization.Get("PROMPT_RELEASE_STRETCHER") : Localization.Get("PROMPT_GRAB_STRETCHER");
-                if (CurrentState == StretcherState.Low) text += " | " + Localization.Get("PROMPT_RAISE_STRETCHER");
-                else text += " | " + Localization.Get("PROMPT_LOWER_STRETCHER");
-                if (CurrentState != StretcherState.Low) text += " | " + Localization.Get("PROMPT_SITTING_STRETCHER");
+                string grabKeyStr = EntryPoint.KeyConfig.StretcherGrabKey?.Value?.ToString() ?? "G";
+                string heightKeyStr = EntryPoint.KeyConfig.StretcherHeightKey?.Value?.ToString() ?? "H";
+                string sitKeyStr = EntryPoint.KeyConfig.StretcherSitKey?.Value?.ToString() ?? "J";
 
-                // Inject Custom Keys
-                text = text.Replace("[G]", $"[{EntryPoint.KeyConfig.StretcherGrabKey.Value}]")
-                           .Replace("[H]", $"[{EntryPoint.KeyConfig.StretcherHeightKey.Value}]")
-                           .Replace("[J]", $"[{EntryPoint.KeyConfig.StretcherSitKey.Value}]");
+                string text = IsAttachedToPlayer ? Localization.Get("PROMPT_RELEASE_STRETCHER") : Localization.Get("PROMPT_GRAB_STRETCHER");
+
+                if (CurrentState == StretcherState.Low)
+                {
+                    text += " | " + Localization.Get("PROMPT_RAISE_STRETCHER");
+                }
+                else
+                {
+                    text += " | " + Localization.Get("PROMPT_LOWER_STRETCHER");
+                }
+
+                if (CurrentState != StretcherState.Low)
+                {
+                    text += " | " + Localization.Get("PROMPT_SITTING_STRETCHER");
+                }
+
+                text = text.Replace("[G]", $"[{grabKeyStr}]")
+                           .Replace("[H]", $"[{heightKeyStr}]")
+                           .Replace("[J]", $"[{sitKeyStr}]");
 
                 UI.Helpers.RenderHelper.Draw3DPrompt(g, text, promptPos, Color.Blue);
             }

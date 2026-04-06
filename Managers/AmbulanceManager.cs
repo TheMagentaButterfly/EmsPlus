@@ -4,7 +4,6 @@ using EmsPlus.UI.Native;
 using EmsPlus.UI.Native.ConfigMenu;
 using Rage;
 using Rage.Native;
-using RAGENativeUI;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -66,7 +65,7 @@ namespace EmsPlus.Managers
 
             if (CurrentVehicle != null && CurrentVehicle.Exists())
             {
-                Vector3 rearPos = CurrentVehicle.GetOffsetPosition(new Vector3(0, -4.0f, 0));
+                Vector3 rearPos = CurrentVehicle.GetOffsetPosition(new Vector3(2.25f, -1.0f, 0));
 
                 float? groundZ = World.GetGroundZ(rearPos, true, true);
 
@@ -503,6 +502,86 @@ namespace EmsPlus.Managers
             }
 
             return VehiclesWithStretcher.Contains(v.Handle);
+        }
+
+        public static void QuickToggleStretcher()
+        {
+            if (GameState.IsPlayerBusy) return;
+
+            if (CurrentVehicle == null || !CurrentVehicle.Exists())
+            {
+                if (!TryGetClosestAmbulance(out Vehicle veh)) return;
+            }
+
+            bool isHolding = StretcherManager.IsAttachedToPlayer;
+            bool isLoaded = IsStretcherLoaded;
+
+            if (!isHolding && !isLoaded)
+            {
+                Game.DisplayNotification("~r~Stretcher is not in the vehicle and you are not holding it.");
+                return;
+            }
+
+            GameState.IsPlayerBusy = true;
+            Ped player = Game.LocalPlayer.Character;
+
+            if (MenuCore.AmbulanceMenu != null && MenuCore.AmbulanceMenu.Visible)
+                MenuCore.AmbulanceMenu.Visible = false;
+
+            GameFiber.StartNew(delegate
+            {
+                bool walkFirst = !IsPlayerAtRear();
+
+                if (walkFirst)
+                {
+                    Vector3 targetPos = CurrentVehicle.GetOffsetPosition(new Vector3(0, -4.5f, 0));
+                    player.Tasks.GoStraightToPosition(targetPos, 1.0f, CurrentVehicle.Heading, 0.5f, 5000);
+
+                    while (player.DistanceTo(targetPos) > 0.6f)
+                    {
+                        GameFiber.Yield();
+                    }
+                }
+
+                if (!AreDoorsOpen)
+                {
+                    string animDict = EntryPoint.AnimationConfig.InteractDict.Value;
+                    string animName = EntryPoint.AnimationConfig.InteractName.Value;
+
+                    NativeFunction.Natives.REQUEST_ANIM_DICT(animDict);
+                    while (!NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>(animDict)) GameFiber.Yield();
+
+                    NativeFunction.Natives.TASK_TURN_PED_TO_FACE_ENTITY(player, CurrentVehicle, 1000);
+                    GameFiber.Sleep(600);
+                    player.Tasks.AchieveHeading(CurrentVehicle.Heading, 0);
+                    GameFiber.Sleep(200);
+                    player.Tasks.PlayAnimation(animDict, animName, 2.0f, AnimationFlags.None);
+                    GameFiber.Sleep(600);
+
+                    ToggleDoorsInternal();
+
+                    GameFiber.Sleep(1000);
+                    player.Tasks.Clear();
+                }
+                else if (walkFirst)
+                {
+                    NativeFunction.Natives.TASK_TURN_PED_TO_FACE_ENTITY(player, CurrentVehicle, 1000);
+                    GameFiber.Sleep(600);
+                }
+
+                GameState.IsPlayerBusy = false;
+
+                if (isLoaded)
+                {
+                    UnloadStretcher();
+                }
+                else if (isHolding)
+                {
+                    LoadStretcher();
+                }
+
+                OnStateUpdate?.Invoke();
+            });
         }
 
         public static void Cleanup()
