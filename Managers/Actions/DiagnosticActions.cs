@@ -8,23 +8,6 @@ namespace EmsPlus.Managers.Actions
 {
     public static class DiagnosticActions
     {
-        public static void TalkToBystander()
-        {
-            if (GameState.CurrentBystander == null)
-            {
-                Game.DisplayNotification(Localization.Get("NOTIF_NO_BYSTANDER"));
-                return;
-            }
-            Game.DisplayNotification("char_call911", "char_call911", Localization.Get("NOTIF_TITLE_BYSTANDER"), Localization.Get("NOTIF_SUBTITLE_PATIENT_HISTORY"), GameState.CurrentPatient.GetSamplersString());
-        }
-
-        public static void CheckHistory()
-        {
-            ActionsCore.Run(Localization.Get("ACTION_CHECKING_ALERT"), 4000, EntryPoint.AnimationConfig.MedicNoteDict.Value, EntryPoint.AnimationConfig.MedicNoteName.Value, () => {
-                Game.DisplayNotification("char_call911", "char_call911", Localization.Get("NOTIF_TITLE_MEDIC_ALERT"), Localization.Get("NOTIF_SUBTITLE_INFO"), GameState.CurrentPatient.History.GetLimitedHistoryString());
-            });
-        }
-
         public static void CheckBGL()
         {
             if (GameState.CurrentPatient == null) return;

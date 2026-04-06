@@ -1,4 +1,5 @@
-﻿using EmsPlus.Medical;
+﻿using EmsPlus.Managers;
+using EmsPlus.Medical;
 using Rage;
 using Rage.Native;
 using System;
@@ -11,7 +12,8 @@ namespace EmsPlus
     public class Patient
     {
         public Ped Character { get; set; }
-        public PatientHistory History { get; set; } = new PatientHistory();
+        public bool HasBeenSpokenTo { get; set; } = false;
+        public List<DialogueLine> Dialogue { get; set; } = new List<DialogueLine>();
         public string DispatchDiagnosis { get; set; } = "Unknown Medical Emergency";
 
         public ConsciousnessLevel Consciousness { get; set; } = ConsciousnessLevel.Unresponsive;
@@ -192,6 +194,5 @@ namespace EmsPlus
         }
 
         public void ApplyVisuals() => PatientVisuals.ApplyBloodEffects(this);
-        public string GetSamplersString() => History.GetLimitedHistoryString();
     }
 }

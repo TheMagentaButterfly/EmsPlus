@@ -16,6 +16,7 @@ namespace EmsPlus.UI.Native.ConfigMenu
         internal const string C_HIGHLIGHT = "~y~";
         internal const string BULLET = "~b~•~s~";
 
+        internal static UIMenu ForceCalloutMenu;
         internal static UIMenu OffsetsRootMenu;
         internal static UIMenu StretcherPosMenu, PatientPosMenu, VehiclePosMenu;//, StretcherDockingMenu;
         internal static UIMenu PropPosMenu;
@@ -33,6 +34,7 @@ namespace EmsPlus.UI.Native.ConfigMenu
 
         public static void Build()
         {
+            BuildForceCalloutMenu();
             BuildOffsetsRootMenu();
             BuildSettingsMenu();
             BuildStretcherCarryMenu();

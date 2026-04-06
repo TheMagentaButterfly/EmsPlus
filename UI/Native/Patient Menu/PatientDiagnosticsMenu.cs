@@ -24,7 +24,6 @@ namespace EmsPlus.UI.Native.PatientMenu
 
             // Interactive Actions
             bool hasBystander = GameState.CurrentBystander != null;
-            AddInteractiveItem(DiagnosticsMenu, Localization.Get("ITEM_CHECK_MED_TAGS"), Localization.Get("DESC_CHECK_MED_TAGS"), true, () => { DiagnosticActions.CheckHistory(); });
 
             bool hasTrauma = InventoryManager.IsKitAvailable("TRAUMABAG", p.Character.Position);
             AddInteractiveItem(DiagnosticsMenu, Localization.Get("ITEM_CHECK_BGL"), hasTrauma ? Localization.Get("DESC_CHECK_BGL") : Localization.Get("REQ_TRAUMA_BAG"), hasTrauma, () => { DiagnosticActions.CheckBGL(); MenuCore.CloseAll(); });

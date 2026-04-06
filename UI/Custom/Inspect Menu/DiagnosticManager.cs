@@ -73,19 +73,6 @@ namespace EmsPlus.UI.Custom.InspectMenu
                 bool bglOk = p.BloodGlucose == VitalState.Normal;
                 newItems.Add(new DiagnosticItem(Localization.Get("DIAG_BGL"), bglText, bglOk));
             }
-
-            // Witness
-            if (GameState.CurrentBystander != null)
-            {
-                newItems.Add(new DiagnosticItem(
-                    Localization.Get("DIAG_WITNESS_INFO"),
-                    Localization.Get("DIAG_WITNESS_PRESENT"),
-                    true,
-                    Localization.Get("DIAG_WITNESS_ACTION"),
-                    (Action)(() => { DiagnosticActions.TalkToBystander(); })
-                ));
-            }
-
             Items = newItems;
         }
 

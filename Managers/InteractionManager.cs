@@ -1,4 +1,5 @@
 ﻿using EmsPlus.Core;
+using EmsPlus.Medical;
 using EmsPlus.UI.Custom.InspectMenu;
 using EmsPlus.UI.Native;
 using EmsPlus.UI.Native.PatientMenu;
@@ -53,6 +54,7 @@ namespace EmsPlus.Managers
 
                 StationManager.Process();
                 InteriorManager.Process();
+                DialogueManager.Process();
 
                 if (Game.LocalPlayer.Character.IsInAnyVehicle(false))
                 {
@@ -116,6 +118,42 @@ namespace EmsPlus.Managers
                     {
                         _lastStretcherToggleTime = Game.GameTime;
                         AmbulanceManager.QuickToggleStretcher();
+                    }
+
+                    // =======================================================
+                    // DIALOGUE INITIATION LOGIC
+                    // =======================================================
+                    if (!DialogueManager.IsActive && !MenuCore.IsAnyMenuOpen)
+                    {
+                        // Check for Bystander
+                        if (GameState.CurrentBystander?.Character.Exists() == true &&
+                            !GameState.CurrentBystander.HasBeenSpokenTo &&
+                            Game.LocalPlayer.Character.DistanceTo(GameState.CurrentBystander.Character) < 3.0f)
+                        {
+                            Game.DisplayHelp($"Press ~y~Y~w~ to talk to the witness.");
+                            if (Game.IsKeyDown(Keys.Y))
+                            {
+                                DialogueManager.StartDialogue(
+                                    GameState.CurrentBystander.Character,
+                                    GameState.CurrentBystander.Dialogue
+                                );
+                            }
+                        }
+                        // Check for Conscious Patient
+                        else if (GameState.CurrentPatient?.Character.Exists() == true &&
+                                 !GameState.CurrentPatient.HasBeenSpokenTo &&
+                                 GameState.CurrentPatient.Consciousness > ConsciousnessLevel.Pain &&
+                                 Game.LocalPlayer.Character.DistanceTo(GameState.CurrentPatient.Character) < 2.0f)
+                        {
+                            Game.DisplayHelp($"Press ~y~Y~w~ to talk to the patient.");
+                            if (Game.IsKeyDown(Keys.Y))
+                            {
+                                DialogueManager.StartDialogue(
+                                    GameState.CurrentPatient.Character,
+                                    GameState.CurrentPatient.Dialogue
+                                );
+                            }
+                        }
                     }
 
                     // =======================================================

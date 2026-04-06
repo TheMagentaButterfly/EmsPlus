@@ -11,6 +11,11 @@ namespace EmsPlus.UI.Native.ConfigMenu
 
         private static void BuildSettingsMenu()
         {
+            var btnForceCallout = new UIMenuItem(
+                $"{BULLET} {Localization.Get("ITEM_FORCE_CALLOUT")}",
+                Localization.Get("ITEM_FORCE_CALLOUT_DESC")
+            );
+
             MenuCore.SettingsMenu = new UIMenu(
                 $"{C_HEADER}{Localization.Get("MENU_CONFIG_TITLE")}",
                 Localization.Get("MENU_CONFIG_SUBTITLE")
@@ -26,8 +31,10 @@ namespace EmsPlus.UI.Native.ConfigMenu
                 Localization.Get("ITEM_SAVE_SETTINGS_DESC")
             );
 
+            MenuCore.SettingsMenu.AddItem(btnForceCallout);
             MenuCore.SettingsMenu.AddItem(btnOffsets);
             MenuCore.SettingsMenu.AddItem(btnSave);
+            MenuCore.SettingsMenu.BindMenuToItem(ForceCalloutMenu, btnForceCallout);
             MenuCore.SettingsMenu.BindMenuToItem(OffsetsRootMenu, btnOffsets);
 
             MenuCore.SettingsMenu.OnItemSelect += (s, item, i) =>

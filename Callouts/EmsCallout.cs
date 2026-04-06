@@ -20,6 +20,7 @@ namespace EmsPlus.Callouts
         /// If empty, it can spawn at any station.
         /// </summary>
         public List<string> AllowedStationIDs { get; set; } = new List<string>();
+        protected List<Entity> SceneEntities = new List<Entity>();
 
         public virtual bool OnBeforeCalloutDisplayed()
         {
@@ -39,6 +40,11 @@ namespace EmsPlus.Callouts
         {
             Finished = true;
             if (AreaBlip != null && AreaBlip.Exists()) AreaBlip.Delete();
+            foreach (var ent in SceneEntities)
+            {
+                if (ent != null && ent.Exists()) ent.Dismiss();
+            }
+            SceneEntities.Clear();
         }
 
         protected void ShowCalloutAreaBlipBeforeAccepting(Vector3 position, float radius)
@@ -123,6 +129,44 @@ namespace EmsPlus.Callouts
             }
 
             return roadPosition + (offsetDir * 3.5f);
+        }
+
+        protected void SpawnEmergencyUnit(string vehModel, string pedModel, Vector3 centerPos, bool sirensOn = true)
+        {
+            Vector3 spawnPos = World.GetNextPositionOnStreet(centerPos.Around(10f, 30f));
+            if (spawnPos == Vector3.Zero) return;
+
+            Vehicle veh = new Vehicle(vehModel, spawnPos);
+            if (veh.Exists())
+            {
+                veh.IsPersistent = true;
+                if (sirensOn) veh.IsSirenOn = true;
+                SceneEntities.Add(veh);
+
+                Ped responder = new Ped(pedModel, veh.GetOffsetPosition(new Vector3(2.5f, 0, 0)), veh.Heading);
+                if (responder.Exists())
+                {
+                    responder.IsPersistent = true;
+                    responder.BlockPermanentEvents = true;
+                    SceneEntities.Add(responder);
+                    NativeFunction.Natives.TASK_TURN_PED_TO_FACE_COORD(responder, centerPos.X, centerPos.Y, centerPos.Z, -1);
+                }
+            }
+        }
+
+        protected Ped SpawnBystander(string pedModel, Vector3 centerPos)
+        {
+            Vector3 spawnPos = GetSidewalkPosition(centerPos.Around(2f, 6f));
+            Ped ped = new Ped(pedModel, spawnPos, 0f);
+            if (ped.Exists())
+            {
+                ped.IsPersistent = true;
+                ped.BlockPermanentEvents = true;
+                NativeFunction.Natives.TASK_TURN_PED_TO_FACE_COORD(ped, centerPos.X, centerPos.Y, centerPos.Z, -1);
+                SceneEntities.Add(ped);
+                return ped;
+            }
+            return null;
         }
     }
 }

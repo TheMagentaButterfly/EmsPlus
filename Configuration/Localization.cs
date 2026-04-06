@@ -368,6 +368,10 @@ namespace EmsPlus
                 w.WriteLine("[Config Menus]");
                 w.WriteLine("MENU_CONFIG_TITLE=EmsPlus");
                 w.WriteLine("MENU_CONFIG_SUBTITLE=~b~Configuration");
+                w.WriteLine("MENU_FORCE_CALLOUT_TITLE=Force Callout");
+                w.WriteLine("MENU_FORCE_CALLOUT_SUBTITLE=~b~Debug Menu");
+                w.WriteLine("ITEM_FORCE_CALLOUT=Force Callout");
+                w.WriteLine("ITEM_FORCE_CALLOUT_DESC=Manually start a specific callout for testing or roleplay.");
                 w.WriteLine("MENU_OFFSETS_ROOT_TITLE=Offsets Configuration");
                 w.WriteLine("MENU_OFFSETS_ROOT_SUBTITLE=~b~Adjust Positions");
                 w.WriteLine("ITEM_OFFSETS_POSITIONS=Offsets & Positions");

@@ -37,6 +37,11 @@ namespace EmsPlus.Managers
             }
         }
 
+        public static List<Type> GetRegisteredCalloutTypes()
+        {
+            return new List<Type>(RegisteredCallouts);
+        }
+
         public static void Process()
         {
             while (true)

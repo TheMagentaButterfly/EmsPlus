@@ -96,6 +96,7 @@
     <Compile Include="Core\EmsPlusAPI.cs" />
     <Compile Include="Managers\AddonManager.cs" />
     <Compile Include="Managers\AudioManager.cs" />
+    <Compile Include="Managers\DialogueManager.cs" />
     <Compile Include="Managers\DispatchManager.cs" />
     <Compile Include="Managers\InteriorManager.cs" />
     <Compile Include="Managers\SceneManager.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="UI\Custom\Inspect Menu\BodyInspectionManager.cs" />
     <Compile Include="Managers\StationManager.cs" />
     <Compile Include="UI\Native\Config Menu\DoorSetupMenu.cs" />
+    <Compile Include="UI\Native\Config Menu\ForceCalloutMenu.cs" />
     <Compile Include="UI\Native\Config Menu\InteractionspointsMenu.cs" />
     <Compile Include="UI\Native\Config Menu\OffsetsRootMenu.cs" />
     <Compile Include="UI\Native\Config Menu\PatientPositionMenu.cs" />
