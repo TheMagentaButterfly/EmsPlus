@@ -12,6 +12,7 @@ namespace EmsPlus.Configuration
         private string FilePath;
 
         public bool CanHaveStretcher { get; set; } = true;
+        public bool CanEnterCabin { get; set; } = true;
 
         public Vector3 StowPos { get; set; } = new Vector3(0f, -1.5f, 0.5f);
         public Rotator StowRot { get; set; } = new Rotator(0f, 0f, 0f);
@@ -88,6 +89,7 @@ namespace EmsPlus.Configuration
             MedicRot = new Rotator(mRx, mRy, mRz);
 
             CanHaveStretcher = ini.ReadBoolean("Settings", "CanHaveStretcher", true);
+            CanEnterCabin = ini.ReadBoolean("Settings", "CanEnterCabin", true);
             string doorString = ini.ReadString("Settings", "DoorIds", "2,3");
             DoorIndices.Clear();
             if (!string.IsNullOrWhiteSpace(doorString))
@@ -126,6 +128,7 @@ namespace EmsPlus.Configuration
             InitializationFile ini = new InitializationFile(FilePath);
 
             ini.Write("Settings", "CanHaveStretcher", CanHaveStretcher);
+            ini.Write("Settings", "CanEnterCabin", CanEnterCabin);
             string doorString = string.Join(",", DoorIndices);
             ini.Write("Settings", "DoorIds", doorString);
 

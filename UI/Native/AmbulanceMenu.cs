@@ -111,11 +111,22 @@ namespace EmsPlus.UI.Native
                 return;
             }
 
-            // 2. REAR CABIN LOGIC (Player is sitting in the back)
+            // 2. CABIN LOGIC
             if (inRearCabin)
             {
                 itemCabinToggle.Text = Localization.Get("ITEM_EXIT_CABIN");
                 itemCabinToggle.Description = Localization.Get("DESC_EXIT_CABIN");
+
+                if (AmbulanceManager.CurrentConfig != null && !AmbulanceManager.CurrentConfig.CanEnterCabin)
+                {
+                    itemCabinToggle.Enabled = false;
+                    itemCabinToggle.Description = Localization.Get("ERR_NO_CABIN") ?? "~r~This vehicle does not have an accessible cabin.";
+                }
+                else
+                {
+                    itemCabinToggle.Enabled = true;
+                }
+
                 MenuCore.AmbulanceMenu.AddItem(itemCabinToggle);
 
                 itemEquipment.Enabled = true;

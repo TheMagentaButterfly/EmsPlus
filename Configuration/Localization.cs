@@ -291,6 +291,7 @@ namespace EmsPlus
                 w.WriteLine("ERR_INVALID_TARGET=~r~Invalid Target:~w~ That body part doesn't need this tool.");
                 w.WriteLine("ERR_ANATOMY_FAIL=~r~Cannot apply this treatment to this location.");
                 w.WriteLine("ERR_TOOL_MISMATCH=~r~Wrong Tool:~w~ Select a different item.");
+                w.WriteLine("ERR_NO_CABIN=~r~This vehicle does not have an accessible cabin.");
                 w.WriteLine("HINT_OPEN_BAG=Open your medical bag to get tools for this.");
                 w.WriteLine("");
 
@@ -420,6 +421,8 @@ namespace EmsPlus
                 w.WriteLine("ITEM_ADD_TO_ALLOWED_DESC=Enable interaction menu and settings saving for this vehicle model.");
                 w.WriteLine("ITEM_CAN_HAVE_STRETCHER=Can Have Stretcher");
                 w.WriteLine("ITEM_CAN_HAVE_STRETCHER_DESC=If disabled, this vehicle will not have a stretcher.");
+                w.WriteLine("ITEM_CAN_ENTER_CABIN=Has Patient Cabin");
+                w.WriteLine("ITEM_CAN_ENTER_CABIN_DESC=If disabled, you cannot enter the rear of the ambulance.");
                 w.WriteLine("MENU_INTERACTION_POINTS_TITLE=Interaction Points");
                 w.WriteLine("MENU_INTERACTION_POINTS_SUBTITLE=~b~Configure Menu Hotspots");
                 w.WriteLine("DESC_INTERACTION_POINTS=Add or remove menu hotspot locations.");

@@ -30,6 +30,8 @@ namespace EmsPlus.Managers
         {
             if (CurrentVehicle == null || !CurrentVehicle.Exists() || !IsStretcherLoaded) return;
 
+            if (CurrentConfig != null && !CurrentConfig.CanEnterCabin) return;
+
             IsPlayerInRearCabin = true;
             Ped player = Game.LocalPlayer.Character;
 

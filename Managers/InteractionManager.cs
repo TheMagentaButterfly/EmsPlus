@@ -93,12 +93,19 @@ namespace EmsPlus.Managers
                         {
                             if (AmbulanceManager.TryGetClosestAmbulance(out Vehicle veh))
                             {
-                                if (AmbulanceManager.IsStretcherLoaded)
+                                if (AmbulanceManager.CurrentConfig != null && !AmbulanceManager.CurrentConfig.CanEnterCabin)
+                                {
+                                    Game.DisplayNotification(Localization.Get("ERR_NO_CABIN") ?? "~r~This vehicle does not have an accessible cabin.");
+                                }
+                                else if (AmbulanceManager.IsStretcherLoaded)
                                 {
                                     MenuCore.CloseAll();
                                     AmbulanceManager.EnterRearCabin();
                                 }
-                                //else { Game.DisplayNotification("~r~Cannot enter cabin.~w~ The stretcher must be loaded first."); }
+                                else
+                                {
+                                    Game.DisplayNotification("~r~Cannot enter cabin.~w~ The stretcher must be loaded first.");
+                                }
                             }
                         }
                     }
