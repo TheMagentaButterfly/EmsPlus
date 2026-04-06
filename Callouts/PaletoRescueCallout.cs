@@ -43,6 +43,9 @@ namespace EmsPlus.Callouts
             GameState.CurrentPatient = new Patient(patient);
             var p = GameState.CurrentPatient;
 
+            p.Dialogue.Add(new DialogueLine("Patient", "I shouldn't have gone off the trail..."));
+            p.Dialogue.Add(new DialogueLine("Patient", "My leg... it looks... it looks wrong. Please make the pain stop."));
+
             p.DispatchDiagnosis = "Major Trauma (MVA)";
             p.Consciousness = ConsciousnessLevel.Pain;
 

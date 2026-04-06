@@ -1,4 +1,5 @@
 ﻿using EmsPlus.Core;
+using EmsPlus.Managers;
 using EmsPlus.Medical;
 using Rage;
 
@@ -27,6 +28,15 @@ namespace EmsPlus.Callouts
 
             GameState.CurrentPatient = new Patient(patient);
             var p = GameState.CurrentPatient;
+
+            SpawnEmergencyUnit("firetruk", "s_m_y_fireman_01", CalloutPosition);
+            Ped bystanderPed = SpawnBystander("a_f_y_tourist_01", CalloutPosition);
+            if (bystanderPed != null)
+            {
+                GameState.CurrentBystander = new Bystander(bystanderPed);
+                GameState.CurrentBystander.Dialogue.Add(new DialogueLine("Witness", "They just collapsed while we were waiting for the bus!"));
+                GameState.CurrentBystander.Dialogue.Add(new DialogueLine("Witness", "I don't think they're breathing, I started chest compressions immediately."));
+            }
 
             p.DispatchDiagnosis = "Cardiac Arrest (V-Fib)";
             p.Consciousness = ConsciousnessLevel.Unresponsive;

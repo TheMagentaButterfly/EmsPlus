@@ -1,4 +1,5 @@
 ﻿using EmsPlus.Core;
+using EmsPlus.Managers;
 using EmsPlus.Medical;
 using Rage;
 
@@ -28,13 +29,21 @@ namespace EmsPlus.Callouts
             GameState.CurrentPatient = new Patient(patient);
             var p = GameState.CurrentPatient;
 
+            SpawnEmergencyUnit("police", "s_m_y_cop_02", CalloutPosition);
+            Ped cop = SpawnBystander("s_m_y_cop_01", CalloutPosition);
+            if (cop != null)
+            {
+                GameState.CurrentBystander = new Bystander(cop);
+                GameState.CurrentBystander.Dialogue.Add(new DialogueLine("Officer", "We've got one down. Shooter fled on foot heading East."));
+                GameState.CurrentBystander.Dialogue.Add(new DialogueLine("Officer", "They're bleeding out fast, they took at least two hits to the torso."));
+            }
+
             p.DispatchDiagnosis = "Gunshot Wound(s)";
             p.Consciousness = ConsciousnessLevel.Pain;
 
             p.Conditions.Add(InjuryFactory.Haemorrhage.Arterial(PedBoneId.LeftUpperArm));
             p.Conditions.Add(InjuryFactory.Chest.SuckingChestWound());
 
-            // They are bleeding heavily, blood volume starts dropping immediately
             p.BloodVolume = 70f;
 
             patient.Tasks.PlayAnimation("misslamar1dead_body", "dead_idle", 8.0f, AnimationFlags.Loop);

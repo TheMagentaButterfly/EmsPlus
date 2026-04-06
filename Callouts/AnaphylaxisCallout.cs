@@ -46,16 +46,14 @@ namespace EmsPlus.Callouts
             if (bystanderPed != null)
             {
                 GameState.CurrentBystander = new Bystander(bystanderPed);
-                // 2. Define their dialogue
-                GameState.CurrentBystander.Dialogue.Add(new DialogueLine("Witness", "Oh thank god, you're here! He just got stung by a bee!"));
-                GameState.CurrentBystander.Dialogue.Add(new DialogueLine("Witness", "He's allergic... he said his throat was closing up and then he just... he can't breathe!"));
-                GameState.CurrentBystander.Dialogue.Add(new DialogueLine("Paramedic", "Okay, I've got it from here. Stand back and give us some space."));
+                GameState.CurrentBystander.Dialogue.Add(new DialogueLine("Witness", "Please help! They were stung by a bee and now they can't breathe!"));
+                GameState.CurrentBystander.Dialogue.Add(new DialogueLine("Paramedic", "I'm on it. I need you to stay back and keep the area clear."));
             }
 
             p.DispatchDiagnosis = "Anaphylactic Shock";
             p.Consciousness = ConsciousnessLevel.Verbal;
 
-            p.SpO2 = VitalState.Low; // Airway is closing
+            p.SpO2 = VitalState.Low;
             p.HeartRate = VitalState.Elevated;
 
             p.Conditions.Add(new SystemicCondition("Anaphylaxis", EmsTreatment.Adrenaline, EmsTreatment.HighFlowOxygen));

@@ -50,6 +50,7 @@ namespace EmsPlus
         public Patient(Ped ped)
         {
             Character = ped;
+            PlayStateAnimation();
         }
 
         public void Update()
@@ -189,10 +190,55 @@ namespace EmsPlus
                 while (!NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>(animDict)) GameFiber.Yield();
                 Character.Tasks.PlayAnimation(animDict, animName, 8.0f, AnimationFlags.Loop);
 
-                Game.DisplayNotification(Localization.Get("NOTIF_PATIENT_REGAINED_CONSCIOUSNESS"));
+                Game.DisplayNotification(Localization.Get("NOTIF_PATIENT_STABILIZED"));
             });
         }
 
         public void ApplyVisuals() => PatientVisuals.ApplyBloodEffects(this);
+
+        public void PlayStateAnimation()
+        {
+            if (Character == null || !Character.Exists()) return;
+
+            string dict = "";
+            string name = "";
+
+            if (IsDead)
+            {
+                dict = EntryPoint.AnimationConfig.PatientUnconDict.Value;
+                name = EntryPoint.AnimationConfig.PatientUnconName.Value;
+            }
+            else if (Consciousness == ConsciousnessLevel.Unresponsive)
+            {
+                dict = EntryPoint.AnimationConfig.PatientUnconDict.Value;
+                name = EntryPoint.AnimationConfig.PatientUnconName.Value;
+            }
+            else if (Consciousness == ConsciousnessLevel.Pain)
+            {
+                dict = EntryPoint.AnimationConfig.PatientHunchedDict.Value;
+                name = EntryPoint.AnimationConfig.PatientHunchedName.Value;
+            }
+            else
+            {
+                dict = EntryPoint.AnimationConfig.PatientReviveDict.Value;
+                name = EntryPoint.AnimationConfig.PatientReviveName.Value;
+            }
+
+            GameFiber.StartNew(delegate
+            {
+                NativeFunction.Natives.REQUEST_ANIM_DICT(dict);
+                int timeout = 0;
+                while (!NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>(dict) && timeout < 200)
+                {
+                    GameFiber.Sleep(10);
+                    timeout++;
+                }
+
+                if (Character.Exists())
+                {
+                    Character.Tasks.PlayAnimation(dict, name, 8.0f, AnimationFlags.Loop);
+                }
+            });
+        }
     }
 }

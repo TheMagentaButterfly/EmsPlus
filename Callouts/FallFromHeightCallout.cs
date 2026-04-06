@@ -1,4 +1,5 @@
 ﻿using EmsPlus.Core;
+using EmsPlus.Managers;
 using EmsPlus.Medical;
 using Rage;
 
@@ -27,6 +28,17 @@ namespace EmsPlus.Callouts
 
             GameState.CurrentPatient = new Patient(patient);
             var p = GameState.CurrentPatient;
+
+            p.Dialogue.Add(new DialogueLine("Patient", "Ow... my leg... everything hurts..."));
+            p.Dialogue.Add(new DialogueLine("Patient", "Don't move me... my back feels like it's on fire."));
+
+            Ped bystanderPed = SpawnBystander("s_m_y_construct_02", CalloutPosition);
+            if (bystanderPed != null)
+            {
+                GameState.CurrentBystander = new Bystander(bystanderPed);
+                GameState.CurrentBystander.Dialogue.Add(new DialogueLine("Coworker", "They fell off the scaffolding! It was at least two stories up."));
+                GameState.CurrentBystander.Dialogue.Add(new DialogueLine("Coworker", "They haven't moved since they hit the ground."));
+            }
 
             p.DispatchDiagnosis = "Traumatic Fall";
             p.Consciousness = ConsciousnessLevel.Pain;

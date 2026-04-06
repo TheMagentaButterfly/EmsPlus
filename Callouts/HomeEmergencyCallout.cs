@@ -84,6 +84,9 @@ namespace EmsPlus.Callouts
                 GameState.CurrentPatient = new Patient(patient);
                 var p = GameState.CurrentPatient;
 
+                p.Dialogue.Add(new DialogueLine("Patient", "Where... where am I?"));
+                p.Dialogue.Add(new DialogueLine("Patient", "Everything is so blurry... did I take too much?"));
+
                 p.DispatchDiagnosis = "Cardiac / Respiratory Arrest";
                 p.Conditions.Add(new SystemicCondition("Drug Overdose", EmsTreatment.Naloxone, EmsTreatment.AirwayManagement));
                 p.HeartRate = VitalState.CriticalLow;

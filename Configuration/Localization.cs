@@ -301,7 +301,7 @@ namespace EmsPlus
                 w.WriteLine("NOTIF_TREATING=Treating injury...");
                 w.WriteLine("NOTIF_INJURY_TREATED=~g~Injury Treated.");
                 w.WriteLine("NOTIF_ADMINISTERED=~g~Administered:~w~ {0}");
-                w.WriteLine("NOTIF_PATIENT_REGAINED_CONSCIOUSNESS=~g~The patient has regained consciousness!");
+                w.WriteLine("NOTIF_PATIENT_STABILIZED=~g~The patient has been stabilized!");
                 w.WriteLine("NOTIF_POSITION_COPIED=Position copied to clipboard!");
                 w.WriteLine("NOTIF_TOOL_PREPARED=~b~Prepared:~w~ {0}. Select injured body part.");
                 w.WriteLine("NOTIF_MONITOR_CONNECTED=~g~Monitor connected.");
