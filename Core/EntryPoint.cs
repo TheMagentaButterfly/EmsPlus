@@ -144,7 +144,6 @@ namespace EmsPlus
             CalloutManager.RegisterCallout(typeof(Callouts.PaletoRescueCallout));
             CalloutManager.RegisterCallout(typeof(Callouts.ProceduralTraumaCallout));
             CalloutManager.RegisterCallout(typeof(Callouts.HomeEmergencyCallout));
-            CalloutManager.RegisterCallout(typeof(Callouts.CardiacArrestCallout));
             CalloutManager.RegisterCallout(typeof(Callouts.FallFromHeightCallout));
             CalloutManager.RegisterCallout(typeof(Callouts.PenetratingTraumaCallout));
             CalloutManager.RegisterCallout(typeof(Callouts.AnaphylaxisCallout));

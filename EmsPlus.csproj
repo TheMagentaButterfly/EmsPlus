@@ -77,7 +77,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\Functions.cs" />
-    <Compile Include="Callouts\CardiacArrestCallout.cs" />
     <Compile Include="Callouts\HomeEmergencyCallout.cs" />
     <Compile Include="Callouts\PaletoRescueCallout.cs" />
     <Compile Include="Callouts\ProceduralTraumaCallout.cs" />
