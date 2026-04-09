@@ -2,6 +2,7 @@
 using EmsPlus.Managers;
 using EmsPlus.Medical;
 using Rage;
+using System.Drawing;
 
 namespace EmsPlus.Callouts
 {
@@ -9,6 +10,7 @@ namespace EmsPlus.Callouts
     {
         private Ped patient;
         private Blip blip;
+        private bool hasArrivedAtScene = false;
 
         public override bool OnBeforeCalloutDisplayed()
         {
@@ -30,7 +32,6 @@ namespace EmsPlus.Callouts
             GameState.CurrentPatient = new Patient(patient);
             var p = GameState.CurrentPatient;
 
-            // 3. Define the PATIENT's dialogue
             p.Dialogue.Add(new DialogueLine("Patient", "*Gasp*... Can't... breathe... my throat..."));
             p.Dialogue.Add(new DialogueLine("Patient", "It feels like it's swelling shut... please... help..."));
 
@@ -41,7 +42,6 @@ namespace EmsPlus.Callouts
 
             SpawnEmergencyUnit("firetruk", "s_m_y_fireman_01", CalloutPosition);
 
-            // 1. Create the bystander
             Ped bystanderPed = SpawnBystander("a_f_y_tourist_01", CalloutPosition);
             if (bystanderPed != null)
             {
@@ -60,9 +60,39 @@ namespace EmsPlus.Callouts
 
             patient.Tasks.PlayAnimation("rcmfanatic1out_of_breath", "p_zero_tired_01e", 8.0f, AnimationFlags.Loop);
 
-            blip = new Blip(patient) { Sprite = (BlipSprite)280, Color = System.Drawing.Color.Orange };
+            blip = new Blip(patient);
+            blip.Color = Color.Red;
+            blip.Name = "Medical Emergency";
+            blip.IsRouteEnabled = true;
+
             return true;
         }
+
+        public override void Process()
+        {
+            base.Process();
+
+            if (!hasArrivedAtScene && Game.LocalPlayer.Character.DistanceTo(patient) < 25f)
+            {
+                hasArrivedAtScene = true;
+
+                if (blip.Exists()) blip.Delete();
+
+                blip = patient.AttachBlip();
+                blip.Sprite = (BlipSprite)280;
+                blip.Color = Color.Yellow;
+                blip.Name = "Patient";
+                blip.IsRouteEnabled = false;
+            }
+
+            if (hasArrivedAtScene && blip.Exists()
+                && GameState.CurrentPatient != null
+                && GameState.CurrentPatient.IsOnStretcher)
+            {
+                blip.Delete();
+            }
+        }
+
         public override void End() { base.End(); if (blip.Exists()) blip.Delete(); if (patient.Exists()) patient.Dismiss(); }
     }
 }

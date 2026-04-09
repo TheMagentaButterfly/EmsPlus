@@ -51,7 +51,11 @@ namespace EmsPlus.Callouts
             patient.Tasks.PlayAnimation("misschinese2_crystalmaze", "2int_loop_a_taocheng", 8.0f, AnimationFlags.Loop);
             p.ApplyVisuals();
 
-            blip = new Blip(patient) { Sprite = (BlipSprite)280, Color = System.Drawing.Color.Yellow };
+            blip = new Blip(patient);
+            blip.Color = Color.Red;
+            blip.Name = "Medical Emergency";
+            blip.IsRouteEnabled = true;
+
             return true;
         }
 
