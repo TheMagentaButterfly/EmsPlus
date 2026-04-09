@@ -129,7 +129,7 @@ namespace EmsPlus
 
         private static void OnUnload()
         {
-            Cleanup(false);
+            Cleanup(true);
             StationManager.Cleanup();
             Game.Console.Print("[EmsPlus] Unloaded.");
         }
@@ -174,6 +174,16 @@ namespace EmsPlus
         {
             Game.FrameRender -= OnGameFrameRender;
 
+            StationManager.Cleanup();
+            CalloutManager.ForceCleanUp();
+            StretcherManager.Cleanup();
+            StretcherGhostManager.DeleteGhosts();
+            InventoryManager.Cleanup();
+            DialogueManager.Cleanup();
+
+            MenuCore.CloseAll();
+            BodyInspectionManager.Cleanup();
+
             if (_inputHandler != null)
             {
                 _inputHandler.Stop();
@@ -185,30 +195,36 @@ namespace EmsPlus
             if (player.Exists())
             {
                 player.Tasks.ClearImmediately();
-
                 NativeFunction.Natives.CLEAR_PED_SECONDARY_TASK(player);
-
                 player.IsPositionFrozen = false;
                 player.IsCollisionEnabled = true;
             }
 
-            CalloutManager.ForceCleanUp();
-            StretcherManager.Cleanup();
-            StretcherGhostManager.DeleteGhosts();
-            InventoryManager.Cleanup();
-            MenuCore.CloseAll();
             GameState.Clear();
-            BodyInspectionManager.Cleanup();
             AmbulanceManager.Cleanup();
             InteriorManager.ForceClearInterior();
 
             if (abortFibers)
             {
-                _mainLogicFiber?.Abort();
-                _uiLogicFiber?.Abort();
-                _simulationFiber?.Abort();
-                _calloutFiber?.Abort();
-                _stationFiber?.Abort();
+                AbortFiberSafe(_mainLogicFiber);
+                AbortFiberSafe(_uiLogicFiber);
+                AbortFiberSafe(_simulationFiber);
+                AbortFiberSafe(_calloutFiber);
+                AbortFiberSafe(_stationFiber);
+            }
+        }
+
+        private static void AbortFiberSafe(GameFiber fiber)
+        {
+            try
+            {
+                if (fiber != null && fiber.IsAlive)
+                {
+                    fiber.Abort();
+                }
+            }
+            catch (System.Exception)
+            {
             }
         }
 

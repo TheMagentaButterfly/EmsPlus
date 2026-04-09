@@ -24,6 +24,11 @@ namespace EmsPlus.Configuration
         public SettingInt DegradationSpeed = new SettingInt("Difficulty", "DegradationSpeed", "How fast the patient worsens (1-5, 5 is fastest).", 2, 1, 5, 2);
         public SettingBool ShowTreatmentHints = new SettingBool("Difficulty", "ShowTreatmentHints", "If true, the menu will suggest treatments.", true);
 
+        // Tutorial Settings
+        public SettingBool EnableTutorial = new SettingBool("Tutorial", "EnableTutorial", "Set to false to skip all tutorials.", true);
+        public SettingInt TutorialProgress = new SettingInt("Tutorial", "TutorialProgress", "Internal tracker for tutorial stage.", 0, 0, 10, 1);
+
+        // Debug Settings
         public SettingBool AdvancedDebugging = new SettingBool("Debug", "AdvancedDebugging", "If true, enables advanced debugging features.", false);
 
         public override void Load()
@@ -127,6 +132,13 @@ namespace EmsPlus.Configuration
                     writer.WriteLine("");
                     writer.WriteLine("; If true, the menu will suggest treatments based on diagnostics.");
                     writer.WriteLine($"ShowTreatmentHints={ShowTreatmentHints.Value}");
+                    writer.WriteLine("");
+
+                    writer.WriteLine("[Tutorial]");
+                    writer.WriteLine("; Set to false to disable all in-game tutorials.");
+                    writer.WriteLine($"EnableTutorial={EnableTutorial.Value}");
+                    writer.WriteLine($"; Current tutorial progress stage. Set to 0 to restart.");
+                    writer.WriteLine($"TutorialProgress={TutorialProgress.Value}");
                     writer.WriteLine("");
 
                     //writer.WriteLine("[Debug]");

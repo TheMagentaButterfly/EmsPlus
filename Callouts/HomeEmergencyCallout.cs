@@ -45,7 +45,6 @@ namespace EmsPlus.Callouts
         {
             base.OnCalloutAccepted();
 
-            // Unlock the specific dispatched door
             InteriorManager.EnableTargetEntrance(TargetInterior, TargetEntrance);
 
             blip = new Blip(CalloutPosition);
@@ -60,14 +59,12 @@ namespace EmsPlus.Callouts
         {
             base.Process();
 
-            // 1. Arrive at building
             if (!hasArrivedAtScene && Game.LocalPlayer.Character.DistanceTo(TargetEntrance.Coords) < 15f)
             {
                 hasArrivedAtScene = true;
                 Game.DisplayNotification($"~b~Dispatch:~w~ Arrived at location. Proceed inside {TargetEntrance.Name}.");
             }
 
-            // 2. Spawn Patient when player enters the correct building
             if (InteriorManager.CurrentInterior != null && !hasSpawnedPatient)
             {
                 hasSpawnedPatient = true;
@@ -105,13 +102,11 @@ namespace EmsPlus.Callouts
                 blip.IsRouteEnabled = false;
             }
 
-            // 3. Clear Blip when loaded
-            if (hasSpawnedPatient && blip.Exists() && GameState.CurrentPatient != null)
+            if (hasArrivedAtScene && blip.Exists()
+                && GameState.CurrentPatient != null
+                && GameState.CurrentPatient.IsOnStretcher)
             {
-                if (GameState.CurrentPatient.IsOnStretcher)
-                {
-                    blip.Delete();
-                }
+                blip.Delete();
             }
         }
 

@@ -19,6 +19,9 @@ namespace EmsPlus.Managers
             while (true)
             {
                 GameFiber.Yield();
+
+                if (_blipMap == null || _blipMap.Count == 0) continue;
+
                 Process();
             }
         }
@@ -140,7 +143,31 @@ namespace EmsPlus.Managers
 
         public static void Cleanup()
         {
-            foreach (var b in _blipMap.Values) if (b.Exists()) b.Delete();
+            Game.Console.Print("[EmsPlus] StationManager: Deleting blips...");
+
+            var blips = _blipMap.Values.ToList();
+
+            foreach (var b in blips)
+            {
+                try
+                {
+                    if (b != null)
+                    {
+                        if (b.Exists()) b.Delete();
+
+                        uint handle = b.Handle;
+                        if (handle != 0)
+                        {
+                            NativeFunction.Natives.REMOVE_BLIP(ref handle);
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Game.Console.Print($"[EmsPlus] Warning: Failed to delete station blip: {ex.Message}");
+                }
+            }
+
             _blipMap.Clear();
             ActiveStation = null;
         }

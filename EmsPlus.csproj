@@ -101,6 +101,7 @@
     <Compile Include="Managers\SceneManager.cs" />
     <Compile Include="Managers\TreatmentManager.cs" />
     <Compile Include="Callouts\AnaphylaxisCallout.cs" />
+    <Compile Include="Managers\TutorialManager.cs" />
     <Compile Include="Medical\AnatomicalRegistry.cs" />
     <Compile Include="Medical\Conditions.cs" />
     <Compile Include="Medical\EmsTreatment.cs" />

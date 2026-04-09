@@ -1,4 +1,5 @@
-﻿using Rage;
+﻿using EmsPlus.Managers;
+using Rage;
 using Rage.Native;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace EmsPlus.Callouts
         public string CalloutName { get; set; }
         public Blip AreaBlip { get; private set; }
         public bool Accepted { get; private set; } = false;
+        public bool PlayerArrived { get; private set; } = false;
         public bool Finished { get; private set; } = false;
 
         /// <summary>
@@ -34,7 +36,20 @@ namespace EmsPlus.Callouts
             return true;
         }
 
-        public virtual void Process() { }
+
+        public virtual void OnPlayerArrivedOnScene()
+        {
+            Managers.TutorialManager.TriggerOnSceneTutorial();
+        }
+
+        public virtual void Process()
+        {
+            if (!PlayerArrived && Game.LocalPlayer.Character.DistanceTo(CalloutPosition) < 40f)
+            {
+                PlayerArrived = true;
+                OnPlayerArrivedOnScene();
+            }
+        }
 
         public virtual void End()
         {

@@ -55,6 +55,7 @@ namespace EmsPlus.Managers
                 StationManager.Process();
                 InteriorManager.Process();
                 DialogueManager.Process();
+                TutorialManager.Process();
 
                 if (Game.LocalPlayer.Character.IsInAnyVehicle(false))
                 {

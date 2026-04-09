@@ -28,6 +28,8 @@ namespace EmsPlus.Managers
 
         public static void EnterRearCabin()
         {
+            TutorialManager.TriggerCabinTutorial();
+
             if (CurrentVehicle == null || !CurrentVehicle.Exists() || !IsStretcherLoaded) return;
 
             if (CurrentConfig != null && !CurrentConfig.CanEnterCabin) return;

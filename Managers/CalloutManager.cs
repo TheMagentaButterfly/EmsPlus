@@ -77,6 +77,7 @@ namespace EmsPlus.Managers
                                 {
                                     IsCalloutDisplayed = false;
                                     EmsService.SetStatus(EmsStatus.EnRoute);
+                                    TutorialManager.TriggerCalloutAcceptedTutorial();
                                 }
                                 else EndCurrent();
                             }
@@ -191,6 +192,7 @@ namespace EmsPlus.Managers
             HospitalManager.CleanupBlip();
             InteriorManager.DisableTargetEntrance();
 
+            DialogueManager.Cleanup();
             BodyInspectionManager.Cleanup();
 
             SceneManager.ClearScene();

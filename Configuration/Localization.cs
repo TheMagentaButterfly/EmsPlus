@@ -559,6 +559,46 @@ namespace EmsPlus
                 w.WriteLine("TASK_IV_STEP_COMPLETE=Complete!");
                 w.WriteLine("TASK_SKILL_CHECK_PASS=~g~Pass!");
                 w.WriteLine("TASK_SKILL_CHECK_FAIL=~r~Fail!");
+                w.WriteLine("");
+
+                w.WriteLine("[Tutorial]");
+                w.WriteLine("TUTORIAL_SPEAKER=Tutorial");
+                w.WriteLine("ITEM_ENABLE_TUTORIAL=Enable Tutorials");
+                w.WriteLine("DESC_ENABLE_TUTORIAL=Toggle the in-game tutorial system. Re-enabling will reset tutorial progress.");
+
+                w.WriteLine("; --- Startup ---");
+                w.WriteLine("TUTORIAL_STARTUP_1=Welcome to EmsPlus! This brief tutorial will guide you through the main features. Press ~y~Y~w~ to advance dialogue boxes like this one.");
+                w.WriteLine("TUTORIAL_STARTUP_2=Your first step is to go on duty. To do so find a ~r~Fire Station~w~ on your map and press ~y~E~w~ inside the red marker.");
+                w.WriteLine("TUTORIAL_STARTUP_3=Once on duty, you can open the main Settings Menu at any time by pressing ~y~{0}~w~. You can also disable this tutorial there. For now, let's wait for a callout.");
+
+                w.WriteLine("; --- Settings Menu ---");
+                w.WriteLine("TUTORIAL_SETTINGS_1=This is the EmsPlus Configuration Menu. From here, you can customize almost every part of the mod.");
+                w.WriteLine("TUTORIAL_SETTINGS_2=The most important section is 'Offsets & Positions'. This lets you adjust how props are attached to your character and vehicles.");
+                w.WriteLine("TUTORIAL_SETTINGS_3=Let's try configuring a vehicle. Find an ambulance you want to use, get near it, then open 'Vehicle Settings' from the previous menu.");
+
+                w.WriteLine("; --- Vehicle Config ---");
+                w.WriteLine("TUTORIAL_VEHICLE_1=This is the Vehicle Configuration menu. First, click 'Reload/Detect Vehicle' to make sure the menu is editing the correct ambulance.");
+                w.WriteLine("TUTORIAL_VEHICLE_2=Check 'Add to Allowed Vehicles'. This tells EmsPlus you want to use this model and enables saving its settings.");
+                w.WriteLine("TUTORIAL_VEHICLE_3=Use the 'Editing Mode' list to select what you want to adjust. 'Stowed Position' is where the stretcher sits inside the ambulance.");
+                w.WriteLine("TUTORIAL_VEHICLE_4='Slide Position' is where it ends up after you unload it. Adjust the X, Y, Z, and rotation values until the ghost stretcher looks correct, then click 'Save All Settings' in the main menu.");
+                w.WriteLine("TUTORIAL_VEHICLE_5=You can also configure which doors open and set up custom interaction points for the ambulance menu. When you're done, go back on duty to get a call.");
+
+                w.WriteLine("; --- Callout & Scene Prep ---");
+                w.WriteLine("TUTORIAL_CALLOUT_ACCEPTED=You've received a callout! Respond ~r~Code 3~w~ to the scene marked on your GPS.");
+                w.WriteLine("TUTORIAL_ONSCENE_1=You've arrived on scene. Before approaching the patient, it's critical to get your equipment ready.");
+                w.WriteLine("TUTORIAL_ONSCENE_2=Go to the rear of your ambulance. To unload the stretcher, you can use the quick-key ~y~{0}~w~, or open the ambulance menu with ~y~{1}~w~.");
+                w.WriteLine("TUTORIAL_ONSCENE_3=From the ambulance menu, you can also equip your primary medical bags, like the Trauma Bag and Oxygen Bag.");
+                w.WriteLine("TUTORIAL_ONSCENE_4=With your gear equipped, you are ready. Approach the patient and press ~y~{0}~w~ to begin the inspection.");
+
+                w.WriteLine("; --- Patient Inspection ---");
+                w.WriteLine("TUTORIAL_INSPECT_1=This is the Patient Inspection Menu. Use your mouse to select different body parts to assess them.");
+                w.WriteLine("TUTORIAL_INSPECT_2=Press ~y~TAB~w~ or click the 'Diagnostics' button to see an overview of the patient's condition. If a witness is nearby, you can question them from this panel.");
+                w.WriteLine("TUTORIAL_INSPECT_3=When you find an injury, open a medical bag you placed on the ground, select the correct tool (like a bandage), then click on the injured body part to apply it.");
+
+                w.WriteLine("; --- Patient Cabin ---");
+                w.WriteLine("TUTORIAL_CABIN_1=The patient is now loaded. You can enter the patient cabin to continue treatment while transporting to the hospital.");
+                w.WriteLine("TUTORIAL_CABIN_2=Press the quick-key ~y~{0}~w~ to enter or exit the cabin. You can also use the ambulance menu. Inside, you have access to all your medical supplies.");
+                w.WriteLine("TUTORIAL_CABIN_3=A waypoint to the nearest hospital has been set. Transport the patient to complete the call. This concludes the tutorial!");
             }
         }
     }

@@ -118,6 +118,7 @@ namespace EmsPlus.UI.Custom.InspectMenu
             GameState.SuppressPrompts = true;
 
             _logicFiber = GameFiber.StartNew(ProcessLogic);
+            TutorialManager.TriggerInspectionTutorial();
             Game.FrameRender += OnRender;
         }
 

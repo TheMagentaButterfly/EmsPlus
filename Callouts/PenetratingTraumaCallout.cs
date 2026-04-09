@@ -2,6 +2,7 @@
 using EmsPlus.Managers;
 using EmsPlus.Medical;
 using Rage;
+using System.Drawing;
 
 namespace EmsPlus.Callouts
 {
@@ -9,6 +10,7 @@ namespace EmsPlus.Callouts
     {
         private Ped patient;
         private Blip blip;
+        private bool hasArrivedAtScene = false;
 
         public override bool OnBeforeCalloutDisplayed()
         {
@@ -49,9 +51,39 @@ namespace EmsPlus.Callouts
             patient.Tasks.PlayAnimation("misslamar1dead_body", "dead_idle", 8.0f, AnimationFlags.Loop);
             p.ApplyVisuals();
 
-            blip = new Blip(patient) { Sprite = (BlipSprite)280, Color = System.Drawing.Color.Red };
+            blip = new Blip(patient);
+            blip.Color = Color.Red;
+            blip.Name = "Medical Emergency";
+            blip.IsRouteEnabled = true;
+
             return true;
         }
+
+        public override void Process()
+        {
+            base.Process();
+
+            if (!hasArrivedAtScene && Game.LocalPlayer.Character.DistanceTo(patient) < 25f)
+            {
+                hasArrivedAtScene = true;
+
+                if (blip.Exists()) blip.Delete();
+
+                blip = patient.AttachBlip();
+                blip.Sprite = (BlipSprite)280;
+                blip.Color = Color.Yellow;
+                blip.Name = "Patient";
+                blip.IsRouteEnabled = false;
+            }
+
+            if (hasArrivedAtScene && blip.Exists()
+                && GameState.CurrentPatient != null
+                && GameState.CurrentPatient.IsOnStretcher)
+            {
+                blip.Delete();
+            }
+        }
+
         public override void End() { base.End(); if (blip.Exists()) blip.Delete(); if (patient.Exists()) patient.Dismiss(); }
     }
 }

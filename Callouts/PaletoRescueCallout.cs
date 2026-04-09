@@ -56,8 +56,8 @@ namespace EmsPlus.Callouts
             patient.Tasks.PlayAnimation("misschinese2_crystalmaze", "2int_loop_a_taocheng", 8.0f, AnimationFlags.Loop);
 
             blip = new Blip(patient);
-            blip.Sprite = (BlipSprite)280;
-            blip.Color = Color.Yellow;
+            blip.Color = Color.Red;
+            blip.Name = "Medical Emergency";
             blip.IsRouteEnabled = true;
 
             return true;
@@ -80,12 +80,11 @@ namespace EmsPlus.Callouts
                 blip.IsRouteEnabled = false;
             }
 
-            if (hasArrivedAtScene && blip.Exists() && GameState.CurrentPatient != null)
+            if (hasArrivedAtScene && blip.Exists()
+                && GameState.CurrentPatient != null
+                && GameState.CurrentPatient.IsOnStretcher)
             {
-                if (GameState.CurrentPatient.IsOnStretcher)
-                {
-                    blip.Delete();
-                }
+                blip.Delete();
             }
         }
 

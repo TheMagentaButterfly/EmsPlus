@@ -22,11 +22,9 @@ namespace EmsPlus.Core
                 LoadoutManager.EquipLoadout();
                 InventoryManager.RestockSupplies(false);
 
-                // 1. Put player in the COP group
                 player.RelationshipGroup = "COP";
                 NativeFunction.Natives.SET_PED_AS_COP(player, true);
 
-                // 2. FORCE ALLIANCES (Make them friendly even if attacked)
                 Game.SetRelationshipBetweenRelationshipGroups("COP", "COP", Relationship.Companion);
                 Game.SetRelationshipBetweenRelationshipGroups("COP", "FIREMAN", Relationship.Companion);
                 Game.SetRelationshipBetweenRelationshipGroups("COP", "MEDIC", Relationship.Companion);
@@ -36,7 +34,6 @@ namespace EmsPlus.Core
                 Game.SetRelationshipBetweenRelationshipGroups("MEDIC", "COP", Relationship.Companion);
                 Game.SetRelationshipBetweenRelationshipGroups("ARMY", "COP", Relationship.Companion);
 
-                // 3. DISABLE WANTED LEVEL & DISPATCH
                 NativeFunction.Natives.SET_MAX_WANTED_LEVEL(0);
                 NativeFunction.Natives.SET_DISPATCH_COPS_FOR_PLAYER(Game.LocalPlayer, false);
                 Game.LocalPlayer.WantedLevel = 0;
@@ -49,6 +46,8 @@ namespace EmsPlus.Core
                 Game.DisplayNotification(Localization.Get("NOTIF_OFF_DUTY"));
                 SetStatus(EmsStatus.OffDuty);
 
+                DialogueManager.Cleanup();
+
                 player.RelationshipGroup = "PLAYER";
                 NativeFunction.Natives.SET_PED_AS_COP(player, false);
 
@@ -60,17 +59,11 @@ namespace EmsPlus.Core
             }
         }
 
-        /// <summary>
-        /// Prevents/Allows the player from whistling for a taxi (Ped Flag 224)
-        /// </summary>
         private static void SetTaxiDisabled(bool disabled)
         {
             NativeFunction.Natives.SET_PED_CONFIG_FLAG(Game.LocalPlayer.Character, 224, disabled);
         }
 
-        /// <summary>
-        /// Sets relationships so Cops, Firefighters, and Medics treat the player as a "Companion"
-        /// </summary>
         private static void SetEmsRelationships(bool onDuty)
         {
             Ped player = Game.LocalPlayer.Character;

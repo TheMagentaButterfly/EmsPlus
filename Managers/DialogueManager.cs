@@ -72,7 +72,7 @@ namespace EmsPlus.Managers
         {
             if (!_isActive) return;
 
-            if (_currentTarget == null || !_currentTarget.Exists())
+            if (_currentTarget != null && !_currentTarget.Exists())
             {
                 EndDialogue();
                 return;
@@ -82,6 +82,15 @@ namespace EmsPlus.Managers
             {
                 ShowNextLine();
             }
+        }
+
+        public static void Cleanup()
+        {
+            Game.DisplaySubtitle("", 1);
+
+            _isActive = false;
+            _currentTarget = null;
+            _queue.Clear();
         }
     }
 }
