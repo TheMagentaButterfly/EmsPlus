@@ -183,7 +183,7 @@ namespace EmsPlus.Custom.TaskMenu
             NativeUITools.DrawNativeRect(hX - (hWidth / 2f) - 15, hY - 5, hWidth + 30, 40, Color.FromArgb(180, 15, 20, 30));
 
 
-            Elements.ForEach(el => el?.DrawGdiTexture(g));
+            Elements.ForEach(el => el?.DrawNativeTexture(g));
 
 
             Elements.ForEach(el => el?.DrawNativeOverlays());

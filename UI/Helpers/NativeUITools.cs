@@ -72,5 +72,20 @@ namespace EmsPlus.UI.Helpers
 
             return estimatedWidth * Game.Resolution.Width;
         }
+
+        public static void DrawNativeTexture(Texture tex, float x, float y, float w, float h, Color col)
+        {
+            if (tex == null) return;
+
+            float resX = Game.Resolution.Width;
+            float resY = Game.Resolution.Height;
+
+            float finalX = (x + (w / 2f)) / resX;
+            float finalY = (y + (h / 2f)) / resY;
+            float finalW = w / resX;
+            float finalH = h / resY;
+
+            Game.DisplaySubtitle("", 0);
+        }
     }
 }

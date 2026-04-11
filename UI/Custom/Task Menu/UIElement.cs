@@ -44,37 +44,31 @@ namespace EmsPlus.Custom.TaskMenu
             _dragAlpha = IsBeingDragged ? 0.7f : 1f;
         }
 
-        // 1. NATIVE LAYER (Bottom)
         public void DrawNativeShadow()
         {
             if (!Enabled) return;
             RectangleF rect = GetScaledBounds();
             if (rect.Width <= 0) return;
-            // Native Shadow
+
             NativeUITools.DrawNativeRect(rect.X + 4, rect.Y + 4, rect.Width, rect.Height, Color.FromArgb(100, 0, 0, 0));
         }
 
-        // 2. GDI LAYER (Middle) - The Texture
-        public void DrawGdiTexture(Rage.Graphics g)
+        public void DrawNativeTexture(Rage.Graphics g)
         {
             if (!Enabled) return;
             RectangleF rect = GetScaledBounds();
             if (rect.Width <= 0) return;
 
-            // Only draw if we actually have a texture
             if (_texture != null)
             {
                 g.DrawTexture(_texture, rect);
             }
             else
             {
-                // Fallback if image missing (Native)
-                int alpha = (int)(255 * _dragAlpha);
-                NativeUITools.DrawNativeRect(rect.X, rect.Y, rect.Width, rect.Height, Color.FromArgb(alpha, 45, 50, 60));
+                NativeUITools.DrawNativeRect(rect.X, rect.Y, rect.Width, rect.Height, Color.FromArgb(150, 45, 50, 60));
             }
         }
 
-        // 3. NATIVE LAYER (Top) - Borders & Tints
         public void DrawNativeOverlays()
         {
             if (!Enabled) return;
@@ -83,13 +77,11 @@ namespace EmsPlus.Custom.TaskMenu
 
             int alpha = (int)(255 * _dragAlpha);
 
-            // Tint Overlay (If texture exists but needs tint)
             if (_texture != null && TintColor != Color.White)
             {
                 NativeUITools.DrawNativeRect(rect.X, rect.Y, rect.Width, rect.Height, Color.FromArgb(alpha / 2, TintColor));
             }
 
-            // Borders
             if (IsHovered || IsDropZone)
             {
                 Color c = IsDropZone ? Color.FromArgb(alpha, 0, 180, 255) : Color.FromArgb(alpha, 255, 255, 255);

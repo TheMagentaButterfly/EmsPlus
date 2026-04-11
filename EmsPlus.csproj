@@ -119,7 +119,6 @@
     <Compile Include="UI\Helpers\InspectionState.cs" />
     <Compile Include="UI\Custom\Inspect Menu\InspectionAction.cs" />
     <Compile Include="UI\Custom\Inspect Menu\Menus\KitMenu.cs" />
-    <Compile Include="UI\Helpers\UITheme.cs" />
     <Compile Include="UI\Custom\Inspect Menu\Menus\MainMenu.cs" />
     <Compile Include="UI\Custom\Inspect Menu\Menus\TreatmentMenu.cs" />
     <Compile Include="Core\Assets.cs" />
