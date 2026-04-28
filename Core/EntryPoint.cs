@@ -232,7 +232,7 @@ namespace EmsPlus
         {
             while (true)
             {
-                GameFiber.Sleep(1000); // 1 second update tick is sufficient
+                GameFiber.Sleep(1000);
                 if (GameState.CurrentPatient?.Character.Exists() ?? false)
                 {
                     GameState.CurrentPatient.Update();
@@ -244,7 +244,7 @@ namespace EmsPlus
         {
             if (GameState.IsPlayerBusy || MenuCore.IsAnyMenuOpen || GameState.SuppressPrompts) return;
 
-            StretcherManager.DrawPrompt(e.Graphics);
+            //StretcherManager.DrawPrompt(e.Graphics);
         }
     }
 }

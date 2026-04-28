@@ -66,6 +66,63 @@ namespace EmsPlus.Managers
                     AmbulanceManager.DrawInteractionMarkers();
                 }
 
+                // =======================================================
+                // TOP-LEFT PROMPT LOGIC
+                // =======================================================
+                bool promptShown = false;
+
+                // 1. Patient Prompt
+                if (GameState.CurrentPatient != null && GameState.CurrentPatient.Character.Exists())
+                {
+                    float dist = Game.LocalPlayer.Character.DistanceTo(GameState.CurrentPatient.Character);
+                    if (dist < PatientInteractDistance)
+                    {
+                        string keyName = EntryPoint.KeyConfig.InteractionKey.Value.ToString();
+                        Game.DisplayHelp(string.Format(Localization.Get("HELP_INSPECT_PATIENT"), keyName));
+                        promptShown = true;
+                    }
+                }
+
+                // 2. Stretcher Prompt
+                if (!promptShown && StretcherManager.Prop != null && StretcherManager.Prop.Exists() && !StretcherManager.IsAttachedToVehicle)
+                {
+                    StretcherManager.Prop.Model.GetDimensions(out Vector3 min, out Vector3 max);
+                    float radius = Math.Max(max.X, max.Y) + 1.2f;
+
+                    if (Game.LocalPlayer.Character.DistanceTo(StretcherManager.Prop) < radius)
+                    {
+                        string grabKey = EntryPoint.KeyConfig.StretcherGrabKey.Value.ToString();
+                        string grabAction = StretcherManager.IsAttachedToPlayer ? "Release" : "Grab";
+                        string fullPrompt = string.Format(Localization.Get("HELP_STRETCHER_CONTROL_GRAB"), grabKey, grabAction);
+
+                        string heightKey = EntryPoint.KeyConfig.StretcherHeightKey.Value.ToString();
+                        string heightAction = (StretcherManager.CurrentState == StretcherManager.StretcherState.Low)
+                            ? Localization.Get("ACTION_RAISE")
+                            : Localization.Get("ACTION_LOWER");
+                        fullPrompt += "\n" + string.Format(Localization.Get("HELP_STRETCHER_CONTROL_HEIGHT"), heightKey, heightAction);
+
+                        if (StretcherManager.CurrentState != StretcherManager.StretcherState.Low)
+                        {
+                            string sitKey = EntryPoint.KeyConfig.StretcherSitKey.Value.ToString();
+                            string sitAction = (StretcherManager.CurrentState == StretcherManager.StretcherState.Sitting)
+                                ? Localization.Get("ACTION_LAY")
+                                : Localization.Get("ACTION_SIT");
+                            fullPrompt += "\n" + string.Format(Localization.Get("HELP_STRETCHER_CONTROL_SIT"), sitKey, sitAction);
+                        }
+
+                        Game.DisplayHelp(fullPrompt);
+                        promptShown = true;
+                    }
+                }
+
+                // 3. Ambulance Prompt
+                if (!promptShown && AmbulanceManager.IsPlayerNearInteractionPoint())
+                {
+                    string keyName = EntryPoint.KeyConfig.OpenAmbulanceMenuKey.Value.ToString();
+                    Game.DisplayHelp(string.Format(Localization.Get("HELP_OPEN_AMBULANCE_MENU"), keyName));
+                    promptShown = true;
+                }
+
                 if (EmsService.IsOnDuty)
                 {
                     if (GameState.CurrentPatient == null)

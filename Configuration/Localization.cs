@@ -318,10 +318,20 @@ namespace EmsPlus
                 w.WriteLine("SUBTITLE_TRANSPORT_PATIENT=~y~Transport patient to the nearest hospital.");
                 w.WriteLine("NOTIF_HOSPITAL_WAYPOINT_SET=~b~Dispatch:~w~ Route to nearest hospital set.");
                 w.WriteLine("NOTIF_PATIENT_HANDED_OVER=~g~Transport Complete:~w~ Patient handed over to hospital staff.");
-                w.WriteLine("NOTIF_VEHICLE_DETECTED=~g~Vehicle Detected: {0}");
+                w.WriteLine("NOTIF_VEHICLE_DETECTED=~g~Vehicle Detected: ~y~{0}");
                 w.WriteLine("NOTIF_NO_AMBULANCE_NEARBY=~r~No Valid Vehicle Nearby");
-                w.WriteLine("HELP_HANDOVER_PATIENT=Press ~INPUT_CONTEXT~ to handover patient.");
                 w.WriteLine("NOTIF_MEDICALBAGS_RESTOCKED=~b~Dispatch:~w~ Medical bags ~g~restocked~w~.");
+                w.WriteLine("HELP_HANDOVER_PATIENT=Press ~INPUT_CONTEXT~ to handover patient.");
+                w.WriteLine("HELP_INSPECT_PATIENT=Press ~y~{0}~w~ to inspect the patient.");
+                w.WriteLine("HELP_TOGGLE_DUTY=Press ~INPUT_CONTEXT~ to go {0}.");
+                w.WriteLine("HELP_OPEN_AMBULANCE_MENU=Press ~y~{0}~w~ to open the ambulance menu.");
+                w.WriteLine("HELP_STRETCHER_CONTROL_GRAB=~y~{0}~w~: {1} Stretcher");
+                w.WriteLine("HELP_STRETCHER_CONTROL_HEIGHT=~y~{0}~w~: {1}");
+                w.WriteLine("HELP_STRETCHER_CONTROL_SIT=~y~{0}~w~: {1}");
+                w.WriteLine("ACTION_RAISE=Raise");
+                w.WriteLine("ACTION_LOWER=Lower");
+                w.WriteLine("ACTION_SIT=Sit Patient Up");
+                w.WriteLine("ACTION_LAY=Lay Patient Down");
                 w.WriteLine("");
 
                 w.WriteLine("[Patient States]");
@@ -340,7 +350,6 @@ namespace EmsPlus
                 w.WriteLine("[Ambulance Menu]");
                 w.WriteLine("MENU_AMBULANCE_TITLE=Ambulance");
                 w.WriteLine("MENU_AMBULANCE_SUBTITLE=~b~Interaction");
-                w.WriteLine("HELP_OPEN_AMBULANCE_MENU=Press {0} to open the ambulance menu.");
                 w.WriteLine("ITEM_TOGGLE_DOORS=Toggle Rear Doors");
                 w.WriteLine("ITEM_OPEN_REAR_DOORS=Open Rear Doors");
                 w.WriteLine("ITEM_CLOSE_REAR_DOORS=Close Rear Doors");
@@ -540,7 +549,6 @@ namespace EmsPlus
                 w.WriteLine("BLIP_STATION_NAME=Fire/EMS Station");
                 w.WriteLine("TEXT_ON_DUTY=~g~On Duty");
                 w.WriteLine("TEXT_OFF_DUTY=~r~Off Duty");
-                w.WriteLine("HELP_TOGGLE_DUTY=Press ~INPUT_CONTEXT~ to go {0}.");
                 w.WriteLine("");
 
                 w.WriteLine("[Interactive Tasks]");
