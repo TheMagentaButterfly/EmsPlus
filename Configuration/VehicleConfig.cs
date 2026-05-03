@@ -53,6 +53,8 @@ namespace EmsPlus.Configuration
         {
             if (!File.Exists(FilePath))
             {
+                ApplySaneDefaults();
+                Save();
                 return;
             }
 
@@ -162,6 +164,24 @@ namespace EmsPlus.Configuration
                     point.Offset.X, point.Offset.Y, point.Offset.Z, point.Scale);
                 ini.Write("InteractionPoints", $"Point_{i}", pointStr);
             }
+        }
+
+        private void ApplySaneDefaults()
+        {
+            if (ModelName == "ambulance")
+            {
+                StowPos = new Vector3(0f, -2.25f, 0.45f);
+                StowRot = new Rotator(0f, 0f, 0f);
+                SlidePos = new Vector3(0f, -4.5f, 0.45f);
+                SlideRot = new Rotator(0f, 0f, 0f);
+                MedicPos = new Vector3(0.5f, -0.2f, 0.45f);
+                MedicRot = new Rotator(0f, 0f, 90f);
+            }
+            
+            DoorIndices = new List<int>() { 2, 3 };
+            InteractionPoints = new List<AmbulanceInteractionPoint>() { new AmbulanceInteractionPoint(new Vector3(0f, -3.5f, 0f), 1.0f) };
+            CanHaveStretcher = true;
+            CanEnterCabin = true;
         }
 
         private float ReadFloat(InitializationFile ini, string section, string key, float defaultVal)

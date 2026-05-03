@@ -95,6 +95,13 @@ namespace EmsPlus
             LoadoutConfig = new LoadoutConfig(); LoadoutConfig.Load();
             AnimationConfig = new AnimationConfig(); AnimationConfig.Load();
             EmsPlusConfig = new EmsPlusConfig(); EmsPlusConfig.Load();
+
+            foreach (string modelName in EmsPlusConfig.ValidAmbulanceModels)
+            {
+                var vehCfg = new VehicleConfig(modelName);
+                vehCfg.Load();
+            }
+
             HospitalsConfig = new HospitalsConfig(); HospitalsConfig.Load();
             StationsConfig = new StationsConfig(); StationsConfig.Load();
             MedicationConfig = new MedicationConfig(); MedicationConfig.Load();

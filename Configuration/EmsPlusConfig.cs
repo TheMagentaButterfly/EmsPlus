@@ -105,7 +105,7 @@ namespace EmsPlus.Configuration
                     writer.WriteLine("");
                     writer.WriteLine("; Define which vehicles allow stretcher/gear interaction (Comma separated).");
                     writer.WriteLine("; You can add/remove vehicles here manually or via the in-game menu.");
-                    writer.WriteLine($"AllowedVehicles={AllowedVehicles.Value}");
+                    writer.WriteLine($"AllowedVehicles=ambulance,{AllowedVehicles.Value}");
                     writer.WriteLine("");
                     writer.WriteLine("; If true, uses the custom interaction points defined in Vehicle configs.");
                     writer.WriteLine("; If false, uses the default 'Near Rear Doors' logic for all vehicles.");

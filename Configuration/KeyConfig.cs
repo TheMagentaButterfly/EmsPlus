@@ -36,11 +36,6 @@ namespace EmsPlus.Configuration
             LoadINI(IniFilePath);
         }
 
-        public void Save()
-        {
-            SaveINI(IniFilePath);
-        }
-
         private void CreateDefaultFile()
         {
             try
