@@ -1,5 +1,6 @@
-﻿using Rage;
-using EmsPlus.Managers;
+﻿using EmsPlus.Managers;
+using Rage;
+using Rage.Native;
 using RAGENativeUI;
 using RAGENativeUI.Elements;
 using System;
@@ -16,6 +17,7 @@ namespace EmsPlus.UI.Native.ConfigMenu
             var btnReloadVeh = new UIMenuItem($"{C_HIGHLIGHT}{Localization.Get("ITEM_RELOAD_VEHICLE")}", Localization.Get("ITEM_RELOAD_VEHICLE_DESC"));
             var chkAllowed = new UIMenuCheckboxItem($"{BULLET} {Localization.Get("ITEM_ADD_TO_ALLOWED") ?? "Add to Allowed Vehicles"}", false, Localization.Get("ITEM_ADD_TO_ALLOWED_DESC") ?? "Enable interaction menu for this model.");
             var chkCanHaveStretcher = new UIMenuCheckboxItem($"{BULLET} {Localization.Get("ITEM_CAN_HAVE_STRETCHER") ?? "Can Have Stretcher"}", true, Localization.Get("ITEM_CAN_HAVE_STRETCHER_DESC") ?? "If disabled, acts as rapid response unit.");
+            var chkHideStretcher = new UIMenuCheckboxItem($"{BULLET} {Localization.Get("ITEM_HIDE_STRETCHER") ?? "Hide Stretcher in Vehicle"}", false, Localization.Get("ITEM_HIDE_STRETCHER_DESC") ?? "Hides the stretcher when inside.");
             var chkCanEnterCabin = new UIMenuCheckboxItem($"{BULLET} {Localization.Get("ITEM_CAN_ENTER_CABIN") ?? "Has Patient Cabin"}", true, Localization.Get("ITEM_CAN_ENTER_CABIN_DESC") ?? "If disabled, you cannot enter the rear of the ambulance.");
 
             var interactionPointsMenu = new UIMenu($"{C_HEADER}{Localization.Get("MENU_INTERACTION_POINTS_TITLE")}", Localization.Get("MENU_INTERACTION_POINTS_SUBTITLE"));
@@ -32,6 +34,7 @@ namespace EmsPlus.UI.Native.ConfigMenu
             VehiclePosMenu.AddItem(btnReloadVeh);
             VehiclePosMenu.AddItem(chkAllowed);
             VehiclePosMenu.AddItem(chkCanHaveStretcher);
+            VehiclePosMenu.AddItem(chkHideStretcher);
             VehiclePosMenu.AddItem(chkCanEnterCabin);
             VehiclePosMenu.AddItem(btnInteractionPoints);
             VehiclePosMenu.BindMenuToItem(interactionPointsMenu, btnInteractionPoints);
@@ -78,6 +81,7 @@ namespace EmsPlus.UI.Native.ConfigMenu
 
                 chkAllowed.Checked = EntryPoint.EmsPlusConfig.IsAllowed(AmbulanceManager.CurrentConfig.ModelName);
                 chkCanHaveStretcher.Checked = AmbulanceManager.CurrentConfig.CanHaveStretcher;
+                chkHideStretcher.Checked = AmbulanceManager.CurrentConfig.HideStretcherInVehicle;
                 chkCanEnterCabin.Checked = AmbulanceManager.CurrentConfig.CanEnterCabin;
 
                 Vector3 p = getPos();
@@ -159,6 +163,24 @@ namespace EmsPlus.UI.Native.ConfigMenu
 
                 if (AmbulanceManager.CurrentVehicle != null && AmbulanceManager.CurrentVehicle.Exists())
                     StretcherGhostManager.UpdateVehicleGhost(AmbulanceManager.CurrentVehicle, AmbulanceManager.CurrentConfig, _editingVehicleMode);
+            };
+
+            chkHideStretcher.CheckboxEvent += (s, c) =>
+            {
+                if (AmbulanceManager.CurrentConfig == null) return;
+                AmbulanceManager.CurrentConfig.HideStretcherInVehicle = c;
+
+                if (AmbulanceManager.IsStretcherLoaded && StretcherManager.Prop != null && StretcherManager.Prop.Exists())
+                {
+                    if (c)
+                    {
+                        NativeFunction.Natives.SET_ENTITY_ALPHA(StretcherManager.Prop, 255, false);
+                    }
+                    else
+                    {
+                        NativeFunction.Natives.RESET_ENTITY_ALPHA(StretcherManager.Prop);
+                    }
+                }
             };
 
             chkCanEnterCabin.CheckboxEvent += (s, c) =>

@@ -469,6 +469,8 @@ namespace EmsPlus
                 w.WriteLine("NOTIF_CONFIG_NOT_SAVED=Not an allowed vehicle. Add it to allowed list first.");
                 w.WriteLine("NOTIF_VEHICLE_ADDED=Added {0} to allowed vehicles.");
                 w.WriteLine("NOTIF_VEHICLE_REMOVED=Removed {0} from allowed vehicles.");
+                w.WriteLine("ITEM_HIDE_STRETCHER=Hide Stretcher in Vehicle");
+                w.WriteLine("ITEM_HIDE_STRETCHER_DESC=Hides the dynamic stretcher when loaded, useful for ambulances that already have a static stretcher in the back.");
                 w.WriteLine("");
 
                 w.WriteLine("[Patient Menu]");

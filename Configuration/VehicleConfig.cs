@@ -12,6 +12,7 @@ namespace EmsPlus.Configuration
         private string FilePath;
 
         public bool CanHaveStretcher { get; set; } = true;
+        public bool HideStretcherInVehicle { get; set; } = false;
         public bool CanEnterCabin { get; set; } = true;
 
         public Vector3 StowPos { get; set; } = new Vector3(0f, -1.5f, 0.5f);
@@ -91,6 +92,7 @@ namespace EmsPlus.Configuration
             MedicRot = new Rotator(mRx, mRy, mRz);
 
             CanHaveStretcher = ini.ReadBoolean("Settings", "CanHaveStretcher", true);
+            HideStretcherInVehicle = ini.ReadBoolean("Settings", "HideStretcherInVehicle", false);
             CanEnterCabin = ini.ReadBoolean("Settings", "CanEnterCabin", true);
             string doorString = ini.ReadString("Settings", "DoorIds", "2,3");
             DoorIndices.Clear();
@@ -130,6 +132,7 @@ namespace EmsPlus.Configuration
             InitializationFile ini = new InitializationFile(FilePath);
 
             ini.Write("Settings", "CanHaveStretcher", CanHaveStretcher);
+            ini.Write("Settings", "HideStretcherInVehicle", HideStretcherInVehicle);
             ini.Write("Settings", "CanEnterCabin", CanEnterCabin);
             string doorString = string.Join(",", DoorIndices);
             ini.Write("Settings", "DoorIds", doorString);
@@ -181,6 +184,7 @@ namespace EmsPlus.Configuration
             DoorIndices = new List<int>() { 2, 3 };
             InteractionPoints = new List<AmbulanceInteractionPoint>() { new AmbulanceInteractionPoint(new Vector3(0f, -3.5f, 0f), 1.0f) };
             CanHaveStretcher = true;
+            HideStretcherInVehicle = false;
             CanEnterCabin = true;
         }
 

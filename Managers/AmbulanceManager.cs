@@ -409,6 +409,11 @@ namespace EmsPlus.Managers
                         if (CurrentVehicle.Exists() && StretcherManager.Prop.Exists())
                         {
                             StretcherManager.Prop.AttachTo(CurrentVehicle, 0, CurrentConfig.StowPos, CurrentConfig.StowRot);
+
+                            if (CurrentConfig.HideStretcherInVehicle)
+                            {
+                                NativeFunction.Natives.SET_ENTITY_ALPHA(StretcherManager.Prop, 0, false);
+                            }
                         }
                     }
                     catch (Exception ex)
@@ -461,6 +466,12 @@ namespace EmsPlus.Managers
                         StretcherManager.Prop.AttachTo(CurrentVehicle, 0, currentPos, CurrentConfig.StowRot);
                     GameFiber.Sleep(15);
                 }
+
+                if (CurrentConfig.HideStretcherInVehicle && StretcherManager.Prop != null && StretcherManager.Prop.Exists())
+                {
+                    NativeFunction.Natives.SET_ENTITY_ALPHA(StretcherManager.Prop, 0, false);
+                }
+
                 player.Tasks.Clear();
                 if (!VehiclesWithStretcher.Contains(CurrentVehicle.Handle)) VehiclesWithStretcher.Add(CurrentVehicle.Handle);
                 OnStateUpdate?.Invoke();
@@ -477,6 +488,13 @@ namespace EmsPlus.Managers
             GameFiber.StartNew(delegate
             {
                 Ped player = Game.LocalPlayer.Character;
+
+                if (StretcherManager.Prop != null && StretcherManager.Prop.Exists())
+                {
+                    NativeFunction.Natives.RESET_ENTITY_ALPHA(StretcherManager.Prop);
+                    StretcherManager.Prop.IsVisible = true;
+                }
+
                 int steps = 30;
                 for (int i = 0; i <= steps; i++)
                 {
