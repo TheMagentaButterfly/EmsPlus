@@ -46,6 +46,7 @@ namespace EmsPlus
         public bool IsLimbSplinted { get; set; } = false;
         public bool IsCardiacArrest { get; internal set; }
         public bool IsDead { get; private set; }
+        public string Mood { get; set; } = "Neutral";
 
         public Patient(Ped ped)
         {

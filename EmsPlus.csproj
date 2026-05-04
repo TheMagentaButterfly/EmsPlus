@@ -85,6 +85,7 @@
     <Compile Include="Configuration\InteriorConfig.cs" />
     <Compile Include="Configuration\Localization.cs" />
     <Compile Include="Configuration\MedicationConfig.cs" />
+    <Compile Include="Configuration\QuestionConfig.cs" />
     <Compile Include="Configuration\StationsConfig.cs" />
     <Compile Include="Configuration\HospitalsConfig.cs" />
     <Compile Include="Configuration\KeyConfig.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Configuration\PropConfig.cs" />
     <Compile Include="Configuration\VehicleConfig.cs" />
     <Compile Include="Core\EmsPlusAPI.cs" />
+    <Compile Include="Managers\Actions\QuestioningActions.cs" />
     <Compile Include="Managers\AddonManager.cs" />
     <Compile Include="Managers\AudioManager.cs" />
     <Compile Include="Managers\DialogueManager.cs" />
@@ -108,7 +110,8 @@
     <Compile Include="Callouts\FallFromHeightCallout.cs" />
     <Compile Include="Medical\InjuryFactory.cs" />
     <Compile Include="Callouts\PenetratingTraumaCallout.cs" />
-    <Compile Include="Medical\PatientData.cs" />
+    <Compile Include="Medical\MedicalModels.cs" />
+    <Compile Include="UI\Custom\Inspect Menu\Menus\QuestionMenu.cs" />
     <Compile Include="UI\Helpers\NativeUITools.cs" />
     <Compile Include="UI\Custom\Inspect Menu\BodyPartManager.cs" />
     <Compile Include="UI\Custom\Inspect Menu\DiagnosticManager.cs" />

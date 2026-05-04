@@ -74,6 +74,22 @@ namespace EmsPlus.UI.Custom.InspectMenu
                 newItems.Add(new DiagnosticItem(Localization.Get("DIAG_BGL"), bglText, bglOk));
             }
             Items = newItems;
+
+            // ==========================================
+            // PATIENT QUESTIONING (NEW)
+            // ==========================================
+            string conscLoc = Localization.Get($"CONSC_{p.Consciousness.ToString().ToUpperInvariant()}") ?? p.Consciousness.ToString();
+            bool canQuestion = p.Consciousness != ConsciousnessLevel.Unresponsive;
+
+            newItems.Add(new DiagnosticItem(
+                Localization.Get("DIAG_CONSCIOUSNESS") ?? "Consciousness",
+                conscLoc,
+                p.Consciousness == ConsciousnessLevel.Alert || p.Consciousness == ConsciousnessLevel.Verbal,
+                canQuestion ? (Localization.Get("ACT_QUESTION_PATIENT") ?? "Question Patient") : null,
+                canQuestion ? (Action)(() => {
+                    BodyInspectionManager.OpenCategoryForHead("QUESTIONS");
+                }) : null
+            ));
         }
 
         private string GetLocalizedTreatmentName(EmsTreatment treatment)

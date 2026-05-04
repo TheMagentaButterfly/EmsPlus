@@ -207,6 +207,8 @@ namespace EmsPlus
                 w.WriteLine("DIAG_STATUS_UNKNOWN=UNKNOWN STATUS");
                 w.WriteLine("DIAG_STATUS_CLEAR=CLEAR");
                 w.WriteLine("DIAG_STATUS_EQUIPMENT=MEDICAL EQUIPMENT");
+                w.WriteLine("MENU_QUESTIONS_TITLE=QUESTIONS");
+                w.WriteLine("DIAG_STATUS_INTERVIEW=PATIENT INTERVIEW");
                 w.WriteLine("");
 
                 w.WriteLine("[Actions]");
@@ -228,6 +230,7 @@ namespace EmsPlus
                 w.WriteLine("ACT_REMOVE_BP=Remove BP Cuff");
                 w.WriteLine("ACT_HANG_FLUIDS=Hang IV Fluids");
                 w.WriteLine("ACT_STOP_FLUIDS=STOP FLUIDS");
+                w.WriteLine("ACT_QUESTION_PATIENT=Question Patient");
                 w.WriteLine("");
 
                 w.WriteLine("[Treatments]");

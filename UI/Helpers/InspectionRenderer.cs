@@ -172,13 +172,32 @@ namespace EmsPlus.UI.Helpers
             NativeUITools.DrawNativeRect(x, y, 3, totalH, Color.FromArgb(255, 0, 255, 150));
             NativeUITools.DrawNativeRect(x, y, w, 50, Color.FromArgb(MathHelper.Clamp(pa / 2, 0, 255), 0, 120, 200));
 
-            NativeUITools.DrawNativeText(part.Name.ToUpper(), x + 15, y + 10, 0.5f, Color.FromArgb(pta, 255, 255, 255));
+            // ==========================================
+            // CUSTOM PANEL TITLE
+            // ==========================================
+            string panelTitle = part.Name.ToUpper();
+            string cat = BodyInspectionManager.CurrentMenuCategory;
 
+            if (cat != null && cat.StartsWith("QUESTIONS"))
+            {
+                panelTitle = Localization.Get("MENU_QUESTIONS_TITLE") ?? "QUESTIONS";
+            }
+
+            NativeUITools.DrawNativeText(panelTitle, x + 15, y + 10, 0.5f, Color.FromArgb(pta, 255, 255, 255));
+
+            // ==========================================
+            // CUSTOM PANEL STATUS
+            // ==========================================
             string statusText;
             Color statusColor;
-
             var p = GameState.CurrentPatient;
-            if (part.LinkedEntity != null)
+
+            if (cat != null && cat.StartsWith("QUESTIONS"))
+            {
+                statusText = Localization.Get("DIAG_STATUS_INTERVIEW") ?? "PATIENT INTERVIEW";
+                statusColor = Color.FromArgb(255, 0, 180, 255);
+            }
+            else if (part.LinkedEntity != null)
             {
                 statusText = Localization.Get("DIAG_STATUS_EQUIPMENT") ?? "MEDICAL EQUIPMENT";
                 statusColor = Color.FromArgb(255, 0, 180, 255);
@@ -203,7 +222,7 @@ namespace EmsPlus.UI.Helpers
                 }
                 else if (injuries != null && injuries.Any() && injuries.All(i => i.IsTreated))
                 {
-                    statusText = Localization.Get("DIAG_STATUS_TREATED");
+                    statusText = Localization.Get("DIAG_STATUS_TREATED") ?? "TREATED";
                     statusColor = Color.FromArgb(255, 255, 180, 0);
                 }
                 else
@@ -217,6 +236,9 @@ namespace EmsPlus.UI.Helpers
             NativeUITools.DrawNativeText(statusText, x + 30, y + 65, 0.4f, statusColor);
             NativeUITools.DrawNativeText(Localization.Get("AVAILABLE ACTION") ?? "AVAILABLE ACTIONS", x + 15, y + 100, 0.3f, Color.FromArgb(MathHelper.Clamp(pta - 80, 0, 255), 200, 200, 200));
 
+            // ==========================================
+            // ACTION BUTTONS
+            // ==========================================
             input.PanelActionButtons.Clear();
             float startY = y + 130f;
 
@@ -227,7 +249,6 @@ namespace EmsPlus.UI.Helpers
             for (int i = startIndex; i < endIndex; i++)
             {
                 var action = actions[i];
-
                 int visualIndex = i - startIndex;
 
                 RectangleF btnRect = new RectangleF(x + 15, startY, w - 40, 45);
@@ -245,6 +266,7 @@ namespace EmsPlus.UI.Helpers
                 startY += actionHeight;
             }
 
+            // Scrollbar
             if (count > MAX_VISIBLE_ACTIONS)
             {
                 float scrollBarX = x + w - 15f;

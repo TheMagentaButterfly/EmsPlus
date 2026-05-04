@@ -169,42 +169,80 @@ namespace EmsPlus.UI.Custom.InspectMenu
 
             if (part.LinkedEntity != null)
             {
-                KitMenu.Build(part, p);
+                Menus.KitMenu.Build(part, p);
                 return;
             }
 
+            // ==========================================
+            // SMART BACK BUTTON
+            // ==========================================
             if (CurrentMenuCategory != "MAIN" && !CurrentMenuCategory.StartsWith("KIT_"))
             {
+                string targetCategory = CurrentMenuCategory.StartsWith("QUESTIONS_") ? "QUESTIONS" : "MAIN";
+
                 CurrentPanelActions.Add(new InspectionAction(
-                    Localization.Get("BTN_BACK"), Localization.Get("BTN_BACK_DESC"), Color.FromArgb(255, 80, 80, 80), true,
-                    () => { CurrentMenuCategory = "MAIN"; RefreshActions(); }
+                    Localization.Get("BTN_BACK") ?? "◄ BACK",
+                    Localization.Get("BTN_BACK_DESC") ?? "Return",
+                    System.Drawing.Color.FromArgb(255, 80, 80, 80),
+                    true,
+                    () => {
+                        CurrentMenuCategory = targetCategory;
+                        RefreshActions();
+                    }
                 ));
             }
 
+            // ==========================================
+            // MENU ROUTING
+            // ==========================================
             switch (CurrentMenuCategory)
             {
                 case "MAIN":
-                    MainMenu.Build(part, p);
+                    Menus.MainMenu.Build(part, p);
                     break;
                 case "AIRWAY":
-                    TreatmentMenu.BuildAirway(part, p);
+                    Menus.TreatmentMenu.BuildAirway(part, p);
                     break;
                 case "ORAL":
-                    TreatmentMenu.BuildOral(part, p);
+                    Menus.TreatmentMenu.BuildOral(part, p);
                     break;
                 case "IV":
-                    TreatmentMenu.BuildIV(part, p);
+                    Menus.TreatmentMenu.BuildIV(part, p);
                     break;
                 case "IM":
-                    TreatmentMenu.BuildIM(part, p);
+                    Menus.TreatmentMenu.BuildIM(part, p);
                     break;
                 case "TREATMENTS":
-                    TreatmentMenu.BuildTreatments(part, p);
+                    Menus.TreatmentMenu.BuildTreatments(part, p);
                     break;
                 case "KIT_DIAGNOSTICS":
-                    KitMenu.BuildDiagnostics(part, p);
+                    Menus.KitMenu.BuildDiagnostics(part, p);
+                    break;
+                case "QUESTIONS":
+                    Menus.QuestionMenu.BuildGroups();
+                    break;
+                default:
+                    if (CurrentMenuCategory.StartsWith("QUESTIONS_"))
+                    {
+                        string groupName = CurrentMenuCategory.Replace("QUESTIONS_", "");
+                        Menus.QuestionMenu.BuildQuestions(groupName);
+                    }
                     break;
             }
+        }
+
+        public static void OpenCategoryForHead(string category)
+        {
+            if (_bodyParts == null || GameState.CurrentPatient == null) return;
+
+            var headPart = _bodyParts.Parts.FirstOrDefault(p => p.BoneId == PedBoneId.Head);
+            if (headPart != null)
+            {
+                _bodyParts.SelectPart(headPart);
+            }
+
+            CurrentMenuCategory = category;
+            RefreshActions();
         }
 
         private static void UpdateCameraPosition()
