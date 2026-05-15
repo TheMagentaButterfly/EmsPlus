@@ -112,6 +112,7 @@
     <Compile Include="Callouts\PenetratingTraumaCallout.cs" />
     <Compile Include="Medical\MedicalModels.cs" />
     <Compile Include="UI\Custom\Inspect Menu\Menus\QuestionMenu.cs" />
+    <Compile Include="UI\Custom\Inspect Menu\PatientDataManager.cs" />
     <Compile Include="UI\Helpers\NativeUITools.cs" />
     <Compile Include="UI\Custom\Inspect Menu\BodyPartManager.cs" />
     <Compile Include="UI\Custom\Inspect Menu\DiagnosticManager.cs" />

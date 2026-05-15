@@ -34,6 +34,46 @@ namespace EmsPlus.Medical
         }
     }
 
+    public class PatientDetails
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public int Age { get; set; }
+        public string DateOfBirth { get; set; }
+        public int Height { get; set; } // cm
+        public int Weight { get; set; } // kg
+        public string Gender { get; set; }
+        public string BloodType { get; set; }
+        public string PrimaryAllergy { get; set; }
+
+        public string FullName => $"{FirstName} {LastName}";
+
+        public void GenerateRandom(bool isMale)
+        {
+            var maleNames = new[] { "James", "John", "Robert", "Michael", "William", "David", "Richard", "Joseph", "Thomas", "Charles" };
+            var femaleNames = new[] { "Mary", "Patricia", "Jennifer", "Linda", "Elizabeth", "Barbara", "Susan", "Jessica", "Sarah", "Karen" };
+            var lastNames = new[] { "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez" };
+            var bloodTypes = new[] { "O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-" };
+            var allergies = new[] { "Penicillin", "Latex", "Peanuts", "Aspirin", "Shellfish", "Sulfa drugs", "Ibuprofen" };
+
+            var rnd = new System.Random();
+            FirstName = isMale ? maleNames[rnd.Next(maleNames.Length)] : femaleNames[rnd.Next(femaleNames.Length)];
+            LastName = lastNames[rnd.Next(lastNames.Length)];
+            Gender = isMale ? "Male" : "Female";
+
+            Age = rnd.Next(18, 85);
+            int birthYear = 2026 - Age;
+            int birthMonth = rnd.Next(1, 13);
+            int birthDay = rnd.Next(1, 29);
+            DateOfBirth = $"{birthMonth:D2}/{birthDay:D2}/{birthYear}";
+
+            Height = rnd.Next(155, 195);
+            Weight = rnd.Next(55, 110);
+            BloodType = bloodTypes[rnd.Next(bloodTypes.Length)];
+            PrimaryAllergy = allergies[rnd.Next(allergies.Length)];
+        }
+    }
+
     public class Bystander
     {
         public Ped Character { get; }

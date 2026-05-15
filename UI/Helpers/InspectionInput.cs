@@ -14,6 +14,7 @@ namespace EmsPlus.UI.Helpers
 
         public RectangleF ExitButton { get; set; }
         public RectangleF DiagnosticsButton { get; set; }
+        public RectangleF DataButton { get; set; }
         public RectangleF PanelBounds { get; set; }
 
         public List<RectangleF> PanelActionButtons { get; } = new List<RectangleF>();
@@ -23,7 +24,7 @@ namespace EmsPlus.UI.Helpers
         public void Update() => MousePosition = Cursor.Position;
 
         public bool ShouldExit() => Game.IsKeyDown(Keys.Escape);
-        public bool ShouldToggleDiagnostics() => NativeFunction.Natives.IS_DISABLED_CONTROL_JUST_PRESSED<bool>(0, 37); // Tab
+        public bool ShouldCyclePanels() => NativeFunction.Natives.IS_DISABLED_CONTROL_JUST_PRESSED<bool>(0, 37); // Tab
 
         public bool IsClicking()
         {
@@ -35,6 +36,7 @@ namespace EmsPlus.UI.Helpers
 
         public bool ClickedExit() => IsHovering(ExitButton);
         public bool ClickedDiagnostics() => IsHovering(DiagnosticsButton);
+        public bool ClickedData() => IsHovering(DataButton);
 
         public int GetClickedPanelAction() => PanelActionButtons.FindIndex(IsHovering);
         public int GetClickedDiagnosticAction() => DiagnosticActionButtons.FindIndex(IsHovering);

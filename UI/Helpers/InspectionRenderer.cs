@@ -13,7 +13,7 @@ namespace EmsPlus.UI.Helpers
     {
         private InspectionInput _input;
 
-        public void Render(Rage.Graphics g, InspectionState state, BodyPartManager bodyParts, DiagnosticManager diagnostics, InspectionInput input, List<InspectionAction> panelActions)
+        public void Render(Rage.Graphics g, InspectionState state, BodyPartManager bodyParts, DiagnosticManager diagnostics, PatientDataManager patientData, InspectionInput input, List<InspectionAction> panelActions)
         {
             _input = input;
 
@@ -28,6 +28,8 @@ namespace EmsPlus.UI.Helpers
 
             if (state.DiagnosticSlide > 0.01f)
                 DrawDiagnosticPanel(state, diagnostics);
+
+            if (state.DataSlide > 0.01f) DrawDataPanel(state, patientData);
 
             DrawCursor(input, state, bodyParts.HoveredPart != null);
         }
@@ -50,6 +52,9 @@ namespace EmsPlus.UI.Helpers
             float btnW = 160f, btnH = 36f, btnY = 45f;
             input.DiagnosticsButton = new RectangleF(Game.Resolution.Width - 400, btnY, btnW, btnH);
             DrawButton(input.DiagnosticsButton, Localization.Get("BTN_DIAGNOSTICS"), input.IsHovering(input.DiagnosticsButton), Color.FromArgb(255, 255, 180, 0), ba, ta);
+
+            input.DataButton = new RectangleF(Game.Resolution.Width - 580, btnY, btnW, btnH);
+            DrawButton(input.DataButton, Localization.Get("BTN_PATIENT_DATA") ?? "PATIENT DATA", input.IsHovering(input.DataButton), Color.FromArgb(255, 0, 180, 255), ba, ta);
 
             input.ExitButton = new RectangleF(Game.Resolution.Width - 220, btnY, btnW, btnH);
             DrawButton(input.ExitButton, Localization.Get("BTN_EXIT"), input.IsHovering(input.ExitButton), Color.FromArgb(255, 255, 60, 60), ba, ta);
@@ -357,6 +362,32 @@ namespace EmsPlus.UI.Helpers
                 }
 
                 itemY += thisItemH;
+            }
+        }
+
+        private void DrawDataPanel(InspectionState state, PatientDataManager data)
+        {
+            float offset = (1f - MathHelper.EaseOutCubic(state.DataSlide)) * -340f;
+            float x = 20f + offset, y = 180f, w = 320f;
+
+            var currentItems = data.Items;
+            float totalH = 80f + (currentItems.Count * 45f);
+
+            int pa = MathHelper.Clamp((int)(220 * state.Alpha * state.DataSlide), 0, 255);
+            int pta = MathHelper.Clamp((int)(255 * state.Alpha * state.DataSlide), 0, 255);
+
+            NativeUITools.DrawNativeRect(x, y, w, totalH, Color.FromArgb(pa, 12, 18, 28));
+            NativeUITools.DrawNativeRect(x, y, 3, totalH, Color.FromArgb(255, 0, 180, 255)); // Blue accent
+            NativeUITools.DrawNativeRect(x, y, w, 50, Color.FromArgb(MathHelper.Clamp(pa / 2, 0, 255), 0, 100, 180));
+            NativeUITools.DrawNativeText(Localization.Get("TITLE_PATIENT_DATA") ?? "PATIENT DATA", x + 15, y + 10, 0.5f, Color.FromArgb(pta, 255, 255, 255));
+
+            float itemY = y + 65f;
+            foreach (var diag in currentItems)
+            {
+                NativeUITools.DrawNativeText("●", x + 15, itemY + 3, 0.3f, Color.FromArgb(255, 0, 255, 150));
+                NativeUITools.DrawNativeText(diag.Label, x + 32, itemY, 0.28f, Color.FromArgb(MathHelper.Clamp(pta - 60, 0, 255), 140, 150, 160));
+                NativeUITools.DrawNativeText(diag.Value, x + 32, itemY + 18, 0.35f, Color.FromArgb(pta, 210, 220, 230));
+                itemY += 45f;
             }
         }
 

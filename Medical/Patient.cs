@@ -12,6 +12,7 @@ namespace EmsPlus
     public class Patient
     {
         public Ped Character { get; set; }
+        public PatientDetails Details { get; set; } = new PatientDetails();
         public bool HasBeenSpokenTo { get; set; } = false;
         public List<DialogueLine> Dialogue { get; set; } = new List<DialogueLine>();
         public string DispatchDiagnosis { get; set; } = "Unknown Medical Emergency";
@@ -51,6 +52,7 @@ namespace EmsPlus
         public Patient(Ped ped)
         {
             Character = ped;
+            Details.GenerateRandom(ped.IsMale);
             PlayStateAnimation();
         }
 

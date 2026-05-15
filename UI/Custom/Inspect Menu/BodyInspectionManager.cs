@@ -43,6 +43,7 @@ namespace EmsPlus.UI.Custom.InspectMenu
         private static InspectionInput _input;
         private static BodyPartManager _bodyParts;
         private static DiagnosticManager _diagnostics;
+        private static PatientDataManager _patientData;
 
         public static string CurrentMenuCategory = "MAIN";
 
@@ -108,6 +109,7 @@ namespace EmsPlus.UI.Custom.InspectMenu
             _input = new InspectionInput();
             _bodyParts = new BodyPartManager(patient);
             _diagnostics = new DiagnosticManager();
+            _patientData = new PatientDataManager();
             _renderer = new InspectionRenderer();
 
             _cam = new Camera(false);
@@ -333,7 +335,7 @@ namespace EmsPlus.UI.Custom.InspectMenu
 
                 if (!_isRotatingCamera)
                 {
-                    if (_input.ShouldToggleDiagnostics()) { _state.ToggleDiagnostics(); AudioHelper.PlaySelect(); }
+                    if (_input.ShouldCyclePanels()) { _state.CyclePanels(); AudioHelper.PlaySelect(); }
 
                     if (_input.IsHoveringPanel)
                     {
@@ -345,6 +347,7 @@ namespace EmsPlus.UI.Custom.InspectMenu
                     {
                         if (_input.ClickedExit()) { StopInspection(true); break; }
                         if (_input.ClickedDiagnostics()) { _state.ToggleDiagnostics(); AudioHelper.PlaySelect(); }
+                        if (_input.ClickedData()) { _state.ToggleData(); AudioHelper.PlaySelect(); }
 
                         int visualIndex = _input.GetClickedPanelAction();
                         if (visualIndex != -1)
@@ -428,7 +431,7 @@ namespace EmsPlus.UI.Custom.InspectMenu
         private static void OnRender(object sender, GraphicsEventArgs e)
         {
             if (!_active) return;
-            _renderer.Render(e.Graphics, _state, _bodyParts, _diagnostics, _input, CurrentPanelActions);
+            _renderer.Render(e.Graphics, _state, _bodyParts, _diagnostics, _patientData, _input, CurrentPanelActions);
         }
 
         private static void DisableControls()

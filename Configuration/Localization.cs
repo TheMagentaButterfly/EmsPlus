@@ -127,6 +127,7 @@ namespace EmsPlus
                 w.WriteLine("SUBTITLE_INSPECTION=Select area to inspect");
                 w.WriteLine("TITLE_DIAGNOSTICS=DIAGNOSTICS");
                 w.WriteLine("TITLE_ACTIONS=AVAILABLE ACTIONS");
+                w.WriteLine("TITLE_PATIENT_DATA=PATIENT DATA");
                 w.WriteLine("");
 
                 w.WriteLine("[Menu Buttons]");
@@ -143,6 +144,7 @@ namespace EmsPlus
                 w.WriteLine("BTN_APPLY_ACTION=Apply {0}");
                 w.WriteLine("DESC_HANDS_ON=Use your hands");
                 w.WriteLine("DESC_FROM_CABINET=From Ambulance Cabinets");
+                w.WriteLine("BTN_PATIENT_DATA=[TAB] Patient Data");
                 w.WriteLine("");
 
                 w.WriteLine("[Categories]");
@@ -209,6 +211,16 @@ namespace EmsPlus
                 w.WriteLine("DIAG_STATUS_EQUIPMENT=MEDICAL EQUIPMENT");
                 w.WriteLine("MENU_QUESTIONS_TITLE=QUESTIONS");
                 w.WriteLine("DIAG_STATUS_INTERVIEW=PATIENT INTERVIEW");
+                w.WriteLine("");
+
+                w.WriteLine("[Patient Data]");
+                w.WriteLine("DATA_NAME=Full Name");
+                w.WriteLine("DATA_DOB=Date of Birth & Age");
+                w.WriteLine("DATA_GENDER=Gender");
+                w.WriteLine("DATA_HEIGHT=Height");
+                w.WriteLine("DATA_WEIGHT=Weight");
+                w.WriteLine("DATA_BLOOD=Blood Type");
+                w.WriteLine("DATA_ALLERGY=Known Allergies");
                 w.WriteLine("");
 
                 w.WriteLine("[Actions]");
@@ -605,7 +617,7 @@ namespace EmsPlus
 
                 w.WriteLine("; --- Patient Inspection ---");
                 w.WriteLine("TUTORIAL_INSPECT_1=This is the Patient Inspection Menu. Use your mouse to select different body parts to assess them.");
-                w.WriteLine("TUTORIAL_INSPECT_2=Press ~y~TAB~w~ or click the 'Diagnostics' button to see an overview of the patient's condition. If a witness is nearby, you can question them from this panel.");
+                w.WriteLine("TUTORIAL_INSPECT_2=Press ~y~TAB~w~ to cycle between the Diagnostics and Patient Data panels. You can also click the buttons at the top right.");
                 w.WriteLine("TUTORIAL_INSPECT_3=When you find an injury, open a medical bag you placed on the ground, select the correct tool (like a bandage), then click on the injured body part to apply it.");
 
                 w.WriteLine("; --- Patient Cabin ---");
