@@ -371,13 +371,18 @@ namespace EmsPlus.UI.Helpers
             float x = 20f + offset, y = 180f, w = 320f;
 
             var currentItems = data.Items;
+            var p = GameState.CurrentPatient;
+
+            bool canQuestion = p != null && p.Consciousness != ConsciousnessLevel.Unresponsive;
+
             float totalH = 80f + (currentItems.Count * 45f);
+            if (canQuestion) totalH += 60f;
 
             int pa = MathHelper.Clamp((int)(220 * state.Alpha * state.DataSlide), 0, 255);
             int pta = MathHelper.Clamp((int)(255 * state.Alpha * state.DataSlide), 0, 255);
 
             NativeUITools.DrawNativeRect(x, y, w, totalH, Color.FromArgb(pa, 12, 18, 28));
-            NativeUITools.DrawNativeRect(x, y, 3, totalH, Color.FromArgb(255, 0, 180, 255)); // Blue accent
+            NativeUITools.DrawNativeRect(x, y, 3, totalH, Color.FromArgb(255, 0, 180, 255));
             NativeUITools.DrawNativeRect(x, y, w, 50, Color.FromArgb(MathHelper.Clamp(pa / 2, 0, 255), 0, 100, 180));
             NativeUITools.DrawNativeText(Localization.Get("TITLE_PATIENT_DATA") ?? "PATIENT DATA", x + 15, y + 10, 0.5f, Color.FromArgb(pta, 255, 255, 255));
 
@@ -388,6 +393,32 @@ namespace EmsPlus.UI.Helpers
                 NativeUITools.DrawNativeText(diag.Label, x + 32, itemY, 0.28f, Color.FromArgb(MathHelper.Clamp(pta - 60, 0, 255), 140, 150, 160));
                 NativeUITools.DrawNativeText(diag.Value, x + 32, itemY + 18, 0.35f, Color.FromArgb(pta, 210, 220, 230));
                 itemY += 45f;
+            }
+
+            // ==========================================
+            // PROMINENT QUESTION BUTTON
+            // ==========================================
+            if (canQuestion)
+            {
+                float btnY = itemY + 5f;
+                float btnW = w - 40f;
+                float btnH = 40f;
+                _input.QuestionButton = new RectangleF(x + 20, btnY, btnW, btnH);
+
+                bool isHovering = _input.IsHovering(_input.QuestionButton);
+                Color btnColor = isHovering ? Color.FromArgb(pa, 0, 180, 255) : Color.FromArgb(MathHelper.Clamp(pa - 40, 0, 255), 0, 100, 180);
+
+                NativeUITools.DrawNativeRect(_input.QuestionButton.X, _input.QuestionButton.Y, _input.QuestionButton.Width, _input.QuestionButton.Height, btnColor);
+
+                if (isHovering)
+                    NativeUITools.DrawNativeRect(_input.QuestionButton.X, _input.QuestionButton.Y + _input.QuestionButton.Height - 2, _input.QuestionButton.Width, 2, Color.FromArgb(pta, 255, 255, 255));
+
+                string btnText = Localization.Get("ACT_QUESTION_PATIENT") ?? "QUESTION PATIENT";
+                NativeUITools.DrawNativeText(btnText.ToUpper(), _input.QuestionButton.X + (_input.QuestionButton.Width / 2f), _input.QuestionButton.Y + 8, 0.4f, Color.FromArgb(pta, 255, 255, 255), true);
+            }
+            else
+            {
+                _input.QuestionButton = RectangleF.Empty;
             }
         }
 

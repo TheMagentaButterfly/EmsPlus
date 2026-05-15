@@ -52,8 +52,49 @@ namespace EmsPlus
         public Patient(Ped ped)
         {
             Character = ped;
+
+            // ==========================================
+            // ANTI-BUMP & RAGDOLL PREVENTION
+            // ==========================================
+            if (Character != null && Character.Exists())
+            {
+                Character.BlockPermanentEvents = true;
+
+                NativeFunction.Natives.SET_PED_CAN_RAGDOLL<bool>(Character, false);
+                NativeFunction.Natives.SET_PED_CAN_EVASIVE_DIVE<bool>(Character, false);
+
+                NativeFunction.Natives.SET_PED_CAN_PLAY_AMBIENT_ANIMS<bool>(Character, false);
+                NativeFunction.Natives.SET_PED_CAN_PLAY_AMBIENT_BASE_ANIMS<bool>(Character, false);
+            }
+
             Details.GenerateRandom(ped.IsMale);
             PlayStateAnimation();
+        }
+
+        private void RevivePatient()
+        {
+            Consciousness = ConsciousnessLevel.Alert;
+            GameFiber.StartNew(delegate
+            {
+                if (Character != null && Character.Exists())
+                {
+                    Character.Health = 100;
+                    Character.IsPositionFrozen = false;
+
+                    // ==========================================
+                    // RESTORE NORMAL PEDESTRIAN PHYSICS
+                    // ==========================================
+                    Character.BlockPermanentEvents = false;
+                    NativeFunction.Natives.SET_PED_CAN_RAGDOLL<bool>(Character, true);
+                    NativeFunction.Natives.SET_PED_CAN_EVASIVE_DIVE<bool>(Character, true);
+                    NativeFunction.Natives.SET_PED_CAN_PLAY_AMBIENT_ANIMS<bool>(Character, true);
+                    NativeFunction.Natives.SET_PED_CAN_PLAY_AMBIENT_BASE_ANIMS<bool>(Character, true);
+                }
+
+                PlayStateAnimation();
+
+                Game.DisplayNotification(Localization.Get("NOTIF_PATIENT_STABILIZED"));
+            });
         }
 
         public void Update()
@@ -168,33 +209,6 @@ namespace EmsPlus
             if (required == EmsTreatment.Bandage && (applied == EmsTreatment.BurnDressing || applied == EmsTreatment.WoundPacking || applied == EmsTreatment.WetDressing)) return true;
             if (required == EmsTreatment.Tourniquet && applied == EmsTreatment.JunctionalTourniquet) return true;
             return false;
-        }
-
-        private void RevivePatient()
-        {
-            Consciousness = ConsciousnessLevel.Alert;
-            GameFiber.StartNew(delegate
-            {
-                Character.Health = 100;
-                Character.BlockPermanentEvents = true;
-                Character.IsPositionFrozen = false;
-                string animDict = "amb@world_human_sunbathe@female@back@base";
-                string animName = "base";
-
-                if (IsOnStretcher && Managers.StretcherManager.Prop != null && Managers.StretcherManager.Prop.Exists())
-                {
-                    Character.IsCollisionEnabled = false;
-                    animDict = "amb@world_human_sunbathe@female@back@base";
-                    animName = "base";
-                }
-                else Character.Tasks.Clear();
-
-                NativeFunction.Natives.REQUEST_ANIM_DICT(animDict);
-                while (!NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>(animDict)) GameFiber.Yield();
-                Character.Tasks.PlayAnimation(animDict, animName, 8.0f, AnimationFlags.Loop);
-
-                Game.DisplayNotification(Localization.Get("NOTIF_PATIENT_STABILIZED"));
-            });
         }
 
         public void ApplyVisuals() => PatientVisuals.ApplyBloodEffects(this);

@@ -349,6 +349,12 @@ namespace EmsPlus.UI.Custom.InspectMenu
                         if (_input.ClickedDiagnostics()) { _state.ToggleDiagnostics(); AudioHelper.PlaySelect(); }
                         if (_input.ClickedData()) { _state.ToggleData(); AudioHelper.PlaySelect(); }
 
+                        if (_input.ClickedQuestion() && _state.DataSlide > 0.1f)
+                        {
+                            OpenCategoryForHead("QUESTIONS");
+                            AudioHelper.PlaySelect();
+                        }
+
                         int visualIndex = _input.GetClickedPanelAction();
                         if (visualIndex != -1)
                         {

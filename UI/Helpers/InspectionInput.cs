@@ -15,6 +15,7 @@ namespace EmsPlus.UI.Helpers
         public RectangleF ExitButton { get; set; }
         public RectangleF DiagnosticsButton { get; set; }
         public RectangleF DataButton { get; set; }
+        public RectangleF QuestionButton { get; set; }
         public RectangleF PanelBounds { get; set; }
 
         public List<RectangleF> PanelActionButtons { get; } = new List<RectangleF>();
@@ -37,6 +38,7 @@ namespace EmsPlus.UI.Helpers
         public bool ClickedExit() => IsHovering(ExitButton);
         public bool ClickedDiagnostics() => IsHovering(DiagnosticsButton);
         public bool ClickedData() => IsHovering(DataButton);
+        public bool ClickedQuestion() => IsHovering(QuestionButton);
 
         public int GetClickedPanelAction() => PanelActionButtons.FindIndex(IsHovering);
         public int GetClickedDiagnosticAction() => DiagnosticActionButtons.FindIndex(IsHovering);
