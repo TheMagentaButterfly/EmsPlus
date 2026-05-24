@@ -22,7 +22,7 @@ namespace EmsPlus.UI.Native.PatientMenu
             PatientMenu = new UIMenu(Localization.Get("MENU_PATIENT_TITLE") ?? "Patient", Localization.Get("MENU_PATIENT_SUBTITLE") ?? "~b~Medical Interaction");
 
             DiagnosticsMenu = new UIMenu($"~b~{Localization.Get("MENU_DIAGNOSTICS_TITLE") ?? "Diagnostics"}", Localization.Get("SUBTITLE_DIAGNOSTICS") ?? "~b~Assess Patient");
-            PatientDataMenu = new UIMenu($"~b~{Localization.Get("MENU_PATIENT_DATA_TITLE") ?? "Patient Data"}", Localization.Get("SUBTITLE_PATIENT_DATA") ?? "~b~Demographics & Info");
+            PatientDataMenu = new UIMenu($"~b~{Localization.Get("MENU_PATIENT_DATA_COLORED") ?? "Patient Data"}", Localization.Get("SUBTITLE_PATIENT_DATA") ?? "~b~Demographics & Info");
             QuestionRootMenu = new UIMenu($"~b~{Localization.Get("MENU_QUESTIONS_TITLE") ?? "Questions"}", Localization.Get("SUBTITLE_QUESTIONS") ?? "~b~Patient Interview");
             TraumaMenu = new UIMenu($"~r~{Localization.Get("MENU_TRAUMA_TITLE") ?? "Trauma"}", Localization.Get("SUBTITLE_TRAUMA") ?? "~b~Treat Injuries");
             AirwayMenu = new UIMenu($"~y~{Localization.Get("MENU_AIRWAY_TITLE") ?? "Airway"}", Localization.Get("SUBTITLE_AIRWAY") ?? "~b~Airway & Breathing");

@@ -18,6 +18,7 @@ namespace EmsPlus.Configuration
 
         // Callout Settings
         public SettingInt CalloutMultiplier { get; set; } = new SettingInt("Callout Settings", "CalloutMultiplier", "Enables or disables callout difficulty multiplier based on player count.", 1, 0, 50, 1);
+        public SettingBool EnableCalloutAudio = new SettingBool("Audio", "EnableCalloutAudio", "If true, dispatch audio will play when a callout is generated.", false);
 
         // Difficulty Settings
         public SettingBool EnablePatientDeath = new SettingBool("Difficulty", "EnablePatientDeath", "If true, patients can die if vitals reach critical levels.", true);
@@ -121,6 +122,10 @@ namespace EmsPlus.Configuration
                     writer.WriteLine("; Adjusts frequency of callouts.");
                     writer.WriteLine("; 0 = Disable, Higher = Less Frequent, Lower = More Frequent.");
                     writer.WriteLine($"CalloutMultiplier={CalloutMultiplier.Value}");
+                    writer.WriteLine("");
+                    writer.WriteLine("[Audio]");
+                    writer.WriteLine("; If true, dispatch audio will play when a callout is generated. (true/false) -EXPERIMENTAL");
+                    writer.WriteLine($"EnableCalloutAudio={EnableCalloutAudio.Value}");
                     writer.WriteLine("");
 
                     writer.WriteLine("[Difficulty]");

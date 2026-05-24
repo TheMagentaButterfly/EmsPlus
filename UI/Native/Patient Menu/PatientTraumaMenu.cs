@@ -27,7 +27,7 @@ namespace EmsPlus.UI.Native.PatientMenu
 
                 foreach (var requiredTreatment in injury.RequiredTreatments)
                 {
-                    string label = $"~r~{string.Format(Localization.Get("ACT_APPLY_TREATMENT_FORMAT") ?? "Apply {0}", requiredTreatment)}";
+                    string label = $"~r~{string.Format(Localization.Get("ACT_APPLY_TREATMENT_COLORED") ?? "Apply {0}", requiredTreatment)}";
                     string desc = hasTraumaKit ? string.Format(Localization.Get("DESC_INJURY_LOCATION") ?? "Location: ~y~{0}~w~ ({1})", injury.Bone, injury.Name) : $"~r~{Localization.Get("REQ_TRAUMA_BAG")}";
                     
                     AddInteractiveItem(TraumaMenu, label, desc, hasTraumaKit, () => {
