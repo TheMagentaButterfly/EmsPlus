@@ -181,37 +181,41 @@ namespace EmsPlus
 
         private static void Cleanup(bool abortFibers)
         {
-            Game.FrameRender -= OnGameFrameRender;
+            try { Game.FrameRender -= OnGameFrameRender; } catch { }
 
-            StationManager.Cleanup();
-            CalloutManager.ForceCleanUp();
-            StretcherManager.Cleanup();
-            StretcherGhostManager.DeleteGhosts();
-            InventoryManager.Cleanup();
-            DialogueManager.Cleanup();
+            try { StationManager.Cleanup(); } catch { }
+            try { CalloutManager.ForceCleanUp(); } catch { }
+            try { StretcherManager.Cleanup(); } catch { }
+            try { StretcherGhostManager.DeleteGhosts(); } catch { }
+            try { InventoryManager.Cleanup(); } catch { }
+            try { DialogueManager.Cleanup(); } catch { }
 
-            MenuCore.CloseAll();
-            BodyInspectionManager.Cleanup();
+            try { MenuCore.CloseAll(); } catch { }
+            try { BodyInspectionManager.Cleanup(); } catch { }
 
             if (_inputHandler != null)
             {
-                _inputHandler.Stop();
-                Events.OnUserInputChanged -= MenuCore.OnUserInputChanged;
+                try { _inputHandler.Stop(); } catch { }
+                try { Events.OnUserInputChanged -= MenuCore.OnUserInputChanged; } catch { }
                 _inputHandler = null;
             }
 
-            Ped player = Game.LocalPlayer.Character;
-            if (player.Exists())
+            try
             {
-                player.Tasks.ClearImmediately();
-                NativeFunction.Natives.CLEAR_PED_SECONDARY_TASK(player);
-                player.IsPositionFrozen = false;
-                player.IsCollisionEnabled = true;
+                Ped player = Game.LocalPlayer.Character;
+                if (player != null && player.Exists())
+                {
+                    player.Tasks.ClearImmediately();
+                    NativeFunction.Natives.CLEAR_PED_SECONDARY_TASK(player);
+                    player.IsPositionFrozen = false;
+                    player.IsCollisionEnabled = true;
+                }
             }
+            catch { }
 
-            GameState.Clear();
-            AmbulanceManager.Cleanup();
-            InteriorManager.ForceClearInterior();
+            try { GameState.Clear(); } catch { }
+            try { AmbulanceManager.Cleanup(); } catch { }
+            try { InteriorManager.ForceClearInterior(); } catch { }
 
             if (abortFibers)
             {
@@ -232,9 +236,7 @@ namespace EmsPlus
                     fiber.Abort();
                 }
             }
-            catch (System.Exception)
-            {
-            }
+            catch {}
         }
 
         private static void SimulationLoop()

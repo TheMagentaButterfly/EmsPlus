@@ -11,7 +11,7 @@ namespace EmsPlus.UI.Native
     public static class MenuCore
     {
         private static MenuPool _menuPool = new MenuPool();
-
+        public static UIMenu ActiveMenu { get; private set; }
         public static UIMenu MainMenu, DiagnosticsMenu, TreatmentsMenu, IvMenu, StretcherMenu;
         public static UIMenu PatientMenu => PatientMenuBuilder.PatientMenu;
         public static UIMenu AmbulanceMenu;
@@ -63,6 +63,9 @@ namespace EmsPlus.UI.Native
         {
             menu.MouseControlsEnabled = false;
             _menuPool.Add(menu);
+
+            menu.OnMenuOpen += (s) => ActiveMenu = s;
+            menu.OnMenuClose += (s) => { if (ActiveMenu == s) ActiveMenu = null; };
         }
 
         public static void OnUserInputChanged(GenericCombo combo)

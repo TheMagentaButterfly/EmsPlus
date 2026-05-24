@@ -102,6 +102,11 @@ namespace EmsPlus.UI.Native
             bool inRearCabin = AmbulanceManager.IsPlayerInRearCabin;
             bool inVehicleSeat = Rage.Game.LocalPlayer.Character.IsInAnyVehicle(false);
 
+            if (Rage.Game.LocalPlayer != null && Rage.Game.LocalPlayer.Character != null && Rage.Game.LocalPlayer.Character.Exists())
+            {
+                inVehicleSeat = Rage.Game.LocalPlayer.Character.IsInAnyVehicle(false);
+            }
+
             if (inVehicleSeat && !inRearCabin)
             {
                 UIMenuItem warningItem = new UIMenuItem("", Localization.Get("DESC_EXIT_VEHICLE"));

@@ -157,10 +157,13 @@
     <Compile Include="UI\Native\Config Menu\SettingsMenu.cs" />
     <Compile Include="UI\Native\Config Menu\StretcherCarryMenu.cs" />
     <Compile Include="UI\Native\Config Menu\VehicleConfigMenu.cs" />
+    <Compile Include="UI\Native\Patient Menu\PatientAirwayMenu.cs" />
+    <Compile Include="UI\Native\Patient Menu\PatientDataMenu.cs" />
     <Compile Include="UI\Native\Patient Menu\PatientDiagnosticsMenu.cs" />
     <Compile Include="UI\Native\Patient Menu\PatientIvMenu.cs" />
     <Compile Include="UI\Native\Patient Menu\PatientKitMenu.cs" />
     <Compile Include="UI\Native\Patient Menu\PatientMedicationMenus.cs" />
+    <Compile Include="UI\Native\Patient Menu\PatientQuestionMenu.cs" />
     <Compile Include="UI\Native\Patient Menu\PatientTraumaMenu.cs" />
     <Compile Include="UI\Native\Patient Menu\PatientMenuBuilder.cs" />
     <Compile Include="Managers\StretcherGhostManager.cs" />

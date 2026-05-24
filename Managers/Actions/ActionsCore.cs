@@ -2,6 +2,7 @@
 using EmsPlus.UI.Native;
 using Rage;
 using Rage.Native;
+using RAGENativeUI;
 using System;
 
 namespace EmsPlus.Managers.Actions
@@ -12,6 +13,8 @@ namespace EmsPlus.Managers.Actions
         {
             if (GameState.IsPlayerBusy) return;
             GameState.IsPlayerBusy = true;
+
+            UIMenu menuToReopen = MenuCore.ActiveMenu;
 
             MenuCore.CloseAll();
 
@@ -51,6 +54,11 @@ namespace EmsPlus.Managers.Actions
                 onComplete?.Invoke();
 
                 GameState.IsPlayerBusy = false;
+
+                if (menuToReopen != null && EntryPoint.EmsPlusConfig.UseNativeUIPatientMenu.Value)
+                {
+                    menuToReopen.Visible = true;
+                }
             });
         }
     }

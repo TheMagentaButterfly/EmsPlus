@@ -87,6 +87,24 @@ namespace EmsPlus.Managers.Actions
             Vector3 patientPos = GameState.CurrentPatient?.Character?.Position ?? Game.LocalPlayer.Character.Position;
             if (!InventoryManager.IsKitAvailable("TRAUMABAG", patientPos)) return;
 
+            // NATIVE-UI BYPASS
+            if (EntryPoint.EmsPlusConfig.UseNativeUIPatientMenu.Value)
+            {
+                ActionsCore.Run(Localization.Get("ACT_ESTABLISHING_IV") ?? "Establishing IV...", 5000,
+                    EntryPoint.AnimationConfig.MedicTreatDict.Value,
+                    EntryPoint.AnimationConfig.MedicTreatName.Value,
+                    () => {
+                        if (GameState.CurrentPatient != null)
+                        {
+                            GameState.CurrentPatient.IsIVEstablished = true;
+                            GameState.CurrentPatient.ApplyTreatment(EmsTreatment.IVAccess, bone);
+                            Rage.Game.DisplayNotification(Localization.Get("NOTIF_IV_ESTABLISHED") ?? "~g~IV Established.");
+                        }
+                    });
+                return;
+            }
+
+            // CUSTOM 3D MENU
             GameState.IsPlayerBusy = true;
             MenuCore.CloseAll();
             BodyInspectionManager.StopInspection(false);

@@ -4,11 +4,12 @@ using EmsPlus.Managers.Actions;
 using Rage;
 using RAGENativeUI;
 using System.Linq;
+
 namespace EmsPlus.UI.Native.PatientMenu
 {
     public static partial class PatientMenuBuilder
     {
-        #region Medication Category Menus (Airway, Oral, IM)
+        #region Medication Category Menus
         private static void BuildCategoryMenu(UIMenu menu, string categoryTag)
         {
             menu.Clear();
@@ -20,21 +21,20 @@ namespace EmsPlus.UI.Native.PatientMenu
             foreach (var med in EntryPoint.MedicationConfig.Definitions.Where(m => m.Categories.Contains(categoryTag)))
             {
                 string reqKit = med.RequiredKit;
-                if (string.IsNullOrEmpty(reqKit) || reqKit == "NONE") 
+                if (string.IsNullOrEmpty(reqKit) || reqKit == "NONE")
                 {
                     if (categoryTag == "IM") reqKit = "TRAUMABAG";
-                    else if (categoryTag == "AIRWAY" && med.Name == "Oxygen") reqKit = "OXYGENBAG";
                     else reqKit = "NONE";
                 }
 
                 bool hasKit = reqKit == "NONE" || InventoryManager.IsKitAvailable(reqKit, patPos);
 
-                bool alreadyApplied = (med.Name == "Oxygen" && p.IsReceivingOxygen);
-                string title = alreadyApplied ? string.Format(Localization.Get("ACT_APPLIED_PREFIX"), med.Name) : med.Name;
-                string sub = !hasKit ? string.Format(Localization.Get("REQ_GENERIC"), reqKit) : med.Description;
+                // COLORIZED
+                string title = $"~g~{med.Name}";
+                string sub = !hasKit ? $"~r~{string.Format(Localization.Get("REQ_GENERIC"), reqKit)}" : med.Description;
+                string reqKitString = string.Format(Localization.Get("REQ_GENERIC_COLORED") ?? "~r~Requires {0}", reqKit);
 
-                AddInteractiveItem(menu, title, sub, hasKit && !alreadyApplied, () => {
-                    if (med.Name == "Oxygen") p.IsReceivingOxygen = true;
+                AddInteractiveItem(menu, title, sub, hasKit, () => {
                     TreatmentActions.AdministerGeneric(med.Name);
                     MenuCore.CloseAll();
                 });
@@ -42,7 +42,6 @@ namespace EmsPlus.UI.Native.PatientMenu
 
             menu.RefreshIndex();
         }
-
         #endregion
     }
 }

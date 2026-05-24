@@ -1,6 +1,7 @@
 ﻿using EmsPlus.Core;
 using EmsPlus.Managers;
 using EmsPlus.Managers.Actions;
+using EmsPlus.Medical;
 using Rage;
 using RAGENativeUI.Elements;
 using System;
@@ -17,31 +18,88 @@ namespace EmsPlus.UI.Native.PatientMenu
             var p = GameState.CurrentPatient;
             if (p == null) return;
 
-            // Header Vitals (Disabled visual items)
-            var infoItem = new UIMenuItem(string.Format(Localization.Get("ITEM_STATUS_CONSCIOUSNESS"), p.Consciousness));
-            infoItem.Enabled = false;
-            DiagnosticsMenu.AddItem(infoItem);
+            string conscText = Localization.Get($"CONSC_{p.Consciousness.ToString().ToUpperInvariant()}") ?? p.Consciousness.ToString();
+            AddReadonlyItem(DiagnosticsMenu, $"~b~{Localization.Get("DIAG_CONSCIOUSNESS")}", conscText);
 
-            // Interactive Actions
-            bool hasBystander = GameState.CurrentBystander != null;
+            if (p.IsBglChecked)
+            {
+                string bglResult = p.BloodGlucose == VitalState.Normal ? "~g~NORMAL" : "~r~ABNORMAL";
+                AddReadonlyItem(DiagnosticsMenu, $"~b~{Localization.Get("DIAG_BGL")}", bglResult);
+            }
 
-            bool hasTrauma = InventoryManager.IsKitAvailable("TRAUMABAG", p.Character.Position);
-            AddInteractiveItem(DiagnosticsMenu, Localization.Get("ITEM_CHECK_BGL"), hasTrauma ? Localization.Get("DESC_CHECK_BGL") : Localization.Get("REQ_TRAUMA_BAG"), hasTrauma, () => { DiagnosticActions.CheckBGL(); MenuCore.CloseAll(); });
+            var dispatchItem = new UIMenuItem($"~y~{Localization.Get("DIAG_DISPATCH_DIAGNOSIS")}", p.DispatchDiagnosis);
+            dispatchItem.Enabled = false;
+            DiagnosticsMenu.AddItem(dispatchItem);
 
-            AddInteractiveItem(DiagnosticsMenu, Localization.Get("ACT_TRAUMA_SWEEP") ?? "Perform Trauma Sweep", Localization.Get("DESC_TRAUMA_SWEEP") ?? "Examine patient's entire body for injuries.", true, () => {
-                ActionsCore.Run(Localization.Get("NOTIF_INSPECTING") ?? "Inspecting...", 5000, EntryPoint.AnimationConfig.MedicAssessDict.Value, EntryPoint.AnimationConfig.MedicAssessName.Value, () => {
+            AddMenuSeparator(DiagnosticsMenu, Localization.Get("CAT_SEP_ASSESSMENTS") ?? "~c~=== ~b~ASSESSMENTS ~c~===");
+
+            bool hasTraumaKit = InventoryManager.IsKitAvailable("TRAUMABAG", p.Character.Position);
+            AddInteractiveItem(DiagnosticsMenu, $"~b~{Localization.Get("ACT_CHECK_BGL")}", hasTraumaKit ? Localization.Get("ACT_GLUCOMETER") : $"~r~{Localization.Get("REQ_TRAUMA_BAG")}", hasTraumaKit, () => {
+                DiagnosticActions.CheckBGL();
+            });
+
+            AddInteractiveItem(DiagnosticsMenu, $"~r~{Localization.Get("ACT_TRAUMA_SWEEP")}", Localization.Get("DESC_TRAUMA_SWEEP"), true, () => {
+                ActionsCore.Run("Inspecting...", 5000, EntryPoint.AnimationConfig.MedicAssessDict.Value, EntryPoint.AnimationConfig.MedicAssessName.Value, () => {
                     foreach (var bone in Enum.GetValues(typeof(PedBoneId)).Cast<PedBoneId>())
                     {
                         p.MarkBoneInspected(bone);
                     }
-                    Game.DisplayNotification(Localization.Get("NOTIF_SWEEP_COMPLETE") ?? "~g~Trauma sweep complete.");
+                    Rage.Game.DisplayNotification("~g~Trauma sweep complete. Check Diagnostics for tips.");
                 });
-                MenuCore.CloseAll();
             });
+
+            var conditions = p.Conditions.Where(c =>
+                (c is PhysicalInjury pi && p.IsBoneInspected(pi.Bone)) ||
+                (c is SystemicCondition)
+            ).ToList();
+
+            if (conditions.Any())
+            {
+                AddMenuSeparator(DiagnosticsMenu, Localization.Get("CAT_SEP_CONDITIONS") ?? "~c~=== ~r~ACTIVE CONDITIONS ~c~===");
+
+                string formatDesc = Localization.Get("DESC_TIP_FORMAT") ?? "Status: {0}\nRequired: {1}";
+                string noneText = Localization.Get("DIAG_STATUS_NONE") ?? "~c~None";
+                string systemicLbl = Localization.Get("LBL_SYSTEMIC") ?? "Systemic";
+
+                foreach (var cond in conditions)
+                {
+                    string status = cond.IsTreated ? (Localization.Get("DIAG_STATUS_TREATED") ?? "~g~Treated") : (Localization.Get("DIAG_STATUS_NEEDS_TREATMENT") ?? "~r~Needs Treatment");
+
+                    var reqList = cond.RequiredTreatments.Select(t => GetLocalizedTreatmentName(t));
+                    string reqs = cond.IsTreated ? noneText : $"~y~{string.Join(", ", reqList)}";
+
+                    string desc = formatDesc.Replace("\\n", "\n").Replace("{0}", status).Replace("{1}", reqs);
+
+                    string label = cond is PhysicalInjury inj ? $"~r~{inj.Bone}~w~: {inj.Name}" : $"~r~{systemicLbl}~w~: {cond.Name}";
+                    var condItem = new UIMenuItem(label, desc);
+                    condItem.Enabled = false;
+
+                    if (cond.IsTreated) condItem.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
+                    else condItem.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
+
+                    DiagnosticsMenu.AddItem(condItem);
+                }
+            }
 
             DiagnosticsMenu.RefreshIndex();
         }
 
+        private static string GetLocalizedTreatmentName(EmsTreatment treatment)
+        {
+            string key = $"TRT_{treatment.ToString().ToUpperInvariant()}";
+            string localized = Localization.Get(key);
+
+            if (localized != key) return localized;
+
+            if (treatment == EmsTreatment.IVAccess) return "Establish IV";
+            if (treatment == EmsTreatment.SalineBag) return "Hang IV Fluids";
+            if (treatment == EmsTreatment.NeedleDecomp) return "Needle Decompression";
+            if (treatment == EmsTreatment.CervicalCollar) return "Cervical Collar";
+            if (treatment == EmsTreatment.ChestSeal) return "Chest Seal";
+            if (treatment == EmsTreatment.DirectPressure) return "Direct Pressure";
+
+            return treatment.ToString();
+        }
         #endregion
     }
 }

@@ -144,22 +144,15 @@ namespace EmsPlus.Managers
         public static void Cleanup()
         {
             Game.Console.Print("[EmsPlus] StationManager: Deleting blips...");
-
             var blips = _blipMap.Values.ToList();
 
             foreach (var b in blips)
             {
-                try
+                try 
                 {
-                    if (b != null)
+                    if (b != null && b.Exists()) 
                     {
-                        if (b.Exists()) b.Delete();
-
-                        uint handle = b.Handle;
-                        if (handle != 0)
-                        {
-                            NativeFunction.Natives.REMOVE_BLIP(ref handle);
-                        }
+                        b.Delete();
                     }
                 }
                 catch (System.Exception ex)

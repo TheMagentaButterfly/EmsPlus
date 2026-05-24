@@ -19,41 +19,55 @@ namespace EmsPlus.UI.Native.PatientMenu
             Vector3 patPos = p.Character.Position;
             bool hasTrauma = InventoryManager.IsKitAvailable("TRAUMABAG", patPos);
 
-            if (p.IsIVEstablished)
+            if (!p.IsIVEstablished)
             {
-                var est = new UIMenuItem(Localization.Get("ITEM_IV_ESTABLISHED"), Localization.Get("DESC_IV_ESTABLISHED"));
+                AddInteractiveItem(IvMenu, $"~o~{Localization.Get("ACT_ESTABLISH_IV")}", hasTrauma ? Localization.Get("ACT_START_LINE") : $"~r~{Localization.Get("REQ_TRAUMA_BAG")}", hasTrauma, () => {
+                    TreatmentActions.EstablishIV(PedBoneId.RightForearm);
+                });
+            }
+            else
+            {
+                var est = new UIMenuItem(Localization.Get("ITEM_IV_ESTABLISHED_COLORED") ?? "~g~IV ESTABLISHED", Localization.Get("DESC_IV_ESTABLISHED") ?? "Access available");
                 est.Enabled = false;
                 est.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
                 IvMenu.AddItem(est);
 
-                // Fluids
                 if (!p.IsReceivingFluids)
                 {
-                    AddInteractiveItem(IvMenu, Localization.Get("ITEM_HANG_FLUIDS"), hasTrauma ? Localization.Get("DESC_HANG_FLUIDS") : Localization.Get("REQ_TRAUMA_BAG"), hasTrauma, () => { TreatmentActions.AdministerFluids(); MenuCore.CloseAll(); });
+                    AddInteractiveItem(IvMenu, $"~b~{Localization.Get("ACT_HANG_FLUIDS")}", hasTrauma ? Localization.Get("DESC_HANG_FLUIDS") : $"~r~{Localization.Get("REQ_TRAUMA_BAG")}", hasTrauma, () => {
+                        TreatmentActions.AdministerFluids();
+                    });
                 }
                 else
                 {
-                    AddInteractiveItem(IvMenu, Localization.Get("ITEM_STOP_FLUIDS"), Localization.Get("DESC_STOP_FLUIDS"), true, () => { p.IsReceivingFluids = false; Game.DisplayNotification(Localization.Get("NOTIF_FLUIDS_STOPPED")); BuildIvMenu(); });
+                    AddInteractiveItem(IvMenu, $"~y~{Localization.Get("ACT_STOP_FLUIDS")}", Localization.Get("DESC_STOP_FLUIDS"), true, () => {
+                        p.IsReceivingFluids = false;
+                        Game.DisplayNotification(Localization.Get("NOTIF_FLUIDS_STOPPED") ?? "~y~Fluids stopped.");
+                        BuildIvMenu();
+                    });
+                }
+
+                AddMenuSeparator(IvMenu, Localization.Get("CAT_SEP_IV_MEDS") ?? "~c~=== IV MEDS ===");
+
+                foreach (var med in EntryPoint.MedicationConfig.Definitions.Where(m => m.Categories.Contains("IV")))
+                {
+                    string reqKit = med.RequiredKit;
+                    if (string.IsNullOrEmpty(reqKit) || reqKit == "NONE") reqKit = "TRAUMABAG";
+
+                    bool hasKit = reqKit == "NONE" || InventoryManager.IsKitAvailable(reqKit, patPos);
+                    bool canGive = hasKit && p.IsIVEstablished;
+
+                    string reqIvString = $"~r~{Localization.Get("REQ_IV")}";
+                    string reqKitString = $"~r~{string.Format(Localization.Get("REQ_GENERIC"), reqKit)}";
+                    string subText = !p.IsIVEstablished ? reqIvString : (!hasKit ? reqKitString : med.Description);
+
+                    AddInteractiveItem(IvMenu, $"~g~{med.Name}", subText, canGive, () => {
+                        TreatmentActions.AdministerGeneric(med.Name);
+                    });
                 }
             }
-
-            // IV Meds Dynamic Loop
-            foreach (var med in EntryPoint.MedicationConfig.Definitions.Where(m => m.Categories.Contains("IV")))
-            {
-                string reqKit = med.RequiredKit;
-                if (string.IsNullOrEmpty(reqKit) || reqKit == "NONE") reqKit = "TRAUMABAG";
-
-                bool hasKit = reqKit == "NONE" || InventoryManager.IsKitAvailable(reqKit, patPos);
-                bool canGive = hasKit && p.IsIVEstablished;
-
-                string subText = !p.IsIVEstablished ? Localization.Get("REQ_IV") : (!hasKit ? string.Format(Localization.Get("REQ_GENERIC"), reqKit) : med.Description);
-
-                AddInteractiveItem(IvMenu, med.Name, subText, canGive, () => { TreatmentActions.AdministerGeneric(med.Name); MenuCore.CloseAll(); });
-            }
-
             IvMenu.RefreshIndex();
         }
-
         #endregion
     }
 }

@@ -86,8 +86,6 @@ namespace EmsPlus.Managers
 
         public static void Cleanup()
         {
-            Game.DisplaySubtitle("", 1);
-
             _isActive = false;
             _currentTarget = null;
             _queue.Clear();
