@@ -13,7 +13,7 @@ namespace EmsPlus.Configuration
         public SettingString AllowedVehicles = new SettingString("General", "AllowedVehicles", "Comma separated list of model names allowed to be used as ambulances.", "ambulance");
         public SettingBool ShowAmbulancePrompts = new SettingBool("General", "ShowAmbulancePrompts", "If true, interaction circles will show around ambulances.", false);
         public SettingBool UseCustomInteractionPoints = new SettingBool("General", "UseCustomInteractionPoints", "If true, uses the configurable points. If false, uses default rear door logic.", false);
-        public SettingBool UseNativeUIPatientMenu = new SettingBool("General", "UseNativeUIPatientMenu", "If true, uses standard NativeUI instead of the custom 3D inspection menu.", true);
+        public SettingBool UseNativeUIPatientMenu = new SettingBool("General", "UseNativeUIPatientMenu", "If true, uses standard NativeUI instead of the custom 3D inspection menu.", false);
         public List<string> ValidAmbulanceModels { get; private set; } = new List<string>();
 
         // Callout Settings
