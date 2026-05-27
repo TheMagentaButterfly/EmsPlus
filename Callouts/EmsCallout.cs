@@ -93,57 +93,38 @@ namespace EmsPlus.Callouts
         }
 
         /// <summary>
-        /// A highly robust method to find a safe pedestrian spawn point (sidewalk).
-        /// Uses GTA V natives and mathematical offsets compatible with RagePluginHook.
+        /// A robust fallback method to find a safe pedestrian spawn point (sidewalk).
         /// </summary>
         protected Vector3 GetSidewalkPosition(Vector3 roadPosition)
         {
-            Vector3 resultPos = Vector3.Zero;
-            float roadHeading = 0f;
-            Vector3 roadCenter = roadPosition;
-
-            if (NativeFunction.Natives.GET_CLOSEST_VEHICLE_NODE_WITH_HEADING<bool>(
-                roadPosition.X, roadPosition.Y, roadPosition.Z,
-                out roadCenter, out roadHeading, 1, 3.0f, 0))
+            if (NativeFunction.Natives.GET_SAFE_COORD_FOR_PED<bool>(roadPosition.X, roadPosition.Y, roadPosition.Z, true, out Vector3 safePos, 16))
             {
-                roadPosition = roadCenter;
-            }
-
-            bool foundSafe = NativeFunction.Natives.GET_SAFE_COORD_FOR_PED<bool>(
-                roadPosition.X, roadPosition.Y, roadPosition.Z,
-                true,
-                out Vector3 safePos,
-                16);
-
-            if (foundSafe && safePos != Vector3.Zero)
-            {
-                float heightDiff = Math.Abs(safePos.Z - roadPosition.Z);
-                if (heightDiff < 2.5f)
+                if (safePos != Vector3.Zero && Math.Abs(safePos.Z - roadPosition.Z) < 5.0f)
                 {
                     return safePos;
                 }
-                else
-                {
-                    Game.Console.Print($"[EmsPlus] Rejected Ped spawn: Too much elevation difference ({heightDiff}m). Likely subway.");
-                }
             }
+
+            Vector3 streetPos = World.GetNextPositionOnStreet(roadPosition);
+            if (streetPos == Vector3.Zero) streetPos = roadPosition;
+
+            NativeFunction.Natives.GET_CLOSEST_VEHICLE_NODE_WITH_HEADING<bool>(
+                streetPos.X, streetPos.Y, streetPos.Z,
+                out Vector3 roadCenter, out float roadHeading, 1, 3.0f, 0);
+
+            if (roadCenter == Vector3.Zero) roadCenter = streetPos;
 
             float angleRad = (roadHeading - 90f) * (float)(Math.PI / 180.0f);
             Vector3 offsetDir = new Vector3((float)Math.Cos(angleRad), (float)Math.Sin(angleRad), 0f);
-
-            Vector3 targetSide = roadPosition + (offsetDir * 4.5f);
+            Vector3 targetSide = roadCenter + (offsetDir * 4.5f);
 
             float? groundZ = World.GetGroundZ(targetSide, true, true);
-
-            if (groundZ.HasValue)
+            if (groundZ.HasValue && Math.Abs(groundZ.Value - roadCenter.Z) < 5.0f)
             {
-                if (Math.Abs(groundZ.Value - roadPosition.Z) < 3.0f)
-                {
-                    return new Vector3(targetSide.X, targetSide.Y, groundZ.Value);
-                }
+                return new Vector3(targetSide.X, targetSide.Y, groundZ.Value);
             }
 
-            return roadPosition + (offsetDir * 3.5f);
+            return roadCenter;
         }
 
         protected void SpawnEmergencyUnit(string vehModel, string pedModel, Vector3 centerPos, bool sirensOn = true)

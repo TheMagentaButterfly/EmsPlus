@@ -7,6 +7,7 @@ using Rage.Native;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace EmsPlus.Managers
 {
@@ -239,6 +240,9 @@ namespace EmsPlus.Managers
         public static bool TryGetClosestAmbulance(out Vehicle vehicle)
         {
             vehicle = null;
+
+            if (UI.Native.MenuCore.IsAnyMenuOpen) return false;
+
             Ped player = Game.LocalPlayer.Character;
 
             Vehicle lastVeh = player.LastVehicle;
@@ -257,19 +261,23 @@ namespace EmsPlus.Managers
                 Vehicle[] nearby = player.GetNearbyVehicles(15);
                 if (nearby == null || nearby.Length == 0) return false;
 
-                foreach (Vehicle veh in nearby)
-                {
-                    if (veh == null || !veh.Exists()) continue;
+                var sortedVehicles = nearby.Where(v => v != null && v.Exists()).OrderBy(v => player.DistanceTo(v)).ToList();
 
+                foreach (Vehicle veh in sortedVehicles)
+                {
                     if (IsValidAmbulance(veh))
                     {
-                        SetCurrentVehicle(veh);
+                        if (CurrentVehicle != veh)
+                        {
+                            SetCurrentVehicle(veh);
+                        }
+
                         vehicle = veh;
                         return true;
                     }
                 }
             }
-            catch (Exception ex) { Game.Console.Print("[EmsPlus] Error in TryGetClosestAmbulance: " + ex.Message); }
+            catch (System.Exception ex) { Game.Console.Print("[EmsPlus] Error in TryGetClosestAmbulance: " + ex.Message); }
             return false;
         }
 
@@ -626,6 +634,13 @@ namespace EmsPlus.Managers
                 }
                 IsPlayerInRearCabin = false;
             }
+        }
+
+        public static void UpdateCurrentConfig(Vehicle v)
+        {
+            if (v == null || !v.Exists()) return;
+
+            SetCurrentVehicle(v);
         }
     }
 }

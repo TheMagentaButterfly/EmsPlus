@@ -12,12 +12,13 @@ namespace EmsPlus.UI.Native
     {
         private static MenuPool _menuPool = new MenuPool();
         public static UIMenu ActiveMenu { get; private set; }
+        private static uint _lastMenuCloseTime = 0;
         public static UIMenu MainMenu, DiagnosticsMenu, TreatmentsMenu, IvMenu, StretcherMenu;
         public static UIMenu PatientMenu => PatientMenuBuilder.PatientMenu;
         public static UIMenu AmbulanceMenu;
         public static UIMenu SettingsMenu;
 
-        public static bool IsAnyMenuOpen => _menuPool.IsAnyMenuOpen();
+        public static bool IsAnyMenuOpen => _menuPool.IsAnyMenuOpen() || Rage.Game.GameTime < _lastMenuCloseTime + 250;
 
         public static void Initialize()
         {
@@ -65,7 +66,11 @@ namespace EmsPlus.UI.Native
             _menuPool.Add(menu);
 
             menu.OnMenuOpen += (s) => ActiveMenu = s;
-            menu.OnMenuClose += (s) => { if (ActiveMenu == s) ActiveMenu = null; };
+
+            menu.OnMenuClose += (s) => {
+                if (ActiveMenu == s) ActiveMenu = null;
+                _lastMenuCloseTime = Rage.Game.GameTime;
+            };
         }
 
         public static void OnUserInputChanged(GenericCombo combo)

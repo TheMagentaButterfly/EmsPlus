@@ -53,18 +53,20 @@ namespace EmsPlus
         {
             Character = ped;
 
-            // ==========================================
-            // ANTI-BUMP & RAGDOLL PREVENTION
-            // ==========================================
             if (Character != null && Character.Exists())
             {
                 Character.BlockPermanentEvents = true;
 
-                NativeFunction.Natives.SET_PED_CAN_RAGDOLL<bool>(Character, false);
-                NativeFunction.Natives.SET_PED_CAN_EVASIVE_DIVE<bool>(Character, false);
+                Character.IsInvincible = true;
+                Character.CanRagdoll = false;
 
+                NativeFunction.Natives.SET_PED_CAN_RAGDOLL<bool>(Character, false);
+                NativeFunction.Natives.SET_PED_CAN_RAGDOLL_FROM_PLAYER_IMPACT<bool>(Character, false);
+                NativeFunction.Natives.SET_PED_CAN_EVASIVE_DIVE<bool>(Character, false);
                 NativeFunction.Natives.SET_PED_CAN_PLAY_AMBIENT_ANIMS<bool>(Character, false);
                 NativeFunction.Natives.SET_PED_CAN_PLAY_AMBIENT_BASE_ANIMS<bool>(Character, false);
+
+                NativeFunction.Natives.SET_PED_CONFIG_FLAG(Character, 281, true);
             }
 
             Details.GenerateRandom(ped.IsMale);
@@ -81,19 +83,20 @@ namespace EmsPlus
                     Character.Health = 100;
                     Character.IsPositionFrozen = false;
 
-                    // ==========================================
-                    // RESTORE NORMAL PEDESTRIAN PHYSICS
-                    // ==========================================
+                    Character.IsInvincible = false;
+                    Character.CanRagdoll = true;
                     Character.BlockPermanentEvents = false;
+
                     NativeFunction.Natives.SET_PED_CAN_RAGDOLL<bool>(Character, true);
+                    NativeFunction.Natives.SET_PED_CAN_RAGDOLL_FROM_PLAYER_IMPACT<bool>(Character, true);
                     NativeFunction.Natives.SET_PED_CAN_EVASIVE_DIVE<bool>(Character, true);
                     NativeFunction.Natives.SET_PED_CAN_PLAY_AMBIENT_ANIMS<bool>(Character, true);
                     NativeFunction.Natives.SET_PED_CAN_PLAY_AMBIENT_BASE_ANIMS<bool>(Character, true);
+                    NativeFunction.Natives.SET_PED_CONFIG_FLAG(Character, 281, false);
                 }
 
                 PlayStateAnimation();
-
-                Game.DisplayNotification(Localization.Get("NOTIF_PATIENT_STABILIZED"));
+                Game.DisplayNotification(Localization.Get("NOTIF_PATIENT_REGAINED_CONSCIOUSNESS"));
             });
         }
 

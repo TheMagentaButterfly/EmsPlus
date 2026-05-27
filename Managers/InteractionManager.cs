@@ -52,10 +52,14 @@ namespace EmsPlus.Managers
             {
                 GameFiber.Yield();
 
-                StationManager.Process();
-                InteriorManager.Process();
                 DialogueManager.Process();
                 TutorialManager.Process();
+
+                if (MenuCore.IsAnyMenuOpen || BodyInspectionManager.IsActive || DialogueManager.IsActive)
+                    continue;
+
+                StationManager.Process();
+                InteriorManager.Process();
 
                 if (Game.LocalPlayer.Character.IsInAnyVehicle(false))
                 {

@@ -48,39 +48,37 @@ namespace EmsPlus.Configuration
                 foreach (string part in parts)
                 {
                     string clean = part.Trim().ToLower();
-                    if (!string.IsNullOrEmpty(clean))
+                    if (!string.IsNullOrEmpty(clean) && !ValidAmbulanceModels.Contains(clean))
+                    {
                         ValidAmbulanceModels.Add(clean);
+                    }
                 }
+            }
+
+            if (ValidAmbulanceModels.Count == 0)
+            {
+                ValidAmbulanceModels.Add("ambulance");
             }
         }
 
         public void AddAllowedVehicle(string modelName)
         {
-            string lower = modelName.ToLower();
+            string lower = modelName.Trim().ToLower();
             if (!ValidAmbulanceModels.Contains(lower))
             {
                 ValidAmbulanceModels.Add(lower);
-                UpdateAllowedString();
                 Save();
             }
         }
 
         public void RemoveAllowedVehicle(string modelName)
         {
-            string lower = modelName.ToLower();
+            string lower = modelName.Trim().ToLower();
             if (ValidAmbulanceModels.Contains(lower))
             {
                 ValidAmbulanceModels.Remove(lower);
-                UpdateAllowedString();
                 Save();
             }
-        }
-
-        private void UpdateAllowedString()
-        {
-            string newList = string.Join(", ", ValidAmbulanceModels);
-
-            AllowedVehicles = new SettingString("General", "AllowedVehicles", "Comma separated list of model names allowed to be used as ambulances.", newList);
         }
 
         public bool IsAllowed(string modelName)
@@ -106,7 +104,8 @@ namespace EmsPlus.Configuration
                     writer.WriteLine("");
                     writer.WriteLine("; Define which vehicles allow stretcher/gear interaction (Comma separated).");
                     writer.WriteLine("; You can add/remove vehicles here manually or via the in-game menu.");
-                    writer.WriteLine($"AllowedVehicles=ambulance,{AllowedVehicles.Value}");
+                    string vehiclesStr = string.Join(",", ValidAmbulanceModels);
+                    writer.WriteLine($"AllowedVehicles={vehiclesStr}");
                     writer.WriteLine("");
                     writer.WriteLine("; If true, uses the custom interaction points defined in Vehicle configs.");
                     writer.WriteLine("; If false, uses the default 'Near Rear Doors' logic for all vehicles.");

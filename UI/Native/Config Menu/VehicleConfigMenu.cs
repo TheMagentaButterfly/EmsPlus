@@ -131,6 +131,10 @@ namespace EmsPlus.UI.Native.ConfigMenu
 
             VehiclePosMenu.OnMenuOpen += (s) =>
             {
+                if (AmbulanceManager.TryGetClosestAmbulance(out Vehicle v))
+                {
+                    AmbulanceManager.UpdateCurrentConfig(v);
+                }
                 syncVehicleMenu();
             };
             VehiclePosMenu.OnMenuClose += (s) =>
@@ -140,19 +144,19 @@ namespace EmsPlus.UI.Native.ConfigMenu
 
             chkAllowed.CheckboxEvent += (s, c) =>
             {
-                if (AmbulanceManager.CurrentConfig == null) return;
+                if (AmbulanceManager.CurrentVehicle == null || !AmbulanceManager.CurrentVehicle.Exists()) return;
 
-                string model = AmbulanceManager.CurrentConfig.ModelName;
+                string model = AmbulanceManager.CurrentVehicle.Model.Name.ToLower();
+
                 if (c)
                 {
                     EntryPoint.EmsPlusConfig.AddAllowedVehicle(model);
-                    Game.DisplayNotification($"{C_SUCCESS}{Localization.Get("NOTIF_VEHICLE_ADDED", model)}");
-                    AmbulanceManager.CurrentConfig.Save();
+                    Game.DisplayNotification($"~g~Added {model} to allowed vehicles.");
                 }
                 else
                 {
                     EntryPoint.EmsPlusConfig.RemoveAllowedVehicle(model);
-                    Game.DisplayNotification($"{C_WARNING}{Localization.Get("NOTIF_VEHICLE_REMOVED", model)}");
+                    Game.DisplayNotification($"~r~Removed {model} from allowed vehicles.");
                 }
             };
 
