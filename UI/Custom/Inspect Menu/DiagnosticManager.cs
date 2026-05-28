@@ -75,7 +75,7 @@ namespace EmsPlus.UI.Custom.InspectMenu
             }
             Items = newItems;
 
-            string conscLoc = Localization.Get($"CONSC_{p.Consciousness.ToString().ToUpperInvariant()}") ?? p.Consciousness.ToString();
+            string conscLoc = Localization.Get($"CONSC_{p.Consciousness.ToString().ToUpperInvariant()}", p.Consciousness.ToString());
             newItems.Add(new DiagnosticItem(
                 Localization.Get("DIAG_CONSCIOUSNESS", "Consciousness"),
                 conscLoc,

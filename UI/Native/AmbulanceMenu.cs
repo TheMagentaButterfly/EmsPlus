@@ -26,9 +26,9 @@ namespace EmsPlus.UI.Native
 
             List<dynamic> kitNames = new List<dynamic>
             {
-                Localization.Get("TRAUMABAG_NAME", "Trauma Bag"),
-                Localization.Get("OXYGENBAG_NAME", "Oxygen Bag"),
-                Localization.Get("DEFIBRILLATOR_NAME", "Defibrillator")
+                $"~r~{Localization.Get("TRAUMABAG_NAME", "Trauma Bag")}",
+                $"~b~{Localization.Get("OXYGENBAG_NAME", "Oxygen Bag")}",
+                $"~g~{Localization.Get("DEFIBRILLATOR_NAME", "Defibrillator")}"
             };
 
             _cachedKitDescs = new List<string>

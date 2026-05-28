@@ -18,7 +18,7 @@ namespace EmsPlus.UI.Native.PatientMenu
             var p = GameState.CurrentPatient;
             if (p == null) return;
 
-            string conscText = Localization.Get($"CONSC_{p.Consciousness.ToString().ToUpperInvariant()}") ?? p.Consciousness.ToString();
+            string conscText = Localization.Get($"CONSC_{p.Consciousness.ToString().ToUpperInvariant()}", p.Consciousness.ToString());
             AddReadonlyItem(DiagnosticsMenu, $"~b~{Localization.Get("DIAG_CONSCIOUSNESS", "Consciousness")}", conscText);
 
             if (p.IsBglChecked)

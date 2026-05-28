@@ -202,13 +202,9 @@ namespace EmsPlus
 
             try
             {
-                Ped player = Game.LocalPlayer.Character;
-                if (player != null && player.Exists())
+                if (Game.LocalPlayer != null && Game.LocalPlayer.Character != null && Game.LocalPlayer.Character.Exists())
                 {
-                    player.Tasks.ClearImmediately();
-                    NativeFunction.Natives.CLEAR_PED_SECONDARY_TASK(player);
-                    player.IsPositionFrozen = false;
-                    player.IsCollisionEnabled = true;
+                    Game.LocalPlayer.Character.Tasks.ClearImmediately();
                 }
             }
             catch { }
