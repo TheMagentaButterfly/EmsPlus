@@ -21,7 +21,7 @@ namespace EmsPlus.UI.Native.PatientMenu
                 {
                     string cleanName = group.Name.Length > 25 ? group.Name.Substring(0, 22) + "..." : group.Name;
 
-                    var groupMenu = new UIMenu($"~b~{cleanName}", Localization.Get("DESC_SELECT_QUESTION"));
+                    var groupMenu = new UIMenu($"~b~{cleanName}", Localization.Get("DESC_SELECT_QUESTION", "Select a question"));
                     MenuCore.AddMenu(groupMenu);
                     AttachActionHandler(groupMenu);
                     _questionSubmenus.Add(group.Name, groupMenu);
@@ -40,7 +40,7 @@ namespace EmsPlus.UI.Native.PatientMenu
 
             foreach (var group in EntryPoint.QuestionConfig.Groups)
             {
-                var groupItem = new UIMenuItem($"~b~{group.Name}", Localization.Get("DESC_QUESTION_CATEGORY"));
+                var groupItem = new UIMenuItem($"~b~{group.Name}", Localization.Get("DESC_QUESTION_CATEGORY", " Select a category"));
                 QuestionRootMenu.AddItem(groupItem);
                 QuestionRootMenu.BindMenuToItem(_questionSubmenus[group.Name], groupItem);
             }

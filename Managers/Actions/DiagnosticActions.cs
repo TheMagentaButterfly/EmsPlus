@@ -15,7 +15,7 @@ namespace EmsPlus.Managers.Actions
             // NATIVE-UI BYPASS
             if (EntryPoint.EmsPlusConfig.UseNativeUIPatientMenu.Value)
             {
-                ActionsCore.Run(Localization.Get("ACT_CHECKING_BGL") ?? "Checking Blood Glucose...", 4000,
+                ActionsCore.Run(Localization.Get("ACT_CHECKING_BGL", "Checking Blood Glucose..."), 4000,
                     EntryPoint.AnimationConfig.MedicTreatDict.Value,
                     EntryPoint.AnimationConfig.MedicTreatName.Value,
                     () => {
@@ -25,11 +25,11 @@ namespace EmsPlus.Managers.Actions
                             var stateResult = GameState.CurrentPatient.BloodGlucose;
 
                             if (stateResult == VitalState.CriticalLow || stateResult == VitalState.Low)
-                                Rage.Game.DisplayNotification(Localization.Get("NOTIF_BGL_LOW") ?? "~y~BGL Result: LOW.");
+                                Rage.Game.DisplayNotification(Localization.Get("NOTIF_BGL_LOW", "~y~BGL Result: LOW."));
                             else if (stateResult == VitalState.CriticalHigh || stateResult == VitalState.Elevated)
-                                Rage.Game.DisplayNotification(Localization.Get("NOTIF_BGL_HIGH") ?? "~r~BGL Result: HIGH.");
+                                Rage.Game.DisplayNotification(Localization.Get("NOTIF_BGL_HIGH", "~r~BGL Result: HIGH."));
                             else
-                                Rage.Game.DisplayNotification(Localization.Get("NOTIF_BGL_NORMAL") ?? "~g~BGL Result: NORMAL.");
+                                Rage.Game.DisplayNotification(Localization.Get("NOTIF_BGL_NORMAL", "~g~BGL Result: NORMAL."));
                         }
                     });
                 return;
@@ -48,11 +48,11 @@ namespace EmsPlus.Managers.Actions
                     GameState.CurrentPatient.IsBglChecked = true;
 
                     if (stateResult == VitalState.CriticalLow || stateResult == VitalState.Low)
-                        Rage.Game.DisplayNotification("~y~Result: LOW.");
+                        Rage.Game.DisplayNotification(Localization.Get("NOTIF_BGL_LOW", "~y~BGL Result: LOW."));
                     else if (stateResult == VitalState.CriticalHigh || stateResult == VitalState.Elevated)
-                        Rage.Game.DisplayNotification("~r~Result: HIGH.");
+                        Rage.Game.DisplayNotification(Localization.Get("NOTIF_BGL_HIGH", "~r~BGL Result: HIGH."));
                     else
-                        Rage.Game.DisplayNotification("~g~Result: NORMAL.");
+                        Rage.Game.DisplayNotification(Localization.Get("NOTIF_BGL_NORMAL", "~g~BGL Result: NORMAL."));
                 }
             };
 

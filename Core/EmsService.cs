@@ -16,7 +16,7 @@ namespace EmsPlus.Core
 
             if (IsOnDuty)
             {
-                Game.DisplayNotification(Localization.Get("NOTIF_ON_DUTY"));
+                Game.DisplayNotification(Localization.Get("NOTIF_ON_DUTY", "~b~EmsPlus:~w~ You are now ~g~On Duty~w~."));
                 SetStatus(EmsStatus.Available);
 
                 LoadoutManager.EquipLoadout();
@@ -43,7 +43,7 @@ namespace EmsPlus.Core
             }
             else
             {
-                Game.DisplayNotification(Localization.Get("NOTIF_OFF_DUTY"));
+                Game.DisplayNotification(Localization.Get("NOTIF_ON_DUTY", "~b~EmsPlus:~w~ You are now ~r~Off Duty~w~."));
                 SetStatus(EmsStatus.OffDuty);
 
                 DialogueManager.Cleanup();
@@ -107,7 +107,7 @@ namespace EmsPlus.Core
             string statusNameKey = newStatus.ToString().ToUpperInvariant();
             string localizedStatus = Localization.Get(statusNameKey);
 
-            Game.DisplayNotification(Localization.Get("NOTIF_STATUS_UPDATE", localizedStatus));
+            Game.DisplayNotification(Localization.GetFormat("NOTIF_STATUS_UPDATE", "~b~Status Update:~w~ {0}", localizedStatus));
         }
     }
 }

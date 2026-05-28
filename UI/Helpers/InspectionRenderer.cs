@@ -43,21 +43,20 @@ namespace EmsPlus.UI.Helpers
             for (int i = 0; i < 3; i++)
                 NativeUITools.DrawNativeRect(0, 136 + i, Game.Resolution.Width, 1, Color.FromArgb(MathHelper.Clamp((80 - i * 25), 0, 255), 0, 180, 255));
 
-            NativeUITools.DrawNativeText(Localization.Get("TITLE_INSPECTION"), 42, 42, 0.7f, Color.FromArgb(ta / 3, 0, 0, 0));
-            NativeUITools.DrawNativeText(Localization.Get("TITLE_INSPECTION"), 40, 40, 0.7f, Color.FromArgb(ta, 255, 255, 255));
+            NativeUITools.DrawNativeText(Localization.Get("TITLE_INSPECTION", "PATIENT INSPECTION"), 42, 42, 0.7f, Color.FromArgb(ta / 3, 0, 0, 0));
+            NativeUITools.DrawNativeText(Localization.Get("TITLE_INSPECTION", "PATIENT INSPECTION"), 40, 40, 0.7f, Color.FromArgb(ta, 255, 255, 255));
 
             NativeUITools.DrawNativeText("●", 40, 78, 0.35f, Color.FromArgb(ta, 0, 255, 150));
-            NativeUITools.DrawNativeText(Localization.Get("SUBTITLE_INSPECTION"), 58, 76, 0.35f, Color.FromArgb(MathHelper.Clamp(ta - 50, 0, 255), 180, 200, 220));
-
+            NativeUITools.DrawNativeText(Localization.Get("SUBTITLE_INSPECTION", "Select area to inspect"), 58, 76, 0.35f, Color.FromArgb(MathHelper.Clamp(ta - 50, 0, 255), 180, 200, 220));
             float btnW = 160f, btnH = 36f, btnY = 45f;
             input.DiagnosticsButton = new RectangleF(Game.Resolution.Width - 400, btnY, btnW, btnH);
-            DrawButton(input.DiagnosticsButton, Localization.Get("BTN_DIAGNOSTICS"), input.IsHovering(input.DiagnosticsButton), Color.FromArgb(255, 255, 180, 0), ba, ta);
+            DrawButton(input.DiagnosticsButton, Localization.Get("BTN_DIAGNOSTICS", "[TAB] Diagnostics"), input.IsHovering(input.DiagnosticsButton), Color.FromArgb(255, 255, 180, 0), ba, ta);
 
             input.DataButton = new RectangleF(Game.Resolution.Width - 580, btnY, btnW, btnH);
-            DrawButton(input.DataButton, Localization.Get("BTN_PATIENT_DATA") ?? "PATIENT DATA", input.IsHovering(input.DataButton), Color.FromArgb(255, 0, 180, 255), ba, ta);
+            DrawButton(input.DataButton, Localization.Get("BTN_PATIENT_DATA", "[TAB] Patient Data"), input.IsHovering(input.DataButton), Color.FromArgb(255, 0, 180, 255), ba, ta);
 
             input.ExitButton = new RectangleF(Game.Resolution.Width - 220, btnY, btnW, btnH);
-            DrawButton(input.ExitButton, Localization.Get("BTN_EXIT"), input.IsHovering(input.ExitButton), Color.FromArgb(255, 255, 60, 60), ba, ta);
+            DrawButton(input.ExitButton, Localization.Get("BTN_EXIT", "[ESC] Exit"), input.IsHovering(input.ExitButton), Color.FromArgb(255, 255, 60, 60), ba, ta);
         }
 
         private void DrawButton(RectangleF rect, string text, bool hover, Color color, int ba, int ta)
@@ -185,7 +184,7 @@ namespace EmsPlus.UI.Helpers
 
             if (cat != null && cat.StartsWith("QUESTIONS"))
             {
-                panelTitle = Localization.Get("MENU_QUESTIONS_TITLE") ?? "QUESTIONS";
+                panelTitle = Localization.Get("MENU_QUESTIONS_TITLE", "QUESTIONS");
             }
 
             NativeUITools.DrawNativeText(panelTitle, x + 15, y + 10, 0.5f, Color.FromArgb(pta, 255, 255, 255));
@@ -199,17 +198,17 @@ namespace EmsPlus.UI.Helpers
 
             if (cat != null && cat.StartsWith("QUESTIONS"))
             {
-                statusText = Localization.Get("DIAG_STATUS_INTERVIEW") ?? "PATIENT INTERVIEW";
+                statusText = Localization.Get("DIAG_STATUS_INTERVIEW", "PATIENT INTERVIEW");
                 statusColor = Color.FromArgb(255, 0, 180, 255);
             }
             else if (part.LinkedEntity != null)
             {
-                statusText = Localization.Get("DIAG_STATUS_EQUIPMENT") ?? "MEDICAL EQUIPMENT";
+                statusText = Localization.Get("DIAG_STATUS_EQUIPMENT", "MEDICAL EQUIPMENT");
                 statusColor = Color.FromArgb(255, 0, 180, 255);
             }
             else if (part.LinkedEntity == null && p != null && !p.IsBoneInspected(part.BoneId))
             {
-                statusText = Localization.Get("DIAG_STATUS_UNKNOWN") ?? "UNKNOWN STATUS";
+                statusText = Localization.Get("DIAG_STATUS_UNKNOWN", "UNKNOWN STATUS");
                 statusColor = Color.FromArgb(255, 150, 150, 150);
             }
             else
@@ -227,19 +226,19 @@ namespace EmsPlus.UI.Helpers
                 }
                 else if (injuries != null && injuries.Any() && injuries.All(i => i.IsTreated))
                 {
-                    statusText = Localization.Get("DIAG_STATUS_TREATED") ?? "TREATED";
+                    statusText = Localization.Get("DIAG_STATUS_TREATED", "TREATED");
                     statusColor = Color.FromArgb(255, 255, 180, 0);
                 }
                 else
                 {
-                    statusText = Localization.Get("DIAG_STATUS_CLEAR") ?? "CLEAR";
+                    statusText = Localization.Get("DIAG_STATUS_CLEAR", "CLEAR");
                     statusColor = Color.FromArgb(255, 0, 255, 150);
                 }
             }
 
             NativeUITools.DrawNativeText("●", x + 15, y + 68, 0.3f, statusColor);
             NativeUITools.DrawNativeText(statusText, x + 30, y + 65, 0.4f, statusColor);
-            NativeUITools.DrawNativeText(Localization.Get("AVAILABLE ACTION") ?? "AVAILABLE ACTIONS", x + 15, y + 100, 0.3f, Color.FromArgb(MathHelper.Clamp(pta - 80, 0, 255), 200, 200, 200));
+            NativeUITools.DrawNativeText(Localization.Get("AVAILABLE_ACTIONS", "AVAILABLE ACTIONS"), x + 15, y + 100, 0.3f, Color.FromArgb(MathHelper.Clamp(pta - 80, 0, 255), 200, 200, 200));
 
             // ==========================================
             // ACTION BUTTONS
@@ -311,7 +310,7 @@ namespace EmsPlus.UI.Helpers
             NativeUITools.DrawNativeRect(x, y, w, totalH, Color.FromArgb(pa, 12, 18, 28));
             NativeUITools.DrawNativeRect(x, y, 3, totalH, Color.FromArgb(255, 255, 180, 0));
             NativeUITools.DrawNativeRect(x, y, w, 50, Color.FromArgb(MathHelper.Clamp(pa / 2, 0, 255), 200, 100, 0));
-            NativeUITools.DrawNativeText(Localization.Get("TITLE_DIAGNOSTICS") ?? "DIAGNOSTICS", x + 15, y + 10, 0.5f, Color.FromArgb(pta, 255, 255, 255));
+            NativeUITools.DrawNativeText(Localization.Get("TITLE_DIAGNOSTICS", "DIAGNOSTICS"), x + 15, y + 10, 0.5f, Color.FromArgb(pta, 255, 255, 255));
 
             _input.DiagnosticActionButtons.Clear();
 
@@ -384,7 +383,7 @@ namespace EmsPlus.UI.Helpers
             NativeUITools.DrawNativeRect(x, y, w, totalH, Color.FromArgb(pa, 12, 18, 28));
             NativeUITools.DrawNativeRect(x, y, 3, totalH, Color.FromArgb(255, 0, 180, 255));
             NativeUITools.DrawNativeRect(x, y, w, 50, Color.FromArgb(MathHelper.Clamp(pa / 2, 0, 255), 0, 100, 180));
-            NativeUITools.DrawNativeText(Localization.Get("TITLE_PATIENT_DATA") ?? "PATIENT DATA", x + 15, y + 10, 0.5f, Color.FromArgb(pta, 255, 255, 255));
+            NativeUITools.DrawNativeText(Localization.Get("TITLE_PATIENT_DATA", "PATIENT DATA"), x + 15, y + 10, 0.5f, Color.FromArgb(pta, 255, 255, 255));
 
             float itemY = y + 65f;
             foreach (var diag in currentItems)
@@ -413,7 +412,7 @@ namespace EmsPlus.UI.Helpers
                 if (isHovering)
                     NativeUITools.DrawNativeRect(_input.QuestionButton.X, _input.QuestionButton.Y + _input.QuestionButton.Height - 2, _input.QuestionButton.Width, 2, Color.FromArgb(pta, 255, 255, 255));
 
-                string btnText = Localization.Get("ACT_QUESTION_PATIENT") ?? "QUESTION PATIENT";
+                string btnText = Localization.Get("ACT_QUESTION_PATIENT", "QUESTION PATIENT");
                 NativeUITools.DrawNativeText(btnText.ToUpper(), _input.QuestionButton.X + (_input.QuestionButton.Width / 2f), _input.QuestionButton.Y + 8, 0.4f, Color.FromArgb(pta, 255, 255, 255), true);
             }
             else

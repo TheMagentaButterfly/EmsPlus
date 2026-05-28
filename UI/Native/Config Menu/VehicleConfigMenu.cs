@@ -14,22 +14,21 @@ namespace EmsPlus.UI.Native.ConfigMenu
 
         private static void BuildVehicleMenu()
         {
-            var btnReloadVeh = new UIMenuItem($"{C_HIGHLIGHT}{Localization.Get("ITEM_RELOAD_VEHICLE")}", Localization.Get("ITEM_RELOAD_VEHICLE_DESC"));
-            var chkAllowed = new UIMenuCheckboxItem($"{BULLET} {Localization.Get("ITEM_ADD_TO_ALLOWED") ?? "Add to Allowed Vehicles"}", false, Localization.Get("ITEM_ADD_TO_ALLOWED_DESC") ?? "Enable interaction menu for this model.");
-            var chkCanHaveStretcher = new UIMenuCheckboxItem($"{BULLET} {Localization.Get("ITEM_CAN_HAVE_STRETCHER") ?? "Can Have Stretcher"}", true, Localization.Get("ITEM_CAN_HAVE_STRETCHER_DESC") ?? "If disabled, acts as rapid response unit.");
-            var chkHideStretcher = new UIMenuCheckboxItem($"{BULLET} {Localization.Get("ITEM_HIDE_STRETCHER") ?? "Hide Stretcher in Vehicle"}", false, Localization.Get("ITEM_HIDE_STRETCHER_DESC") ?? "Hides the stretcher when inside.");
-            var chkCanEnterCabin = new UIMenuCheckboxItem($"{BULLET} {Localization.Get("ITEM_CAN_ENTER_CABIN") ?? "Has Patient Cabin"}", true, Localization.Get("ITEM_CAN_ENTER_CABIN_DESC") ?? "If disabled, you cannot enter the rear of the ambulance.");
-
-            var interactionPointsMenu = new UIMenu($"{C_HEADER}{Localization.Get("MENU_INTERACTION_POINTS_TITLE")}", Localization.Get("MENU_INTERACTION_POINTS_SUBTITLE"));
+            var btnReloadVeh = new UIMenuItem($"{C_HIGHLIGHT}{Localization.Get("ITEM_RELOAD_VEHICLE", "Reload Vehicle")}", Localization.Get("ITEM_RELOAD_VEHICLE_DESC", "Reload the current vehicle configuration"));
+            var chkAllowed = new UIMenuCheckboxItem($"{BULLET} {Localization.Get("ITEM_ADD_TO_ALLOWED", "Add to Allowed Vehicles")}", false, Localization.Get("ITEM_ADD_TO_ALLOWED_DESC", "Enable interaction menu for this model."));
+            var chkCanHaveStretcher = new UIMenuCheckboxItem($"{BULLET} {Localization.Get("ITEM_CAN_HAVE_STRETCHER", "Can Have Stretcher")}", true, Localization.Get("ITEM_CAN_HAVE_STRETCHER_DESC", "If disabled, acts as rapid response unit."));
+            var chkHideStretcher = new UIMenuCheckboxItem($"{BULLET} {Localization.Get("ITEM_HIDE_STRETCHER", "Hide Stretcher in Vehicle")}", false, Localization.Get("ITEM_HIDE_STRETCHER_DESC", "Hides the stretcher when inside."));
+            var chkCanEnterCabin = new UIMenuCheckboxItem($"{BULLET} {Localization.Get("ITEM_CAN_ENTER_CABIN", "Has Patient Cabin")}", true, Localization.Get("ITEM_CAN_ENTER_CABIN_DESC", "If disabled, you cannot enter the rear of the ambulance."));
+            var interactionPointsMenu = new UIMenu($"{C_HEADER}{Localization.Get("MENU_INTERACTION_POINTS_TITLE", "Interaction Points")}", Localization.Get("MENU_INTERACTION_POINTS_SUBTITLE", "Configure interaction points"));
             MenuCore.AddMenu(interactionPointsMenu);
-            var btnInteractionPoints = new UIMenuItem($"{BULLET} {Localization.Get("MENU_INTERACTION_POINTS_TITLE")}", Localization.Get("DESC_INTERACTION_POINTS"));
+            var btnInteractionPoints = new UIMenuItem($"{BULLET} {Localization.Get("MENU_INTERACTION_POINTS_TITLE", "Interaction Points")}", Localization.Get("DESC_INTERACTION_POINTS", "Configure interaction points"));
 
             var listModes = new List<dynamic> {
-                $"{C_HEADER}{Localization.Get("MODE_STOWED_POS")}",
-                $"{C_HEADER}{Localization.Get("MODE_SLIDE_POS")}",
-                $"{C_HEADER}{Localization.Get("MODE_MEDIC_SEAT_POS")}"
+                $"{C_HEADER}{Localization.Get("MODE_STOWED_POS", "Stowed Position")}",
+                $"{C_HEADER}{Localization.Get("MODE_SLIDE_POS", "Slide Position")}",
+                $"{C_HEADER}{Localization.Get("MODE_MEDIC_SEAT_POS", "Medic Seat Position")}"
             };
-            var itemEditMode = new UIMenuListItem($"{C_HIGHLIGHT}{Localization.Get("ITEM_EDITING_MODE")}", listModes, 0, Localization.Get("ITEM_EDITING_MODE_DESC_VEHICLE"));
+            var itemEditMode = new UIMenuListItem($"{C_HIGHLIGHT}{Localization.Get("ITEM_EDITING_MODE", "Editing Mode")}", listModes, 0, Localization.Get("ITEM_EDITING_MODE_DESC_VEHICLE", "Select the mode to edit"));
 
             VehiclePosMenu.AddItem(btnReloadVeh);
             VehiclePosMenu.AddItem(chkAllowed);
@@ -42,9 +41,9 @@ namespace EmsPlus.UI.Native.ConfigMenu
 
             interactionPointsMenu.OnMenuOpen += (s) => RebuildInteractionPointMenu(interactionPointsMenu);
 
-            var doorsMenu = new UIMenu($"{C_HEADER}{Localization.Get("MENU_DOOR_SETUP_TITLE")}", Localization.Get("MENU_DOOR_SETUP_SUBTITLE"));
+            var doorsMenu = new UIMenu($"{C_HEADER}{Localization.Get("MENU_DOOR_SETUP_TITLE", "Door Setup")}", Localization.Get("MENU_DOOR_SETUP_SUBTITLE", "Configure door settings"));
             MenuCore.AddMenu(doorsMenu);
-            var btnDoors = new UIMenuItem($"{BULLET} {Localization.Get("ITEM_CONFIGURE_DOORS")}", Localization.Get("ITEM_CONFIGURE_DOORS_DESC"));
+            var btnDoors = new UIMenuItem($"{BULLET} {Localization.Get("ITEM_CONFIGURE_DOORS", "Configure Doors")}", Localization.Get("ITEM_CONFIGURE_DOORS_DESC", "Configure the doors of the vehicle"));
             VehiclePosMenu.AddItem(btnDoors);
             VehiclePosMenu.BindMenuToItem(doorsMenu, btnDoors);
 
@@ -94,12 +93,12 @@ namespace EmsPlus.UI.Native.ConfigMenu
                 MenuHelpers.SyncListItem(sYaw, r.Yaw, MenuHelpers.DegreeValues);
             };
 
-            sX = MenuHelpers.AddListControl(VehiclePosMenu, $"{C_HEADER}X {C_INFO}{Localization.Get("LABEL_LEFT_RIGHT")}", 0f, v => { if (AmbulanceManager.CurrentConfig == null) return; Vector3 p = getPos(); setPos(new Vector3(v, p.Y, p.Z)); refreshGhost(); }, null);
-            sY = MenuHelpers.AddListControl(VehiclePosMenu, $"{C_HEADER}Y {C_INFO}{Localization.Get("LABEL_FORWARD_BACK")}", 0f, v => { if (AmbulanceManager.CurrentConfig == null) return; Vector3 p = getPos(); setPos(new Vector3(p.X, v, p.Z)); refreshGhost(); }, null);
-            sZ = MenuHelpers.AddListControl(VehiclePosMenu, $"{C_HEADER}Z {C_INFO}{Localization.Get("LABEL_UP_DOWN")}", 0f, v => { if (AmbulanceManager.CurrentConfig == null) return; Vector3 p = getPos(); setPos(new Vector3(p.X, p.Y, v)); refreshGhost(); }, null);
-            sP = MenuHelpers.AddDegreeListControl(VehiclePosMenu, $"{C_HEADER}{Localization.Get("LABEL_PITCH")} {C_INFO}{Localization.Get("LABEL_TILT")}", 0f, v => { if (AmbulanceManager.CurrentConfig == null) return; Rotator r = getRot(); setRot(new Rotator(v, r.Roll, r.Yaw)); refreshGhost(); }, null);
-            sR = MenuHelpers.AddDegreeListControl(VehiclePosMenu, $"{C_HEADER}{Localization.Get("LABEL_ROLL")} {C_INFO}{Localization.Get("LABEL_LEAN")}", 0f, v => { if (AmbulanceManager.CurrentConfig == null) return; Rotator r = getRot(); setRot(new Rotator(r.Pitch, v, r.Yaw)); refreshGhost(); }, null);
-            sYaw = MenuHelpers.AddDegreeListControl(VehiclePosMenu, $"{C_HEADER}{Localization.Get("LABEL_YAW")} {C_INFO}{Localization.Get("LABEL_ROTATE")}", 0f, v => { if (AmbulanceManager.CurrentConfig == null) return; Rotator r = getRot(); setRot(new Rotator(r.Pitch, r.Roll, v)); refreshGhost(); }, null);
+            sX = MenuHelpers.AddListControl(VehiclePosMenu, $"{C_HEADER}X {C_INFO}{Localization.Get("LABEL_LEFT_RIGHT", "Left/Right")}", 0f, v => { if (AmbulanceManager.CurrentConfig == null) return; Vector3 p = getPos(); setPos(new Vector3(v, p.Y, p.Z)); refreshGhost(); }, null);
+            sY = MenuHelpers.AddListControl(VehiclePosMenu, $"{C_HEADER}Y {C_INFO}{Localization.Get("LABEL_FORWARD_BACK", "Forward/Back")}", 0f, v => { if (AmbulanceManager.CurrentConfig == null) return; Vector3 p = getPos(); setPos(new Vector3(p.X, v, p.Z)); refreshGhost(); }, null);
+            sZ = MenuHelpers.AddListControl(VehiclePosMenu, $"{C_HEADER}Z {C_INFO}{Localization.Get("LABEL_UP_DOWN", "Up/Down")}", 0f, v => { if (AmbulanceManager.CurrentConfig == null) return; Vector3 p = getPos(); setPos(new Vector3(p.X, p.Y, v)); refreshGhost(); }, null);
+            sP = MenuHelpers.AddDegreeListControl(VehiclePosMenu, $"{C_HEADER}{Localization.Get("LABEL_PITCH", "Pitch")} {C_INFO}{Localization.Get("LABEL_TILT", "Tilt")}", 0f, v => { if (AmbulanceManager.CurrentConfig == null) return; Rotator r = getRot(); setRot(new Rotator(v, r.Roll, r.Yaw)); refreshGhost(); }, null);
+            sR = MenuHelpers.AddDegreeListControl(VehiclePosMenu, $"{C_HEADER}{Localization.Get("LABEL_ROLL", "Roll")} {C_INFO}{Localization.Get("LABEL_LEAN", "Lean")}", 0f, v => { if (AmbulanceManager.CurrentConfig == null) return; Rotator r = getRot(); setRot(new Rotator(r.Pitch, v, r.Yaw)); refreshGhost(); }, null);
+            sYaw = MenuHelpers.AddDegreeListControl(VehiclePosMenu, $"{C_HEADER}{Localization.Get("LABEL_YAW", "Yaw")} {C_INFO}{Localization.Get("LABEL_ROTATE", "Rotate")}", 0f, v => { if (AmbulanceManager.CurrentConfig == null) return; Rotator r = getRot(); setRot(new Rotator(r.Pitch, r.Roll, v)); refreshGhost(); }, null);
 
             VehiclePosMenu.OnItemSelect += (s, item, i) =>
             {
@@ -107,7 +106,7 @@ namespace EmsPlus.UI.Native.ConfigMenu
 
                 if (AmbulanceManager.GetVehicleForConfig(out Vehicle v))
                 {
-                    Game.DisplayNotification($"{C_SUCCESS}{Localization.Get("NOTIF_VEHICLE_DETECTED", v.Model.Name)}");
+                    Game.DisplayNotification($"{C_SUCCESS}{string.Format(Localization.GetFormat("NOTIF_VEHICLE_DETECTED", "Vehicle detected: {0}"), v.Model.Name)}");
                     GameFiber.StartNew(delegate
                     {
                         GameFiber.Yield();
@@ -117,7 +116,7 @@ namespace EmsPlus.UI.Native.ConfigMenu
                 }
                 else
                 {
-                    Game.DisplayNotification($"{C_WARNING}{Localization.Get("NOTIF_NO_AMBULANCE_NEARBY")}");
+                    Game.DisplayNotification($"{C_WARNING}{string.Format(Localization.GetFormat("NOTIF_NO_VEHICLE_NEARBY", "No vehicle nearby."))}");
                 }
             };
 
@@ -151,12 +150,12 @@ namespace EmsPlus.UI.Native.ConfigMenu
                 if (c)
                 {
                     EntryPoint.EmsPlusConfig.AddAllowedVehicle(model);
-                    Game.DisplayNotification($"~g~Added {model} to allowed vehicles.");
+                    Game.DisplayNotification($"~g~{string.Format(Localization.GetFormat("NOTIF_VEHICLE_ADDED", "Added {0} to allowed vehicles."), model)}");
                 }
                 else
                 {
                     EntryPoint.EmsPlusConfig.RemoveAllowedVehicle(model);
-                    Game.DisplayNotification($"~r~Removed {model} from allowed vehicles.");
+                    Game.DisplayNotification($"~r~{string.Format(Localization.GetFormat("NOTIF_VEHICLE_REMOVED", "Removed {0} from allowed vehicles."), model)}");
                 }
             };
 

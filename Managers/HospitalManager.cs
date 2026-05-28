@@ -28,7 +28,7 @@ namespace EmsPlus.Managers
                 hospitalBlip.Name = closest.Name;
                 hospitalBlip.IsRouteEnabled = true;
 
-                Game.DisplayNotification(Localization.Get("NOTIF_HOSPITAL_WAYPOINT_SET"));
+                Game.DisplayNotification(Localization.Get("NOTIF_HOSPITAL_WAYPOINT_SET", "~b~Dispatch:~w~ Route to nearest hospital set."));
             }
         }
 
@@ -58,7 +58,7 @@ namespace EmsPlus.Managers
 
                     if (dist2D < 6.0f)
                     {
-                        Game.DisplayHelp(Localization.Get("HELP_HANDOVER_PATIENT"));
+                        Game.DisplayHelp(Localization.Get("HELP_HANDOVER_PATIENT", "Press ~INPUT_CONTEXT~ to handover patient."));
 
                         if (Game.IsControlJustPressed(0, GameControl.Context))
                         {
@@ -94,7 +94,7 @@ namespace EmsPlus.Managers
             EmsService.SetStatus(EmsStatus.Available);
 
             Game.FadeScreenIn(1000);
-            Game.DisplayNotification(Localization.Get("NOTIF_PATIENT_HANDED_OVER"));
+            Game.DisplayNotification(Localization.Get("NOTIF_PATIENT_HANDED_OVER", "~g~Transport Complete:~w~ Patient handed over to hospital staff."));
         }
 
         public static void CleanupBlip()

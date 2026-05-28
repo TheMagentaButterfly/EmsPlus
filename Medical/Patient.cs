@@ -96,7 +96,7 @@ namespace EmsPlus
                 }
 
                 PlayStateAnimation();
-                Game.DisplayNotification(Localization.Get("NOTIF_PATIENT_REGAINED_CONSCIOUSNESS"));
+                Game.DisplayNotification(Localization.Get("NOTIF_PATIENT_REGAINED_CONSCIOUSNESS", "~g~Patient has regained consciousness."));
             });
         }
 
@@ -145,13 +145,13 @@ namespace EmsPlus
                 SpO2 = VitalState.None;
                 Consciousness = ConsciousnessLevel.Unresponsive;
 
-                Game.DisplayNotification("~r~Dispatch:~w~ Patient has flatlined. Time of death recorded.");
+                Game.DisplayNotification(Localization.Get("NOTIF_PATIENT_FLATLINED", "~b~Dispatch:~r~ Patient has flatlined. Time of death recorded."));
             }
         }
 
         public void ApplyTreatment(EmsTreatment treatment, PedBoneId? targetBone = null)
         {
-            if (IsDead) { Game.DisplayNotification("~r~Cannot treat a deceased patient."); return; }
+            if (IsDead) { Game.DisplayNotification(Localization.Get("NOTIF_CANNOT_TREAT_DECEASED", "~r~Cannot treat a deceased patient.")); return; }
 
             bool treatmentWasEffective = false;
             bool isLocalized = AnatomicalRegistry.IsLocalizedTreatment(treatment);
@@ -167,7 +167,7 @@ namespace EmsPlus
                     IsCardiacArrest = false;
                     HeartRate = VitalState.Low;
                     BloodPressure = VitalState.CriticalLow;
-                    Game.DisplayNotification("~g~PULSE RESTORED!~w~ Keep monitoring.");
+                    Game.DisplayNotification(Localization.Get("NOTIF_PULSE_RESTORED", "~g~PULSE RESTORED!~w~ Keep monitoring."));
                 }
             }
 

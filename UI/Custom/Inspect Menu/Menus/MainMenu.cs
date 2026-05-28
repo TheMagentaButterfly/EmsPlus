@@ -37,7 +37,7 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
                     {
                         string label = FormatTreatmentName(action.ToString());
                         BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
-                            Localization.Get("BTN_PERFORM_ACTION", label), Localization.Get("DESC_HANDS_ON"), Color.Orange, true, () => {
+                            Localization.GetFormat("BTN_PERFORM_ACTION", "Perform {0}", label), Localization.Get("DESC_HANDS_ON", "Use your hands"), Color.Orange, true, () => {
                                 BodyInspectionManager.HandleTreatmentLogic(action, injury.Bone);
                             }
                         ));
@@ -52,7 +52,7 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
                             {
                                 string label = FormatTreatmentName(action.ToString());
                                 BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
-                                    Localization.Get("BTN_APPLY_ACTION", label), string.Format(Localization.Get("DESC_FROM_CABINET"), label), Color.LightBlue, true, () => {
+                                    Localization.GetFormat("BTN_APPLY_ACTION", "Apply {0}", label), string.Format(Localization.Get("DESC_FROM_CABINET", "From Ambulance Cabinets"), label), Color.LightBlue, true, () => {
                                         BodyInspectionManager.HandleTreatmentLogic(action, injury.Bone);
                                     }
                                 ));
@@ -61,7 +61,7 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
                         else
                         {
                             BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
-                                Localization.Get("DIAG_INJURY_DETECTED"), Localization.Get("HINT_OPEN_BAG"), Color.FromArgb(255, 100, 100, 100), false, null
+                                Localization.Get("DIAG_INJURY_DETECTED", "INJURY DETECTED"), Localization.Get("HINT_OPEN_BAG", "Open your medical bag to get tools for this."), Color.FromArgb(255, 100, 100, 100), false, null
                             ));
                         }
                     }
@@ -73,7 +73,7 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
                 if (p.Conditions.Any(c => !c.IsTreated && c.RequiredTreatments.Contains(EmsTreatment.CPR)))
                 {
                     BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
-                        Localization.Get("TRT_CPR"), "", Color.Orange, true, () => {
+                        Localization.Get("TRT_CPR", "CPR"), Localization.Get("TRT_CPR_DESC", "Perform CPR"), Color.Orange, true, () => {
                             BodyInspectionManager.HandleTreatmentLogic(EmsTreatment.CPR, part.BoneId);
                         }
                     ));
@@ -85,15 +85,15 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
             {
                 if (!p.IsEcgsConnected)
                 {
-                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_ATTACH_MONITOR"), Localization.Get("ACT_ATTACH_MONITOR"), Color.LightGreen, true, () => {
-                        ActionsCore.Run(Localization.Get("ACT_ATTACHING_LEADS"), 2000, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsEcgsConnected = true; Game.DisplayNotification(Localization.Get("NOTIF_MONITOR_CONNECTED")); });
+                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_ATTACH_MONITOR", "Attach ECG/SpO2 Monitor"), Localization.Get("ACT_ATTACH_MONITOR_DESC", "Attach ECG/SpO2 Monitor"), Color.LightGreen, true, () => {
+                        ActionsCore.Run(Localization.Get("ACT_ATTACHING_LEADS", "Attaching leads..."), 2000, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsEcgsConnected = true; Game.DisplayNotification(Localization.Get("NOTIF_MONITOR_CONNECTED", "~g~Monitor connected.")); });
                         BodyInspectionManager.StopInspection(false);
                     }));
                 }
                 else
                 {
-                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_REMOVE_MONITOR"), Localization.Get("ACT_REMOVE_MONITOR"), Color.Orange, true, () => {
-                        ActionsCore.Run(Localization.Get("ACT_REMOVING_LEADS"), 1500, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsEcgsConnected = false; Game.DisplayNotification(Localization.Get("NOTIF_MONITOR_DISCONNECTED")); });
+                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_REMOVE_MONITOR", "Remove ECG/SpO2 Monitor"), Localization.Get("ACT_REMOVE_MONITOR_DESC", "Remove ECG/SpO2 Monitor"), Color.Orange, true, () => {
+                        ActionsCore.Run(Localization.Get("ACT_REMOVING_LEADS", "Removing leads..."), 1500, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsEcgsConnected = false; Game.DisplayNotification(Localization.Get("NOTIF_MONITOR_DISCONNECTED", "~r~Monitor disconnected.")); });
                         BodyInspectionManager.StopInspection(false);
                     }));
                 }
@@ -103,15 +103,15 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
             {
                 if (!p.IsBpCuffConnected)
                 {
-                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_ATTACH_BP"), Localization.Get("ACT_ATTACH_BP"), Color.LightGreen, true, () => {
-                        ActionsCore.Run(Localization.Get("ACT_APPLYING_CUFF"), 2000, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsBpCuffConnected = true; Game.DisplayNotification(Localization.Get("NOTIF_BP_CONNECTED")); });
+                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_ATTACH_BP", "Attach BP Cuff"), Localization.Get("ACT_ATTACH_BP_DESC", "Attach BP Cuff"), Color.LightGreen, true, () => {
+                        ActionsCore.Run(Localization.Get("ACT_APPLYING_CUFF", "Applying BP Cuff..."), 2000, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsBpCuffConnected = true; Game.DisplayNotification(Localization.Get("NOTIF_BP_CONNECTED", "~g~BP Cuff connected.")); });
                         BodyInspectionManager.StopInspection(false);
                     }));
                 }
                 else
                 {
-                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_REMOVE_BP"), Localization.Get("ACT_REMOVE_BP"), Color.Orange, true, () => {
-                        ActionsCore.Run(Localization.Get("ACT_REMOVING_CUFF"), 1500, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsBpCuffConnected = false; Game.DisplayNotification(Localization.Get("NOTIF_BP_REMOVED")); });
+                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_REMOVE_BP", "Remove BP Cuff"), Localization.Get("ACT_REMOVE_BP_DESC", "Remove BP Cuff"), Color.Orange, true, () => {
+                        ActionsCore.Run(Localization.Get("ACT_REMOVING_CUFF", "Removing BP Cuff..."), 1500, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsBpCuffConnected = false; Game.DisplayNotification(Localization.Get("NOTIF_BP_REMOVED", "~r~BP Cuff removed.")); });
                         BodyInspectionManager.StopInspection(false);
                     }));
                 }
@@ -126,7 +126,7 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
                 if (p.IsOnStretcher)
                 {
                     BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
-                        Localization.Get("ACT_UNLOAD_PATIENT"), isStretcherAvailable ? Localization.Get("ACT_UNLOAD_PATIENT_ON_GROUND") : Localization.Get("ACT_CANNOT_UNLOAD_INSIDE_VEHICLE"),
+                        Localization.Get("ACT_UNLOAD_PATIENT", "Unload Patient"), isStretcherAvailable ? Localization.Get("ACT_UNLOAD_PATIENT_ON_GROUND", "Unload patient on ground") : Localization.Get("ACT_CANNOT_UNLOAD_INSIDE_VEHICLE", "Cannot unload inside vehicle"),
                         Color.FromArgb(255, 255, 150, 0), isStretcherAvailable,
                         () => { StretcherActions.UnloadPatient(); BodyInspectionManager.StopInspection(false); }
                     ));
@@ -134,7 +134,7 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
                 else if (nearStretcher)
                 {
                     BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
-                        Localization.Get("ACT_LOAD_PATIENT"), Localization.Get("ACT_SECURE_PATIENT"), Color.FromArgb(255, 0, 255, 100), true,
+                        Localization.Get("ACT_LOAD_PATIENT", "Load Patient"), Localization.Get("ACT_SECURE_PATIENT", "Secure Patient"), Color.FromArgb(255, 0, 255, 100), true,
                         () => { StretcherActions.LoadPatient(); BodyInspectionManager.StopInspection(false); }
                     ));
                 }
@@ -143,21 +143,21 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
             // 4. CATEGORY NAVIGATION BUTTONS (IV / Meds / Airway)
             if (part.BoneId == PedBoneId.Head || part.BoneId == PedBoneId.Neck)
             {
-                AddBtn(Localization.Get("CAT_AIRWAY"), Localization.Get("CAT_AIRWAY_DESC"), Color.FromArgb(255, 0, 180, 255), "AIRWAY");
+                AddBtn(Localization.Get("CAT_AIRWAY", "Airway / Breathing"), Localization.Get("CAT_AIRWAY_DESC", "Oxygen & Masks"), Color.FromArgb(255, 0, 180, 255), "AIRWAY");
             }
             if (hasTrauma || inCabin)
             {
                 if (part.BoneId == PedBoneId.Head)
                 {
-                    AddBtn(Localization.Get("CAT_MEDS"), Localization.Get("CAT_MEDS_DESC"), Color.FromArgb(255, 255, 50, 50), "ORAL");
+                    AddBtn(Localization.Get("CAT_MEDS", "Medications"), Localization.Get("CAT_MEDS_DESC", "Administer Drugs"), Color.FromArgb(255, 255, 50, 50), "ORAL");
                 }
                 if (part.BoneId == PedBoneId.LeftUpperArm || part.BoneId == PedBoneId.RightUpperArm || part.BoneId == PedBoneId.LeftThigh || part.BoneId == PedBoneId.RightThigh)
                 {
-                    AddBtn(Localization.Get("CAT_IM"), Localization.Get("CAT_IM_DESC"), Color.FromArgb(255, 255, 50, 50), "IM");
+                    AddBtn(Localization.Get("CAT_IM", "Intramuscular Injection"), Localization.Get("CAT_IM_DESC", "Administer IM Drugs"), Color.FromArgb(255, 255, 50, 50), "IM");
                 }
                 if (part.BoneId == PedBoneId.LeftForeArm || part.BoneId == PedBoneId.RightForearm || part.BoneId == PedBoneId.LeftHand || part.BoneId == PedBoneId.RightHand)
                 {
-                    AddBtn(Localization.Get("CAT_IV"), Localization.Get("CAT_IV_DESC"), Color.FromArgb(255, 255, 100, 0), "IV");
+                    AddBtn(Localization.Get("CAT_IV", "Circulation / IV"), Localization.Get("CAT_IV_DESC", "IV Access & Fluids"), Color.FromArgb(255, 255, 100, 0), "IV");
                 }
             }
         }
@@ -172,20 +172,20 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
 
         private static string FormatTreatmentName(string input)
         {
-            if (input == "DirectPressure") return Localization.Get("TRT_DIRECT_PRESSURE");
-            if (input == "AirwayManagement") return Localization.Get("TRT_MANAGE_AIRWAY");
-            if (input == "ChestSeal") return Localization.Get("TRT_CHESTSEAL");
-            if (input == "NeedleDecomp") return Localization.Get("TRT_NEEDLEDECOMP");
-            if (input == "CervicalCollar") return Localization.Get("TRT_CERVICALCOLLAR");
-            if (input == "PelvicBinder") return Localization.Get("TRT_PELVICBINDER");
-            if (input == "TractionSplint") return Localization.Get("TRT_TRACTIONSPLINT");
-            if (input == "WoundPacking") return Localization.Get("TRT_WOUNDPACKING");
-            if (input == "JunctionalTourniquet") return Localization.Get("TRT_JUNCTIONALTOURNIQUET");
-            if (input == "BurnDressing") return Localization.Get("TRT_BURNDRESSING");
-            if (input == "WetDressing") return Localization.Get("TRT_WETDRESSING");
-            if (input == "EyePatch") return Localization.Get("TRT_EYEPATCH");
-            if (input == "EyeShield") return Localization.Get("TRT_EYESHIELD");
-            if (input == "IcePack") return Localization.Get("TRT_ICEPACK");
+            if (input == "DirectPressure") return Localization.Get("TRT_DIRECT_PRESSURE", "Direct Pressure");
+            if (input == "AirwayManagement") return Localization.Get("TRT_MANAGE_AIRWAY", "Airway Management");
+            if (input == "ChestSeal") return Localization.Get("TRT_CHESTSEAL", "Chest Seal");
+            if (input == "NeedleDecomp") return Localization.Get("TRT_NEEDLEDECOMP", "Needle Decompression");
+            if (input == "CervicalCollar") return Localization.Get("TRT_CERVICALCOLLAR", "Cervical Collar");
+            if (input == "PelvicBinder") return Localization.Get("TRT_PELVICBINDER", "Pelvic Binder");
+            if (input == "TractionSplint") return Localization.Get("TRT_TRACTIONSPLINT", "Traction Splint");
+            if (input == "WoundPacking") return Localization.Get("TRT_WOUNDPACKING", "Wound Packing");
+            if (input == "JunctionalTourniquet") return Localization.Get("TRT_JUNCTIONALTOURNIQUET", "Junctional Tourniquet");
+            if (input == "BurnDressing") return Localization.Get("TRT_BURNDRESSING", "Burn Dressing");
+            if (input == "WetDressing") return Localization.Get("TRT_WETDRESSING", "Wet Dressing");
+            if (input == "EyePatch") return Localization.Get("TRT_EYEPATCH", "Eye Patch");
+            if (input == "EyeShield") return Localization.Get("TRT_EYESHIELD", "Eye Shield");
+            if (input == "IcePack") return Localization.Get("TRT_ICEPACK", "Ice Pack");
             return input;
         }
     }

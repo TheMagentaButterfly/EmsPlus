@@ -119,7 +119,7 @@ namespace EmsPlus.Managers
             {
                 string keyName = EntryPoint.KeyConfig.OpenAmbulanceMenuKey.Value.ToString();
                 string formattedKey = $"~w~[~y~{keyName}~w~]";
-                Game.DisplayHelp(Localization.Get("HELP_OPEN_AMBULANCE_MENU", formattedKey));
+                Game.DisplayHelp(Localization.Get("HELP_OPEN_AMBULANCE_MENU", "Press ~y~{0}~w~ to open the ambulance menu.", formattedKey));
             }
         }
 
@@ -436,7 +436,7 @@ namespace EmsPlus.Managers
         {
             if (CurrentConfig != null && !CurrentConfig.CanHaveStretcher) return;
             if (IsStretcherLoaded) return;
-            if (!StretcherManager.IsAttachedToPlayer) { Game.DisplayNotification(Localization.Get("NOTIF_MUST_HOLD_STRETCHER")); return; }
+            if (!StretcherManager.IsAttachedToPlayer) { Game.DisplayNotification(Localization.Get("NOTIF_MUST_HOLD_STRETCHER", "~r~You must be holding the stretcher.")); return; }
             if (CurrentVehicle == null || !CurrentVehicle.Exists()) return;
             if (!AreDoorsOpen) { return; }
 
@@ -450,7 +450,7 @@ namespace EmsPlus.Managers
             {
                 EmsService.SetStatus(EmsStatus.Transporting);
                 HospitalManager.SetWaypointToClosest();
-                Game.DisplaySubtitle(Localization.Get("SUBTITLE_TRANSPORT_PATIENT"), 5000);
+                Game.DisplaySubtitle(Localization.Get("SUBTITLE_TRANSPORT_PATIENT", "~y~Transport patient to the nearest hospital."), 5000);
             }
 
             InventoryManager.StoreAllKits();
@@ -548,7 +548,7 @@ namespace EmsPlus.Managers
 
             if (!isHolding && !isLoaded)
             {
-                Game.DisplayNotification("~r~Stretcher is not in the vehicle and you are not holding it.");
+                Game.DisplayNotification(Localization.Get("NOTIF_STRETCHER_NOT_IN_VEHICLE", "~r~Stretcher is not in the vehicle and you are not holding it."));
                 return;
             }
 

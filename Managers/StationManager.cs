@@ -62,8 +62,8 @@ namespace EmsPlus.Managers
 
                     if (dist < 2.0f)
                     {
-                        string dutyText = EmsService.IsOnDuty ? Localization.Get("TEXT_OFF_DUTY") : Localization.Get("TEXT_ON_DUTY");
-                        Game.DisplayHelp(Localization.Get("HELP_TOGGLE_DUTY", dutyText));
+                        string dutyText = EmsService.IsOnDuty ? Localization.Get("TEXT_OFF_DUTY", "~r~Off Duty") : Localization.Get("TEXT_ON_DUTY", "~g~On Duty");
+                        Game.DisplayHelp(Localization.GetFormat("HELP_TOGGLE_DUTY", "Press ~INPUT_CONTEXT~ to go {0}.", dutyText));
 
                         if (Game.IsControlJustPressed(0, GameControl.Context) && _canToggle)
                         {

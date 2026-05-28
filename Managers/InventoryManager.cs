@@ -59,7 +59,7 @@ namespace EmsPlus.Managers
 
             if (notify)
             {
-                Game.DisplayNotification(Localization.Get("NOTIF_MEDICALBAGS_RESTOCKED"));
+                Game.DisplayNotification(Localization.Get("NOTIF_MEDICALBAGS_RESTOCKED", "~b~Dispatch:~w~ Medical bags ~g~restocked~w~."));
             }
         }
 

@@ -33,7 +33,7 @@ namespace EmsPlus.UI.Tasks
         {
             float cX = Game.Resolution.Width / 2f;
             float hY = Game.Resolution.Height * 0.15f;
-            string title = Localization.Get("TASK_BGL_TITLE");
+            string title = Localization.Get("TASK_BGL_TITLE", "BLOOD GLUCOSE TEST");
             string instr = GetInstruction();
             NativeUITools.DrawNativeText(title, cX, hY, 0.5f, Color.FromArgb(255, 0, 200, 255), true);
             NativeUITools.DrawNativeText(instr, cX, hY + 45, 0.35f, Color.FromArgb(200, 200, 220, 240), true);
@@ -86,10 +86,10 @@ namespace EmsPlus.UI.Tasks
         {
             switch (_state)
             {
-                case State.NeedsPrick: return Localization.Get("TASK_BGL_STEP_PRICK");
-                case State.NeedsSample: return Localization.Get("TASK_BGL_STEP_SAMPLE");
-                case State.NeedsReading: return Localization.Get("TASK_BGL_STEP_INSERT");
-                default: return Localization.Get("TASK_BGL_STEP_COMPLETE");
+                case State.NeedsPrick: return Localization.Get("TASK_BGL_STEP_PRICK", "Prick the finger.");
+                case State.NeedsSample: return Localization.Get("TASK_BGL_STEP_SAMPLE", "Collect the blood sample.");
+                case State.NeedsReading: return Localization.Get("TASK_BGL_STEP_INSERT", "Insert the strip into the glucometer.");
+                default: return Localization.Get("TASK_BGL_STEP_COMPLETE", "Test complete!");
             }
         }
     }

@@ -13,27 +13,27 @@ namespace EmsPlus.UI.Native.ConfigMenu
         private static void BuildSettingsMenu()
         {
             MenuCore.SettingsMenu = new UIMenu(
-                $"{C_HEADER}{Localization.Get("MENU_CONFIG_TITLE")}",
-                Localization.Get("MENU_CONFIG_SUBTITLE")
+                $"{C_HEADER}{Localization.Get("MENU_CONFIG_TITLE", "Configuration")}",
+                Localization.Get("MENU_CONFIG_SUBTITLE", "Settings")
             );
             MenuCore.AddMenu(MenuCore.SettingsMenu);
 
             var btnForceCallout = new UIMenuItem(
-                $"{BULLET} {Localization.Get("ITEM_FORCE_CALLOUT")}",
-                Localization.Get("ITEM_FORCE_CALLOUT_DESC")
+                $"{BULLET} {Localization.Get("ITEM_FORCE_CALLOUT", "Force Callout")}",
+                Localization.Get("ITEM_FORCE_CALLOUT_DESC", "Force a callout to occur")
             );
             var chkTutorial = new UIMenuCheckboxItem(
-                $"{BULLET} {Localization.Get("ITEM_ENABLE_TUTORIAL")}",
+                $"{BULLET} {Localization.Get("ITEM_ENABLE_TUTORIAL", "Enable Tutorial")}",
                 EntryPoint.EmsPlusConfig.EnableTutorial.Value,
-                Localization.Get("DESC_ENABLE_TUTORIAL")
+                Localization.Get("DESC_ENABLE_TUTORIAL", "Enable or disable the tutorial")
             );
             var btnOffsets = new UIMenuItem(
-                $"{BULLET} {Localization.Get("ITEM_OFFSETS_POSITIONS")}",
-                Localization.Get("ITEM_OFFSETS_POSITIONS_DESC")
+                $"{BULLET} {Localization.Get("ITEM_OFFSETS_POSITIONS", "Offsets & Positions")}",
+                Localization.Get("ITEM_OFFSETS_POSITIONS_DESC", "Configure offsets and positions")
             );
             var btnSave = new UIMenuItem(
-                $"{C_SUCCESS}{Localization.Get("ITEM_SAVE_SETTINGS")}",
-                Localization.Get("ITEM_SAVE_SETTINGS_DESC")
+                $"{C_SUCCESS}{Localization.Get("ITEM_SAVE_SETTINGS", "Save Settings")}",
+                Localization.Get("ITEM_SAVE_SETTINGS_DESC", "Save the current settings")
             );
 
             MenuCore.SettingsMenu.AddItem(btnForceCallout);
@@ -51,18 +51,18 @@ namespace EmsPlus.UI.Native.ConfigMenu
 
                 if (AmbulanceManager.CurrentConfig == null)
                 {
-                    Game.DisplayNotification($"{C_SUCCESS}{Localization.Get("NOTIF_SETTINGS_SAVED_GENERIC")}");
+                    Game.DisplayNotification($"{C_SUCCESS}{Localization.Get("NOTIF_SETTINGS_SAVED_GENERIC", "Settings saved successfully.")}");
                     return;
                 }
 
                 if (EntryPoint.EmsPlusConfig.IsAllowed(AmbulanceManager.CurrentConfig.ModelName))
                 {
                     AmbulanceManager.CurrentConfig.Save();
-                    Game.DisplayNotification($"{C_SUCCESS}{string.Format(Localization.Get("NOTIF_SETTINGS_SAVED_VEHICLE"), AmbulanceManager.CurrentConfig.ModelName)}");
+                    Game.DisplayNotification($"{C_SUCCESS}{string.Format(Localization.Get("NOTIF_SETTINGS_SAVED_VEHICLE", "Settings saved successfully for {0}."), AmbulanceManager.CurrentConfig.ModelName)}");
                 }
                 else
                 {
-                    Game.DisplayNotification($"{C_WARNING}{Localization.Get("NOTIF_CONFIG_NOT_SAVED")}");
+                    Game.DisplayNotification($"{C_WARNING}{Localization.Get("NOTIF_CONFIG_NOT_SAVED", "Configuration not saved.")}");
                 }
             };
 

@@ -58,7 +58,7 @@ namespace EmsPlus.UI.Tasks
             float cX = Game.Resolution.Width / 2f;
             float hY = Game.Resolution.Height * 0.15f;
 
-            string title = Localization.Get("TASK_IV_TITLE");
+            string title = Localization.Get("TASK_IV_TITLE", "IV PLACEMENT");
             string instr = GetInstruction();
 
             NativeUITools.DrawNativeText(title, cX, hY, 0.5f, Color.FromArgb(255, 0, 200, 255), true);
@@ -108,10 +108,10 @@ namespace EmsPlus.UI.Tasks
         {
             switch (_state)
             {
-                case State.Cath: return Localization.Get("TASK_IV_STEP_CATH");
-                case State.Vein: return Localization.Get("TASK_IV_STEP_VEIN");
-                case State.Fix: return Localization.Get("TASK_IV_STEP_FIX");
-                default: return Localization.Get("TASK_IV_STEP_COMPLETE");
+                case State.Cath: return Localization.Get("TASK_IV_STEP_CATH", "Insert the catheter.");
+                case State.Vein: return Localization.Get("TASK_IV_STEP_VEIN", "Locate the vein.");
+                case State.Fix: return Localization.Get("TASK_IV_STEP_FIX", "Secure the IV with tape.");
+                default: return Localization.Get("TASK_IV_STEP_COMPLETE", "IV placement complete.");
             }
         }
     }

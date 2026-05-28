@@ -165,7 +165,7 @@ namespace EmsPlus.Managers
                     string zone = NativeFunction.Natives.GET_NAME_OF_ZONE<string>(callout.CalloutPosition.X, callout.CalloutPosition.Y, callout.CalloutPosition.Z);
                     string loc = string.IsNullOrEmpty(street) ? Game.GetLocalizedString(zone) : $"{street}, {Game.GetLocalizedString(zone)}";
 
-                    string fullText = $"~w~Call: ~b~{callout.CalloutName}~n~~w~Location: ~y~{loc}~n~~c~{callout.CalloutMessage}~n~~w~{Localization.Get("NOTIF_CALLOUT_ACCEPT_PROMPT")}";
+                    string fullText = $"~w~Call: ~b~{callout.CalloutName}~n~~w~Location: ~y~{loc}~n~~c~{callout.CalloutMessage}~n~~w~{Localization.Get("NOTIF_CALLOUT_ACCEPT_PROMPT", "~g~Y~w~ to accept ~o~/ ~r~N~w~ to decline.")}";
                     Game.DisplayNotification("char_call911", "char_call911", "DISPATCH", "EMERGENCY CALL", fullText);
                 }
             }

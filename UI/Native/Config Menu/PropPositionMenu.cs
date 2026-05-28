@@ -14,12 +14,12 @@ namespace EmsPlus.UI.Native.ConfigMenu
         {
             var listKits = new List<dynamic>
             {
-                $"{C_HEADER}{Localization.Get("TRAUMABAG_NAME")}",
-                $"{C_HEADER}{Localization.Get("OXYGENBAG_NAME")}",
-                $"{C_HEADER}{Localization.Get("DEFIBRILLATOR_NAME")}"
+                $"{C_HEADER}{Localization.Get("TRAUMABAG_NAME", "Trauma Bag")}",
+                $"{C_HEADER}{Localization.Get("OXYGENBAG_NAME", "Oxygen Bag")}",
+                $"{C_HEADER}{Localization.Get("DEFIBRILLATOR_NAME", "Defibrillator")}"
             };
 
-            var itemKit = new UIMenuListItem($"{C_HIGHLIGHT}{Localization.Get("ITEM_SELECT_KIT")}", listKits, 0, Localization.Get("ITEM_SELECT_KIT_DESC_PROP"));
+            var itemKit = new UIMenuListItem($"{C_HIGHLIGHT}{Localization.Get("ITEM_SELECT_KIT", "Select Kit")}", listKits, 0, Localization.Get("ITEM_SELECT_KIT_DESC_PROP", "Select the kit to edit"));
             PropPosMenu.AddItem(itemKit);
 
             Func<Vector3> getPos = () =>
@@ -69,12 +69,12 @@ namespace EmsPlus.UI.Native.ConfigMenu
                 InventoryManager.ReAttachProp();
             };
 
-            sX = MenuHelpers.AddListControl(PropPosMenu, $"{C_HEADER}X {C_INFO}{Localization.Get("LABEL_LEFT_RIGHT")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(v, p.Y, p.Z)); InventoryManager.ReAttachProp(); }, null);
-            sY = MenuHelpers.AddListControl(PropPosMenu, $"{C_HEADER}Y {C_INFO}{Localization.Get("LABEL_FORWARD_BACK")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(p.X, v, p.Z)); InventoryManager.ReAttachProp(); }, null);
-            sZ = MenuHelpers.AddListControl(PropPosMenu, $"{C_HEADER}Z {C_INFO}{Localization.Get("LABEL_UP_DOWN")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(p.X, p.Y, v)); InventoryManager.ReAttachProp(); }, null);
-            sP = MenuHelpers.AddDegreeListControl(PropPosMenu, $"{C_HEADER}{Localization.Get("LABEL_PITCH")} {C_INFO}{Localization.Get("LABEL_TILT")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(v, r.Roll, r.Yaw)); InventoryManager.ReAttachProp(); }, null);
-            sR = MenuHelpers.AddDegreeListControl(PropPosMenu, $"{C_HEADER}{Localization.Get("LABEL_ROLL")} {C_INFO}{Localization.Get("LABEL_LEAN")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(r.Pitch, v, r.Yaw)); InventoryManager.ReAttachProp(); }, null);
-            sYaw = MenuHelpers.AddDegreeListControl(PropPosMenu, $"{C_HEADER}{Localization.Get("LABEL_YAW")} {C_INFO}{Localization.Get("LABEL_ROTATE")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(r.Pitch, r.Roll, v)); InventoryManager.ReAttachProp(); }, null);
+            sX = MenuHelpers.AddListControl(PropPosMenu, $"{C_HEADER}X {C_INFO}{Localization.Get("LABEL_LEFT_RIGHT", "Left/Right")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(v, p.Y, p.Z)); InventoryManager.ReAttachProp(); }, null);
+            sY = MenuHelpers.AddListControl(PropPosMenu, $"{C_HEADER}Y {C_INFO}{Localization.Get("LABEL_FORWARD_BACK", "Forward/Back")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(p.X, v, p.Z)); InventoryManager.ReAttachProp(); }, null);
+            sZ = MenuHelpers.AddListControl(PropPosMenu, $"{C_HEADER}Z {C_INFO}{Localization.Get("LABEL_UP_DOWN", "Up/Down")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(p.X, p.Y, v)); InventoryManager.ReAttachProp(); }, null);
+            sP = MenuHelpers.AddDegreeListControl(PropPosMenu, $"{C_HEADER}{Localization.Get("LABEL_PITCH", "Pitch")} {C_INFO}{Localization.Get("LABEL_TILT", "Tilt")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(v, r.Roll, r.Yaw)); InventoryManager.ReAttachProp(); }, null);
+            sR = MenuHelpers.AddDegreeListControl(PropPosMenu, $"{C_HEADER}{Localization.Get("LABEL_ROLL", "Roll")} {C_INFO}{Localization.Get("LABEL_LEAN", "Lean")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(r.Pitch, v, r.Yaw)); InventoryManager.ReAttachProp(); }, null);
+            sYaw = MenuHelpers.AddDegreeListControl(PropPosMenu, $"{C_HEADER}{Localization.Get("LABEL_YAW", "Yaw")} {C_INFO}{Localization.Get("LABEL_ROTATE", "Rotate")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(r.Pitch, r.Roll, v)); InventoryManager.ReAttachProp(); }, null);
 
             PropPosMenu.OnListChange += (s, item, index) =>
             {

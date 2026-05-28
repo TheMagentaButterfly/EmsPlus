@@ -133,7 +133,7 @@ namespace EmsPlus
                 MenuCore.Initialize();
             }
 
-            Game.DisplayNotification(Localization.Get("NOTIF_CONFIGSRELOADED"));
+            Game.DisplayNotification(Localization.Get("NOTIF_CONFIGSRELOADED", "~b~EmsPlus~w~: All configurations reloaded!"));
         }
 
         private static void OnUnload()
@@ -254,8 +254,6 @@ namespace EmsPlus
         private static void OnGameFrameRender(object sender, GraphicsEventArgs e)
         {
             if (GameState.IsPlayerBusy || MenuCore.IsAnyMenuOpen || GameState.SuppressPrompts) return;
-
-            //StretcherManager.DrawPrompt(e.Graphics);
         }
     }
 }

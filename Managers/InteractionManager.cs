@@ -71,23 +71,33 @@ namespace EmsPlus.Managers
                 }
 
                 // =======================================================
-                // TOP-LEFT PROMPT LOGIC
+                // TOP-LEFT PROMPT LOGIC (Priority System)
                 // =======================================================
                 bool promptShown = false;
 
-                // 1. Patient Prompt
+                // Priority 1: Patient Inspection Prompt
                 if (GameState.CurrentPatient != null && GameState.CurrentPatient.Character.Exists())
                 {
                     float dist = Game.LocalPlayer.Character.DistanceTo(GameState.CurrentPatient.Character);
                     if (dist < PatientInteractDistance)
                     {
                         string keyName = EntryPoint.KeyConfig.InteractionKey.Value.ToString();
-                        Game.DisplayHelp(string.Format(Localization.Get("HELP_INSPECT_PATIENT"), keyName));
+                        Game.DisplayHelp(Localization.GetFormat("HELP_INSPECT_PATIENT", "Press ~y~{0}~w~ to inspect the patient.", keyName));
                         promptShown = true;
                     }
                 }
 
-                // 2. Stretcher Prompt
+                // Priority 2: Bystander Interview Prompt
+                if (!promptShown && GameState.CurrentBystander?.Character.Exists() == true && !GameState.CurrentBystander.HasBeenSpokenTo)
+                {
+                    if (Game.LocalPlayer.Character.DistanceTo(GameState.CurrentBystander.Character) < 3.0f)
+                    {
+                        Game.DisplayHelp(Localization.Get("HELP_TALK_BYSTANDER", "Press ~y~Y~w~ to talk to the witness."));
+                        promptShown = true;
+                    }
+                }
+
+                // Priority 3: Stretcher Prompt
                 if (!promptShown && StretcherManager.Prop != null && StretcherManager.Prop.Exists() && !StretcherManager.IsAttachedToVehicle)
                 {
                     StretcherManager.Prop.Model.GetDimensions(out Vector3 min, out Vector3 max);
@@ -97,21 +107,17 @@ namespace EmsPlus.Managers
                     {
                         string grabKey = EntryPoint.KeyConfig.StretcherGrabKey.Value.ToString();
                         string grabAction = StretcherManager.IsAttachedToPlayer ? "Release" : "Grab";
-                        string fullPrompt = string.Format(Localization.Get("HELP_STRETCHER_CONTROL_GRAB"), grabKey, grabAction);
+                        string fullPrompt = Localization.GetFormat("HELP_STRETCHER_CONTROL_GRAB", "~y~{0}~w~: {1} Stretcher", grabKey, grabAction);
 
                         string heightKey = EntryPoint.KeyConfig.StretcherHeightKey.Value.ToString();
-                        string heightAction = (StretcherManager.CurrentState == StretcherManager.StretcherState.Low)
-                            ? Localization.Get("ACTION_RAISE")
-                            : Localization.Get("ACTION_LOWER");
-                        fullPrompt += "\n" + string.Format(Localization.Get("HELP_STRETCHER_CONTROL_HEIGHT"), heightKey, heightAction);
+                        string heightAction = (StretcherManager.CurrentState == StretcherManager.StretcherState.Low) ? (Localization.Get("ACTION_RAISE", "Raise")) : (Localization.Get("ACTION_LOWER", "Lower"));
+                        fullPrompt += "\n" + Localization.GetFormat("HELP_STRETCHER_CONTROL_HEIGHT", "~y~{0}~w~: {1}", heightKey, heightAction);
 
                         if (StretcherManager.CurrentState != StretcherManager.StretcherState.Low)
                         {
                             string sitKey = EntryPoint.KeyConfig.StretcherSitKey.Value.ToString();
-                            string sitAction = (StretcherManager.CurrentState == StretcherManager.StretcherState.Sitting)
-                                ? Localization.Get("ACTION_LAY")
-                                : Localization.Get("ACTION_SIT");
-                            fullPrompt += "\n" + string.Format(Localization.Get("HELP_STRETCHER_CONTROL_SIT"), sitKey, sitAction);
+                            string sitAction = (StretcherManager.CurrentState == StretcherManager.StretcherState.Sitting) ? (Localization.Get("ACTION_LAY", "Lay Patient Down")) : (Localization.Get("ACTION_SIT", "Sit Patient Up"));
+                            fullPrompt += "\n" + Localization.GetFormat("HELP_STRETCHER_CONTROL_SIT", "~y~{0}~w~: {1}", sitKey, sitAction);
                         }
 
                         Game.DisplayHelp(fullPrompt);
@@ -119,11 +125,11 @@ namespace EmsPlus.Managers
                     }
                 }
 
-                // 3. Ambulance Prompt
+                // Priority 4: Ambulance Prompt
                 if (!promptShown && AmbulanceManager.IsPlayerNearInteractionPoint())
                 {
                     string keyName = EntryPoint.KeyConfig.OpenAmbulanceMenuKey.Value.ToString();
-                    Game.DisplayHelp(string.Format(Localization.Get("HELP_OPEN_AMBULANCE_MENU"), keyName));
+                    Game.DisplayHelp(Localization.GetFormat("HELP_AMBULANCE_MENU", "Press ~y~{0}~w~ to open the equipment menu.", keyName));
                     promptShown = true;
                 }
 
@@ -159,7 +165,7 @@ namespace EmsPlus.Managers
                             {
                                 if (AmbulanceManager.CurrentConfig != null && !AmbulanceManager.CurrentConfig.CanEnterCabin)
                                 {
-                                    Game.DisplayNotification(Localization.Get("ERR_NO_CABIN") ?? "~r~This vehicle does not have an accessible cabin.");
+                                    Game.DisplayNotification(Localization.Get("ERR_NO_CABIN", "~r~This vehicle does not have an accessible cabin."));
                                 }
                                 else if (AmbulanceManager.IsStretcherLoaded)
                                 {
@@ -168,7 +174,7 @@ namespace EmsPlus.Managers
                                 }
                                 else
                                 {
-                                    Game.DisplayNotification("~r~Cannot enter cabin.~w~ The stretcher must be loaded first.");
+                                    Game.DisplayNotification(Localization.Get("ERR_NO_STRETCHER_FOR_CABIN", "~r~Cannot enter cabin.~w~ The stretcher must be loaded first."));
                                 }
                             }
                         }
@@ -192,7 +198,7 @@ namespace EmsPlus.Managers
                             !GameState.CurrentBystander.HasBeenSpokenTo &&
                             Game.LocalPlayer.Character.DistanceTo(GameState.CurrentBystander.Character) < 3.0f)
                         {
-                            Game.DisplayHelp($"Press ~y~Y~w~ to talk to the witness.");
+                            Game.DisplayHelp(Localization.Get("HELP_TALK_TO_WITNESS", "Press ~y~Y~w~ to talk to the witness."));
                             if (Game.IsKeyDown(Keys.Y))
                             {
                                 DialogueManager.StartDialogue(
@@ -207,7 +213,7 @@ namespace EmsPlus.Managers
                                  GameState.CurrentPatient.Consciousness > ConsciousnessLevel.Pain &&
                                  Game.LocalPlayer.Character.DistanceTo(GameState.CurrentPatient.Character) < 2.0f)
                         {
-                            Game.DisplayHelp($"Press ~y~Y~w~ to talk to the patient.");
+                            Game.DisplayHelp(Localization.Get("HELP_TALK_TO_PATIENT", "Press ~y~Y~w~ to talk to the patient."));
                             if (Game.IsKeyDown(Keys.Y))
                             {
                                 DialogueManager.StartDialogue(

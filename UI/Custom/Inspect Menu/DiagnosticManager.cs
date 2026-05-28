@@ -19,7 +19,7 @@ namespace EmsPlus.UI.Custom.InspectMenu
             if (p == null) return;
 
             string condition = p.DispatchDiagnosis;
-            newItems.Add(new DiagnosticItem(Localization.Get("DIAG_DISPATCH_DIAGNOSIS"), condition, true));
+            newItems.Add(new DiagnosticItem(Localization.Get("DIAG_DISPATCH_DIAGNOSIS", "DISPATCH DIAGNOSIS"), condition, true));
 
             foreach (var cond in p.Conditions)
             {
@@ -37,7 +37,7 @@ namespace EmsPlus.UI.Custom.InspectMenu
                 }
                 newItems.Add(new DiagnosticItem(
                     cond.Name,
-                    cond.IsTreated ? (Localization.Get("DIAG_STATUS_TREATED") ?? "TREATED") : (Localization.Get("DIAG_STATUS_REQUIRED") ?? "REQUIRED"),
+                    cond.IsTreated ? (Localization.Get("DIAG_STATUS_TREATED", "TREATED")) : (Localization.Get("DIAG_STATUS_REQUIRED", "REQUIRED")),
                     cond.IsTreated,
                     null, null, steps
                 ));
@@ -48,36 +48,36 @@ namespace EmsPlus.UI.Custom.InspectMenu
                 // HR
                 string hrText = GetStateText(p.HeartRate);
                 bool hrOk = p.HeartRate == VitalState.Normal;
-                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_HR"), hrText, hrOk));
+                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_HR", "Heart Rate"), hrText, hrOk));
 
                 // SpO2
                 string oxyText = GetStateText(p.SpO2);
                 bool oxyOk = p.SpO2 == VitalState.Normal;
-                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_SPO2"), oxyText, oxyOk));
+                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_SPO2", "O2 Saturation"), oxyText, oxyOk));
             }
             else
             {
-                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_MONITOR"), Localization.Get("DIAG_MONITOR_NOT_CONNECTED"), true));
+                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_MONITOR", "Monitor"), Localization.Get("DIAG_MONITOR_NOT_CONNECTED", "Not Connected"), true));
             }
 
             if (p.IsBpCuffConnected)
             {
                 string bpText = GetStateText(p.BloodPressure);
                 bool bpOk = p.BloodPressure == VitalState.Normal;
-                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_BP"), bpText, bpOk));
+                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_BP", "Blood Pressure"), bpText, bpOk));
             }
 
             if (p.IsBglChecked)
             {
                 string bglText = GetStateText(p.BloodGlucose);
                 bool bglOk = p.BloodGlucose == VitalState.Normal;
-                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_BGL"), bglText, bglOk));
+                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_BGL", "Blood Glucose"), bglText, bglOk));
             }
             Items = newItems;
 
             string conscLoc = Localization.Get($"CONSC_{p.Consciousness.ToString().ToUpperInvariant()}") ?? p.Consciousness.ToString();
             newItems.Add(new DiagnosticItem(
-                Localization.Get("DIAG_CONSCIOUSNESS") ?? "Consciousness",
+                Localization.Get("DIAG_CONSCIOUSNESS", "Consciousness"),
                 conscLoc,
                 p.Consciousness == ConsciousnessLevel.Alert || p.Consciousness == ConsciousnessLevel.Verbal
             ));

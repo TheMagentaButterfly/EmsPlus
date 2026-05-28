@@ -427,20 +427,20 @@ namespace EmsPlus.Managers
                 string heightKeyStr = EntryPoint.KeyConfig.StretcherHeightKey?.Value?.ToString() ?? "H";
                 string sitKeyStr = EntryPoint.KeyConfig.StretcherSitKey?.Value?.ToString() ?? "J";
 
-                string text = IsAttachedToPlayer ? Localization.Get("PROMPT_RELEASE_STRETCHER") : Localization.Get("PROMPT_GRAB_STRETCHER");
+                string text = IsAttachedToPlayer ? Localization.Get("PROMPT_RELEASE_STRETCHER", "[G] Release Stretcher") : Localization.Get("PROMPT_GRAB_STRETCHER", "[G] Grab Stretcher");
 
                 if (CurrentState == StretcherState.Low)
                 {
-                    text += " | " + Localization.Get("PROMPT_RAISE_STRETCHER");
+                    text += " | " + Localization.Get("PROMPT_RAISE_STRETCHER", "[H] Raise");
                 }
                 else
                 {
-                    text += " | " + Localization.Get("PROMPT_LOWER_STRETCHER");
+                    text += " | " + Localization.Get("PROMPT_LOWER_STRETCHER", "[H] Lower");
                 }
 
                 if (CurrentState != StretcherState.Low)
                 {
-                    text += " | " + Localization.Get("PROMPT_SITTING_STRETCHER");
+                    text += " | " + Localization.Get("PROMPT_SITTING_STRETCHER", "[J] Toggle Sitting");
                 }
 
                 text = text.Replace("[G]", $"[{grabKeyStr}]")

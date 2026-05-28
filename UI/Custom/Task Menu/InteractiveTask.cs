@@ -176,7 +176,7 @@ namespace EmsPlus.Custom.TaskMenu
 
             Elements.ForEach(el => el?.DrawNativeShadow());
 
-            var hTxt = Localization.Get("TASK_HELP_TEXT");
+            var hTxt = Localization.Get("TASK_HELP_TEXT", "Drag items to complete the procedure");
             float hWidth = NativeUITools.MeasureNativeTextWidth(hTxt, 0.35f);
             float hX = (Game.Resolution.Width / 2f);
             float hY = Game.Resolution.Height - 60f;
@@ -188,7 +188,7 @@ namespace EmsPlus.Custom.TaskMenu
 
             Elements.ForEach(el => el?.DrawNativeOverlays());
 
-            string exitText = Localization.Get("BTN_EXIT");
+            string exitText = Localization.Get("BTN_EXIT", "[ESC] Exit");
             NativeUITools.DrawNativeText(exitText, _exitButtonRect.X + (_exitButtonRect.Width / 2), _exitButtonRect.Y + 6, 0.35f, Color.FromArgb(ta, Color.White), true);
             NativeUITools.DrawNativeText(hTxt, hX, hY, 0.35f, Color.FromArgb(ta, 180, 200, 220), true);
 

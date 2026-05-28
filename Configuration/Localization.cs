@@ -8,13 +8,13 @@ namespace EmsPlus
     public static class Localization
     {
         private static Dictionary<string, string> _strings = new Dictionary<string, string>();
+        private static string _currentLangFile = "";
 
         public static void Load()
         {
             _strings.Clear();
 
             string folder = Path.Combine(Application.StartupPath, "Plugins", "EmsPlus", "Settings", "Localization");
-
             string defaultFile = Path.Combine(folder, "English.ini");
             if (!File.Exists(defaultFile)) CreateDefaultFile(defaultFile);
 
@@ -27,15 +27,38 @@ namespace EmsPlus
                 targetFile = defaultFile;
             }
 
+            _currentLangFile = targetFile;
             ParseIni(targetFile);
             Game.Console.Print($"[EmsPlus] Localization loaded: {Path.GetFileNameWithoutExtension(targetFile)} ({_strings.Count} keys).");
         }
 
-        public static string Get(string key)
+        /// <summary>
+        /// Gets a localized string. If the key does not exist and a defaultText is provided, 
+        /// it automatically adds the key and text to the .ini file so translators can find it later!
+        /// </summary>
+        public static string Get(string key, string defaultText = null)
         {
             if (_strings.TryGetValue(key, out string value))
                 return value;
+
+            if (!string.IsNullOrEmpty(defaultText))
+            {
+                _strings[key] = defaultText;
+                AppendMissingKey(key, defaultText);
+                return defaultText;
+            }
+
             return key;
+        }
+
+        /// <summary>
+        /// A helper method for formatted strings that also supports auto-appending.
+        /// </summary>
+        public static string GetFormat(string key, string defaultText, params object[] args)
+        {
+            string text = Get(key, defaultText);
+            try { return string.Format(text, args); }
+            catch { return text; }
         }
 
         public static string Get(string key, params object[] args)
@@ -46,6 +69,21 @@ namespace EmsPlus
                 catch { return value; }
             }
             return key;
+        }
+
+        private static void AppendMissingKey(string key, string value)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(_currentLangFile) || !File.Exists(_currentLangFile)) return;
+
+                string safeValue = value.Replace("\n", "\\n");
+
+                File.AppendAllText(_currentLangFile, $"{key}={safeValue}\n");
+
+                Game.Console.Print($"[EmsPlus] Localization Auto-Added: '{key}'");
+            }
+            catch { }
         }
 
         private static void ParseIni(string path)
@@ -273,6 +311,7 @@ namespace EmsPlus
                 w.WriteLine("TRT_EYEPATCH=Eye Patch");
                 w.WriteLine("TRT_EYESHIELD=Eye Shield");
                 w.WriteLine("TRT_STABILISEOBJECT=Object Stabilizer");
+                w.WriteLine("TRT_IVACCESS=IV Start Kit");
                 w.WriteLine("TRT_NALOXONE=Naloxone");
                 w.WriteLine("TRT_GLUCOSE=Glucose");
                 w.WriteLine("TRT_ADRENALINE=Adrenaline");
@@ -623,113 +662,6 @@ namespace EmsPlus
                 w.WriteLine("TUTORIAL_CABIN_1=The patient is now loaded. You can enter the patient cabin to continue treatment while transporting to the hospital.");
                 w.WriteLine("TUTORIAL_CABIN_2=Press the quick-key ~y~{0}~w~ to enter or exit the cabin. You can also use the ambulance menu. Inside, you have access to all your medical supplies.");
                 w.WriteLine("TUTORIAL_CABIN_3=A waypoint to the nearest hospital has been set. Transport the patient to complete the call. This concludes the tutorial!");
-                w.WriteLine("");
-
-                w.WriteLine("[Native Patient Menu]");
-                w.WriteLine("ACT_TRAUMA_SWEEP=Perform Trauma Sweep");
-                w.WriteLine("DESC_TRAUMA_SWEEP=Examine patient's entire body for injuries.");
-                w.WriteLine("NOTIF_SWEEP_COMPLETE=~g~Trauma sweep complete.");
-                w.WriteLine("CAT_SEP_CONDITIONS=~c~=== ~r~ACTIVE CONDITIONS ~c~===");
-                w.WriteLine("DIAG_STATUS_NEEDS_TREATMENT=~r~Needs Treatment");
-                w.WriteLine("DIAG_STATUS_NONE=~c~None");
-                w.WriteLine("LBL_SYSTEMIC=Systemic");
-                w.WriteLine("DESC_TIP_FORMAT=Status: {0}\\nRequired: {1}");
-                w.WriteLine("ACT_ESTABLISHING_IV=Establishing IV...");
-                w.WriteLine("ACT_CHECKING_BGL=Checking Blood Glucose...");
-                w.WriteLine("NOTIF_SWEEP_COMPLETE_TIPS=~g~Trauma sweep complete. Check Diagnostics for tips.");
-                w.WriteLine("NOTIF_IV_ESTABLISHED=~g~IV Established.");
-                w.WriteLine("NOTIF_BGL_LOW=~y~BGL Result: LOW.");
-                w.WriteLine("NOTIF_BGL_HIGH=~r~BGL Result: HIGH.");
-                w.WriteLine("NOTIF_BGL_NORMAL=~g~BGL Result: NORMAL.");
-                w.WriteLine("CAT_SEP_ASSESSMENTS=~c~=== ~b~ASSESSMENTS ~c~===");
-                w.WriteLine("CAT_SEP_TREATMENTS=~c~=== ~r~TREATMENTS ~c~===");
-                w.WriteLine("CAT_SEP_MEDICATIONS=~c~=== ~g~MEDICATIONS ~c~===");
-                w.WriteLine("CAT_SEP_LOGISTICS=~c~=== ~p~LOGISTICS ~c~===");
-                w.WriteLine("CAT_SEP_IV_MEDS=~c~=== IV MEDS ===");
-                w.WriteLine("CAT_SEP_OXYGEN=~c~=== OXYGEN & MASKS ===");
-                w.WriteLine("");
-                w.WriteLine("[NativeUI Colored Strings]");
-                w.WriteLine("MENU_DIAGNOSTICS_COLORED=~b~Diagnostics");
-                w.WriteLine("MENU_PATIENT_DATA_COLORED=~b~Patient Data");
-                w.WriteLine("MENU_QUESTIONS_COLORED=~b~Questions");
-                w.WriteLine("MENU_TRAUMA_COLORED=~r~Trauma");
-                w.WriteLine("MENU_AIRWAY_COLORED=~y~Airway");
-                w.WriteLine("MENU_ORAL_COLORED=~g~Oral Meds");
-                w.WriteLine("MENU_IV_COLORED=~o~IV / Access");
-                w.WriteLine("MENU_IM_COLORED=~g~IM Meds");
-                w.WriteLine("MENU_GROUND_KITS_COLORED=~p~Ground Kits");
-
-                w.WriteLine("SUBTITLE_DIAGNOSTICS=~b~Assess Patient");
-                w.WriteLine("SUBTITLE_PATIENT_DATA=~b~Demographics & Info");
-                w.WriteLine("SUBTITLE_QUESTIONS=~b~Patient Interview");
-                w.WriteLine("SUBTITLE_TRAUMA=~b~Treat Injuries");
-                w.WriteLine("SUBTITLE_AIRWAY=~b~Airway & Breathing");
-                w.WriteLine("SUBTITLE_ORAL=~b~Oral Medications");
-                w.WriteLine("SUBTITLE_IV=~b~Fluids & IV Lines");
-                w.WriteLine("SUBTITLE_IM=~b~Intramuscular Injections");
-                w.WriteLine("SUBTITLE_GROUND_KITS=~b~Interact with Medical Kits");
-
-                w.WriteLine("DESC_DIAGNOSTICS=Assess patient vitals and trauma.");
-                w.WriteLine("DESC_PATIENT_DATA=View generated patient demographics and history.");
-                w.WriteLine("DESC_QUESTION_PATIENT=Interview the patient using the SAMPLER format.");
-                w.WriteLine("DESC_TRAUMA=Treat physical injuries and bleeding.");
-                w.WriteLine("DESC_AIRWAY=Airway management and oxygen therapy.");
-                w.WriteLine("DESC_IV=Manage IV lines and fluids.");
-                w.WriteLine("DESC_ORAL=Administer oral medications.");
-                w.WriteLine("DESC_IM=Intramuscular medications.");
-                w.WriteLine("DESC_GROUND_KITS=Interact with dropped equipment.");
-                w.WriteLine("DESC_QUESTION_CATEGORY=Ask questions from this category.");
-                w.WriteLine("DESC_SELECT_QUESTION=~b~Select a question");
-
-                w.WriteLine("ACT_QUESTION_PATIENT_COLORED=~b~Question Patient");
-                w.WriteLine("ACT_UNLOAD_PATIENT_COLORED=~p~Unload Patient");
-                w.WriteLine("ACT_LOAD_PATIENT_COLORED=~p~Load Patient");
-
-                w.WriteLine("ACT_MANUAL_AIRWAY_COLORED=~y~Manual Airway Maneuver");
-                w.WriteLine("NOTIF_AIRWAY_OPENED=~g~Airway manually opened.");
-                w.WriteLine("ACT_APPLY_OXYGEN_MASK_COLORED=~b~Apply Oxygen Mask");
-                w.WriteLine("ACT_APPLY_NRB_MASK_COLORED=~b~Apply NRB Mask");
-                w.WriteLine("ACT_USE_BVM_COLORED=~b~Use Bag Valve Mask");
-                w.WriteLine("ACT_MANAGING_AIRWAY=Managing Airway...");
-                w.WriteLine("ACT_APPLYING_O2_MASK=Applying O2 Mask...");
-                w.WriteLine("ACT_APPLYING_NRB_MASK=Applying NRB Mask...");
-                w.WriteLine("ACT_ASSISTING_VENTILATIONS=Assisting Ventilations...");
-                w.WriteLine("REQ_OXYGEN_BAG_COLORED=~r~Requires Oxygen Bag");
-
-                w.WriteLine("ACT_ESTABLISH_IV_COLORED=~o~Establish IV");
-                w.WriteLine("ITEM_IV_ESTABLISHED_COLORED=~g~IV ESTABLISHED");
-                w.WriteLine("ACT_HANG_FLUIDS_COLORED=~b~Hang IV Fluids");
-                w.WriteLine("ACT_STOP_FLUIDS_COLORED=~y~Stop Fluids");
-                w.WriteLine("REQ_IV_COLORED=~r~Requires IV Access");
-                w.WriteLine("REQ_GENERIC_COLORED=~r~Requires {0}");
-
-                w.WriteLine("ACT_APPLY_TREATMENT_COLORED=~r~Apply {0}");
-                w.WriteLine("DESC_INJURY_LOCATION=Location: ~y~{0}~w~ ({1})");
-                w.WriteLine("REQ_TRAUMA_BAG_COLORED=~r~Requires Trauma Bag");
-                w.WriteLine("ITEM_NO_INJURIES_COLORED=~g~No Injuries Found");
-                w.WriteLine("DESC_NO_INJURIES_NATIVEUI=Patient has no visible untreated trauma. Make sure to perform a Trauma Sweep from the Diagnostics menu first.");
-
-                w.WriteLine("ITEM_MED_COLORED=~g~{0}");
-
-                w.WriteLine("DATA_NAME_COLORED=~b~Full Name");
-                w.WriteLine("DATA_DOB_COLORED=~b~DOB & Age");
-                w.WriteLine("DATA_GENDER_COLORED=~b~Gender");
-                w.WriteLine("DATA_HEIGHT_COLORED=~b~Height");
-                w.WriteLine("DATA_WEIGHT_COLORED=~b~Weight");
-                w.WriteLine("DATA_BLOOD_COLORED=~r~Blood Type");
-                w.WriteLine("DATA_ALLERGY_COLORED=~y~Known Allergies");
-                w.WriteLine("CAT_SEP_MEDICAL_INFO=~c~=== ~r~MEDICAL INFO ~c~===");
-
-                w.WriteLine("ITEM_NO_KITS_NEARBY_COLORED=~c~No Kits Nearby");
-                w.WriteLine("ACT_PICK_UP_KIT_COLORED=~p~Pick Up {0}");
-                w.WriteLine("CAT_SEP_DEFIB=~c~=== DEFIBRILLATOR ===");
-                w.WriteLine("ACT_ATTACH_MONITOR_COLORED=~g~Attach Monitor");
-                w.WriteLine("ACT_REMOVE_MONITOR_COLORED=~y~Remove Monitor");
-                w.WriteLine("ACT_ATTACH_BP_CUFF_COLORED=~g~Attach BP Cuff");
-                w.WriteLine("ACT_REMOVE_BP_CUFF_COLORED=~y~Remove BP Cuff");
-
-                w.WriteLine("QUESTION_GROUP_COLORED=~b~{0}");
-                w.WriteLine("QUESTION_TEXT_COLORED=~w~{0}");
             }
         }
     }

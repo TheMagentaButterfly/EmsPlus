@@ -31,7 +31,8 @@ namespace EmsPlus.Managers.Actions
             string animDict = EntryPoint.AnimationConfig.MedicTreatDict.Value;
             string animName = EntryPoint.AnimationConfig.MedicTreatName.Value;
 
-            string message = Localization.Get("ACTION_ADMINISTERING_GENERIC", medName);
+            string message = Localization.Get("ACTION_ADMINISTERING_GENERIC", "Administering {0}...", medName);
+
             if (message == "ACTION_ADMINISTERING_GENERIC") message = $"Administering {medName}...";
 
             ActionsCore.Run(message, 4000, animDict, animName, () =>
@@ -42,7 +43,7 @@ namespace EmsPlus.Managers.Actions
                 if (medName == "Epinephrine") p.ApplyTreatment(EmsTreatment.Adrenaline);
                 else if (medName == "Naloxone") p.ApplyTreatment(EmsTreatment.Naloxone);
                 else if (medName == "Dextrose") p.ApplyTreatment(EmsTreatment.Glucose);
-                else Game.DisplayNotification(string.Format(Localization.Get("NOTIF_ADMINISTERED"), medName));
+                else Game.DisplayNotification(string.Format(Localization.Get("NOTIF_ADMINISTERED", "~g~Administered {0}."), medName));
             });
         }
 
@@ -54,7 +55,7 @@ namespace EmsPlus.Managers.Actions
 
             if (!hasO2 && !hasTrauma) { return; }
 
-            ActionsCore.Run("Applying Oxygen...", 2000,
+            ActionsCore.Run(Localization.Get("ACTION_ADMINISTERING_OXYGEN", "Applying Oxygen..."), 2000,
                 EntryPoint.AnimationConfig.MedicTreatDict.Value,
                 EntryPoint.AnimationConfig.MedicTreatName.Value, () =>
                 {
@@ -72,7 +73,7 @@ namespace EmsPlus.Managers.Actions
             if (!InventoryManager.IsKitAvailable("TRAUMABAG", patientPos)) return;
             if (GameState.CurrentPatient == null || !GameState.CurrentPatient.IsIVEstablished) return;
 
-            ActionsCore.Run("Hanging Saline Bag...", 3000,
+            ActionsCore.Run(Localization.Get("ACTION_HANGING_SALINE_BAG", "Hanging Saline Bag..."), 3000,
                 EntryPoint.AnimationConfig.MedicTreatDict.Value,
                 EntryPoint.AnimationConfig.MedicTreatName.Value,
                 () =>
@@ -90,7 +91,7 @@ namespace EmsPlus.Managers.Actions
             // NATIVE-UI BYPASS
             if (EntryPoint.EmsPlusConfig.UseNativeUIPatientMenu.Value)
             {
-                ActionsCore.Run(Localization.Get("ACT_ESTABLISHING_IV") ?? "Establishing IV...", 5000,
+                ActionsCore.Run(Localization.Get("ACT_ESTABLISHING_IV", "Establishing IV..."), 5000,
                     EntryPoint.AnimationConfig.MedicTreatDict.Value,
                     EntryPoint.AnimationConfig.MedicTreatName.Value,
                     () => {
@@ -98,7 +99,7 @@ namespace EmsPlus.Managers.Actions
                         {
                             GameState.CurrentPatient.IsIVEstablished = true;
                             GameState.CurrentPatient.ApplyTreatment(EmsTreatment.IVAccess, bone);
-                            Rage.Game.DisplayNotification(Localization.Get("NOTIF_IV_ESTABLISHED") ?? "~g~IV Established.");
+                            Rage.Game.DisplayNotification(Localization.Get("NOTIF_IV_ESTABLISHED", "~g~IV Established."));
                         }
                     });
                 return;
@@ -131,7 +132,7 @@ namespace EmsPlus.Managers.Actions
         public static void ApplyCCollar()
         {
             if (GameState.CurrentPatient == null) return;
-            ActionsCore.Run("Applying Cervical Collar...", 4000,
+            ActionsCore.Run(Localization.Get("ACTION_APPLYING_C_COLLAR", "Applying Cervical Collar..."), 4000,
                 EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () =>
                 {
                     GameState.CurrentPatient.IsCCollarApplied = true;
@@ -142,7 +143,7 @@ namespace EmsPlus.Managers.Actions
         public static void ApplySplint(Rage.PedBoneId bone)
         {
             if (GameState.CurrentPatient == null) return;
-            ActionsCore.Run("Applying Splint...", 5000,
+            ActionsCore.Run(Localization.Get("ACTION_APPLYING_SPLINT", "Applying Splint..."), 5000,
                 EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () =>
                 {
                     GameState.CurrentPatient.IsLimbSplinted = true;
@@ -157,7 +158,7 @@ namespace EmsPlus.Managers.Actions
             string animDict = EntryPoint.AnimationConfig.MedicTreatDict.Value;
             string animName = EntryPoint.AnimationConfig.MedicTreatName.Value;
 
-            ActionsCore.Run(Localization.Get("NOTIF_TREATING"), 3000, animDict, animName, () =>
+            ActionsCore.Run(Localization.Get("NOTIF_TREATING", "Treating injury..."), 3000, animDict, animName, () =>
             {
                 GameState.CurrentPatient.ApplyTreatment(EmsTreatment.Bandage, injury.Bone);
             });

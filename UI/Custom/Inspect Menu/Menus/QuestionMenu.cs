@@ -1,5 +1,4 @@
-﻿using EmsPlus.UI.Custom.InspectMenu;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace EmsPlus.UI.Custom.InspectMenu.Menus
 {

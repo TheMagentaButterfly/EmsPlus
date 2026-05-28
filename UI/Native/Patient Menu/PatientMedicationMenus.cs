@@ -31,8 +31,8 @@ namespace EmsPlus.UI.Native.PatientMenu
 
                 // COLORIZED
                 string title = $"~g~{med.Name}";
-                string sub = !hasKit ? $"~r~{string.Format(Localization.Get("REQ_GENERIC"), reqKit)}" : med.Description;
-                string reqKitString = string.Format(Localization.Get("REQ_GENERIC_COLORED") ?? "~r~Requires {0}", reqKit);
+                string sub = !hasKit ? $"~r~{string.Format(Localization.GetFormat("REQ_GENERIC", "Requires {0}"), reqKit)}" : med.Description;
+                string reqKitString = string.Format(Localization.GetFormat("REQ_GENERIC_COLORED", "~r~Requires {0}"), reqKit);
 
                 AddInteractiveItem(menu, title, sub, hasKit, () => {
                     TreatmentActions.AdministerGeneric(med.Name);

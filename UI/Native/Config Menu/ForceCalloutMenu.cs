@@ -12,7 +12,7 @@ namespace EmsPlus.UI.Native.ConfigMenu
 
         private static void BuildForceCalloutMenu()
         {
-            ForceCalloutMenu = new UIMenu($"{C_HEADER}{Localization.Get("MENU_FORCE_CALLOUT_TITLE")}", Localization.Get("MENU_FORCE_CALLOUT_SUBTITLE"));
+            ForceCalloutMenu = new UIMenu($"{C_HEADER}{Localization.Get("MENU_FORCE_CALLOUT_TITLE", "Force Callout")}", Localization.Get("MENU_FORCE_CALLOUT_SUBTITLE", "Manually start a callout"));
             MenuCore.AddMenu(ForceCalloutMenu);
 
             ForceCalloutMenu.OnMenuOpen += (menu) =>

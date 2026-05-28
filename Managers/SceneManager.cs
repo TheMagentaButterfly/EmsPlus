@@ -14,7 +14,7 @@ namespace EmsPlus.Managers
             if (IsSceneSecured)
             {
                 ClearScene();
-                Game.DisplayNotification("~g~Scene Unsecured:~w~ Traffic and pedestrians returning to normal.");
+                Game.DisplayNotification(Localization.Get("NOTIF_SCENE_UNSECURED", "~g~Scene Unsecured:~w~ Traffic and pedestrians returning to normal."));
             }
             else
             {
@@ -25,7 +25,7 @@ namespace EmsPlus.Managers
                 _popZoneId = NativeFunction.Natives.ADD_POPULATION_BLOCKING_AREA<int>(p.X - 40f, p.Y - 40f, p.X + 40f, p.Y + 40f, false, false, false, false);
 
                 IsSceneSecured = true;
-                Game.DisplayNotification("~r~Scene Secured:~w~ Traffic stopped and pedestrians blocked.");
+                Game.DisplayNotification(Localization.Get("NOTIF_SCENE_SECURED", "~r~Scene Secured:~w~ Traffic stopped and pedestrians blocked."));
             }
         }
 

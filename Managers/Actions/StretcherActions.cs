@@ -20,7 +20,7 @@ namespace EmsPlus.Managers.Actions
         {
             if (AmbulanceManager.IsStretcherLoaded)
             {
-                Game.DisplayNotification(Localization.Get("ERR_STRETCHER_IN_AMBULANCE"));
+                Game.DisplayNotification(Localization.Get("ERR_STRETCHER_IN_AMBULANCE", "~r~Cannot load patient:~w~ stretcher is already in ambulance."));
                 return;
             }
 

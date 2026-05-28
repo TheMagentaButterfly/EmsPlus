@@ -56,7 +56,7 @@ namespace EmsPlus.Managers
                         NativeFunction.Natives.DRAW_MARKER(1, TargetEntrance.Coords.X, TargetEntrance.Coords.Y, TargetEntrance.Coords.Z - 1.0f, 0, 0, 0, 0, 0, 0, 1.5f, 1.5f, 1.0f, 0, 200, 255, 150, false, false, 2, false, 0, 0, false);
                         if (dist < 1.5f)
                         {
-                            Game.DisplayHelp($"Press ~INPUT_CONTEXT~ to enter {TargetEntrance.Name}.");
+                            Game.DisplayHelp(Localization.GetFormat("HELP_ENTER_INTERIOR", "Press ~INPUT_CONTEXT~ to enter {0}.", TargetEntrance.Name));
                             if (Game.IsControlJustPressed(0, GameControl.Context))
                             {
                                 EnterInterior(TargetInterior, TargetEntrance);
@@ -74,7 +74,7 @@ namespace EmsPlus.Managers
                     NativeFunction.Natives.DRAW_MARKER(1, CurrentInterior.ExitCoords.X, CurrentInterior.ExitCoords.Y, CurrentInterior.ExitCoords.Z - 1.0f, 0, 0, 0, 0, 0, 0, 1.5f, 1.5f, 1.0f, 0, 200, 255, 150, false, false, 2, false, 0, 0, false);
                     if (dist < 1.5f)
                     {
-                        Game.DisplayHelp("Press ~INPUT_CONTEXT~ to exit.");
+                        Game.DisplayHelp(Localization.GetFormat("HELP_EXIT_INTERIOR", "Press ~INPUT_CONTEXT~ to exit."));
                         if (Game.IsControlJustPressed(0, GameControl.Context))
                         {
                             ExitInterior();

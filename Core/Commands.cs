@@ -97,7 +97,7 @@ namespace EmsPlus
             clipboardThread.Join();
 
             Game.Console.Print($"[EmsPlus] Position: {pos}");
-            Game.DisplayNotification(Localization.Get("NOTIF_POSITION_COPIED", pos));
+            Game.DisplayNotification(Localization.Get("NOTIF_POSITION_COPIED", "~g~Position copied to clipboard!", pos));
         }
     }
 }

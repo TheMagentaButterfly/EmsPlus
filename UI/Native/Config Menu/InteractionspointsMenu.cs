@@ -17,11 +17,11 @@ namespace EmsPlus.UI.Native.ConfigMenu
 
             if (AmbulanceManager.CurrentConfig == null)
             {
-                menu.AddItem(new UIMenuItem($"{C_DANGER}{Localization.Get("ITEM_NO_VEHICLE")}", Localization.Get("DESC_NO_VEHICLE")));
+                menu.AddItem(new UIMenuItem($"{C_DANGER}{Localization.Get("ITEM_NO_VEHICLE", "No Vehicle")}", Localization.Get("DESC_NO_VEHICLE", "No vehicle is currently selected.")));
                 return;
             }
 
-            var btnAddNew = new UIMenuItem($"{C_SUCCESS}{Localization.Get("ITEM_ADD_INTERACTION_POINT")}", Localization.Get("DESC_ADD_INTERACTION_POINT"));
+            var btnAddNew = new UIMenuItem($"{C_SUCCESS}{Localization.Get("ITEM_ADD_INTERACTION_POINT", "Add Interaction Point")}", Localization.Get("DESC_ADD_INTERACTION_POINT", "Add a new interaction point."));
             menu.AddItem(btnAddNew);
             menu.OnItemSelect += (s, item, i) =>
             {
@@ -37,10 +37,10 @@ namespace EmsPlus.UI.Native.ConfigMenu
                 int index = i;
                 var point = AmbulanceManager.CurrentConfig.InteractionPoints[index];
 
-                var pointMenu = new UIMenu($"{C_HEADER}" + string.Format(Localization.Get("MENU_POINT_TITLE"), index + 1), Localization.Get("MENU_POINT_SUBTITLE"));
+                var pointMenu = new UIMenu($"{C_HEADER}" + string.Format(Localization.Get("MENU_POINT_TITLE", "Point {0}"), index + 1), Localization.Get("MENU_POINT_SUBTITLE", "Edit the interaction point"));
                 MenuCore.AddMenu(pointMenu);
 
-                var btnEditPoint = new UIMenuItem(string.Format(Localization.Get("ITEM_EDIT_POINT"), index + 1), string.Format(Localization.Get("DESC_EDIT_POINT"), point.Offset.X, point.Offset.Y, point.Offset.Z, point.Scale));
+                var btnEditPoint = new UIMenuItem(string.Format(Localization.Get("ITEM_EDIT_POINT", "Edit Point {0}"), index + 1), string.Format(Localization.Get("DESC_EDIT_POINT", "Edit the interaction point at X: {0}, Y: {1}, Z: {2}, Scale: {3}"), point.Offset.X, point.Offset.Y, point.Offset.Z, point.Scale));
                 menu.AddItem(btnEditPoint);
                 menu.BindMenuToItem(pointMenu, btnEditPoint);
 
@@ -55,12 +55,12 @@ namespace EmsPlus.UI.Native.ConfigMenu
         {
             var point = AmbulanceManager.CurrentConfig.InteractionPoints[index];
 
-            MenuHelpers.AddListControl(editMenu, $"{C_HEADER}X {C_INFO}{Localization.Get("LABEL_LEFT_RIGHT")}", point.Offset.X, v => { var p = AmbulanceManager.CurrentConfig.InteractionPoints[index]; p.Offset = new Vector3(v, p.Offset.Y, p.Offset.Z); }, null);
-            MenuHelpers.AddListControl(editMenu, $"{C_HEADER}Y {C_INFO}{Localization.Get("LABEL_FORWARD_BACK")}", point.Offset.Y, v => { var p = AmbulanceManager.CurrentConfig.InteractionPoints[index]; p.Offset = new Vector3(p.Offset.X, v, p.Offset.Z); }, null);
-            MenuHelpers.AddListControl(editMenu, $"{C_HEADER}Z {C_INFO}{Localization.Get("LABEL_UP_DOWN")}", point.Offset.Z, v => { var p = AmbulanceManager.CurrentConfig.InteractionPoints[index]; p.Offset = new Vector3(p.Offset.X, p.Offset.Y, v); }, null);
-            MenuHelpers.AddListControl(editMenu, $"{C_HEADER}{Localization.Get("LABEL_SCALE_SIZE")}", point.Scale, v => { float clampedScale = v < 0.1f ? 0.1f : v; AmbulanceManager.CurrentConfig.InteractionPoints[index].Scale = clampedScale; }, null);
+            MenuHelpers.AddListControl(editMenu, $"{C_HEADER}X {C_INFO}{Localization.Get("LABEL_LEFT_RIGHT", "Left/Right")}", point.Offset.X, v => { var p = AmbulanceManager.CurrentConfig.InteractionPoints[index]; p.Offset = new Vector3(v, p.Offset.Y, p.Offset.Z); }, null);
+            MenuHelpers.AddListControl(editMenu, $"{C_HEADER}Y {C_INFO}{Localization.Get("LABEL_FORWARD_BACK", "Forward/Back")}", point.Offset.Y, v => { var p = AmbulanceManager.CurrentConfig.InteractionPoints[index]; p.Offset = new Vector3(p.Offset.X, v, p.Offset.Z); }, null);
+            MenuHelpers.AddListControl(editMenu, $"{C_HEADER}Z {C_INFO}{Localization.Get("LABEL_UP_DOWN", "Up/Down")}", point.Offset.Z, v => { var p = AmbulanceManager.CurrentConfig.InteractionPoints[index]; p.Offset = new Vector3(p.Offset.X, p.Offset.Y, v); }, null);
+            MenuHelpers.AddListControl(editMenu, $"{C_HEADER}{Localization.Get("LABEL_SCALE_SIZE", "Scale/Size")}", point.Scale, v => { float clampedScale = v < 0.1f ? 0.1f : v; AmbulanceManager.CurrentConfig.InteractionPoints[index].Scale = clampedScale; }, null);
 
-            var btnDelete = new UIMenuItem($"{C_DANGER}{Localization.Get("ITEM_DELETE_POINT")}", Localization.Get("DESC_DELETE_POINT"));
+            var btnDelete = new UIMenuItem($"{C_DANGER}{Localization.Get("ITEM_DELETE_POINT", "Delete Point")}", Localization.Get("DESC_DELETE_POINT", "Delete this interaction point."));
             editMenu.AddItem(btnDelete);
             editMenu.OnItemSelect += (s, item, i) =>
             {

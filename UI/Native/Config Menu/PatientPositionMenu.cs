@@ -14,11 +14,11 @@ namespace EmsPlus.UI.Native.ConfigMenu
         {
             var listModes = new List<dynamic>
             {
-                $"{C_HEADER}{Localization.Get("MODE_NORMAL_STRETCHER")}",
-                $"{C_HEADER}{Localization.Get("MODE_LOWERED_STRETCHER")}",
-                $"{C_HEADER}{Localization.Get("MODE_SITTING_STRETCHER")}"
+                $"{C_HEADER}{Localization.Get("MODE_NORMAL_STRETCHER", "Normal Stretcher")}",
+                $"{C_HEADER}{Localization.Get("MODE_LOWERED_STRETCHER", "Lowered Stretcher")}",
+                $"{C_HEADER}{Localization.Get("MODE_SITTING_STRETCHER", "Sitting Stretcher")}"
             };
-            var itemMode = new UIMenuListItem($"{C_HIGHLIGHT}{Localization.Get("ITEM_EDITING_MODE")}", listModes, 0, Localization.Get("ITEM_EDITING_MODE_DESC_PATIENT"));
+            var itemMode = new UIMenuListItem($"{C_HIGHLIGHT}{Localization.Get("ITEM_EDITING_MODE", "Editing Mode")}", listModes, 0, Localization.Get("ITEM_EDITING_MODE_DESC_PATIENT", "Select the mode for editing patient positions"));
             PatientPosMenu.AddItem(itemMode);
 
             Func<Vector3> getPos = () =>
@@ -64,12 +64,12 @@ namespace EmsPlus.UI.Native.ConfigMenu
                 StretcherGhostManager.UpdatePatientGhost(_editingPatientMode);
             };
 
-            pX = MenuHelpers.AddListControl(PatientPosMenu, $"{C_HEADER}X {C_INFO}{Localization.Get("LABEL_LEFT_RIGHT")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(v, p.Y, p.Z)); StretcherGhostManager.UpdatePatientGhost(_editingPatientMode); }, null);
-            pY = MenuHelpers.AddListControl(PatientPosMenu, $"{C_HEADER}Y {C_INFO}{Localization.Get("LABEL_FORWARD_BACK")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(p.X, v, p.Z)); StretcherGhostManager.UpdatePatientGhost(_editingPatientMode); }, null);
-            pZ = MenuHelpers.AddListControl(PatientPosMenu, $"{C_HEADER}Z {C_INFO}{Localization.Get("LABEL_UP_DOWN")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(p.X, p.Y, v)); StretcherGhostManager.UpdatePatientGhost(_editingPatientMode); }, null);
-            pP = MenuHelpers.AddDegreeListControl(PatientPosMenu, $"{C_HEADER}{Localization.Get("LABEL_PITCH")} {C_INFO}{Localization.Get("LABEL_TILT")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(v, r.Roll, r.Yaw)); StretcherGhostManager.UpdatePatientGhost(_editingPatientMode); }, null);
-            pR = MenuHelpers.AddDegreeListControl(PatientPosMenu, $"{C_HEADER}{Localization.Get("LABEL_ROLL")} {C_INFO}{Localization.Get("LABEL_LEAN")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(r.Pitch, v, r.Yaw)); StretcherGhostManager.UpdatePatientGhost(_editingPatientMode); }, null);
-            pYaw = MenuHelpers.AddDegreeListControl(PatientPosMenu, $"{C_HEADER}{Localization.Get("LABEL_YAW")} {C_INFO}{Localization.Get("LABEL_ROTATE")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(r.Pitch, r.Roll, v)); StretcherGhostManager.UpdatePatientGhost(_editingPatientMode); }, null);
+            pX = MenuHelpers.AddListControl(PatientPosMenu, $"{C_HEADER}X {C_INFO}{Localization.Get("LABEL_LEFT_RIGHT", "Left/Right")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(v, p.Y, p.Z)); StretcherGhostManager.UpdatePatientGhost(_editingPatientMode); }, null);
+            pY = MenuHelpers.AddListControl(PatientPosMenu, $"{C_HEADER}Y {C_INFO}{Localization.Get("LABEL_FORWARD_BACK", "Forward/Back")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(p.X, v, p.Z)); StretcherGhostManager.UpdatePatientGhost(_editingPatientMode); }, null);
+            pZ = MenuHelpers.AddListControl(PatientPosMenu, $"{C_HEADER}Z {C_INFO}{Localization.Get("LABEL_UP_DOWN", "Up/Down")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(p.X, p.Y, v)); StretcherGhostManager.UpdatePatientGhost(_editingPatientMode); }, null);
+            pP = MenuHelpers.AddDegreeListControl(PatientPosMenu, $"{C_HEADER}{Localization.Get("LABEL_PITCH", "Pitch")} {C_INFO}{Localization.Get("LABEL_TILT", "Tilt")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(v, r.Roll, r.Yaw)); StretcherGhostManager.UpdatePatientGhost(_editingPatientMode); }, null);
+            pR = MenuHelpers.AddDegreeListControl(PatientPosMenu, $"{C_HEADER}{Localization.Get("LABEL_ROLL", "Roll")} {C_INFO}{Localization.Get("LABEL_LEAN", "Lean")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(r.Pitch, v, r.Yaw)); StretcherGhostManager.UpdatePatientGhost(_editingPatientMode); }, null);
+            pYaw = MenuHelpers.AddDegreeListControl(PatientPosMenu, $"{C_HEADER}{Localization.Get("LABEL_YAW", "Yaw")} {C_INFO}{Localization.Get("LABEL_ROTATE", "Rotate")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(r.Pitch, r.Roll, v)); StretcherGhostManager.UpdatePatientGhost(_editingPatientMode); }, null);
 
             PatientPosMenu.OnListChange += (sender, item, index) =>
             {

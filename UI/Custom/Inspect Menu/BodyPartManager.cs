@@ -21,28 +21,25 @@ namespace EmsPlus.UI.Custom.InspectMenu
 
         public BodyPartManager(Ped patient)
         {
-            _parts.Add(new BodyPart(Localization.Get("BP_HEAD"), PedBoneId.Head));
+            _parts.Add(new BodyPart(Localization.Get("BP_HEAD", "Head"), PedBoneId.Head));
 
-            _parts.Add(new BodyPart(Localization.Get("BP_NECK"), PedBoneId.Neck));
-            _parts.Add(new BodyPart(Localization.Get("BP_CHEST"), PedBoneId.Spine3));
-            _parts.Add(new BodyPart(Localization.Get("BP_STOMACH"), PedBoneId.Spine));
+            _parts.Add(new BodyPart(Localization.Get("BP_NECK", "Neck"), PedBoneId.Neck));
+            _parts.Add(new BodyPart(Localization.Get("BP_CHEST", "Chest"), PedBoneId.Spine3));
+            _parts.Add(new BodyPart(Localization.Get("BP_STOMACH", "Stomach"), PedBoneId.Spine));   
+            _parts.Add(new BodyPart(Localization.Get("BP_L_UPPER_ARM", "Left Upper Arm"), PedBoneId.LeftUpperArm));
+            _parts.Add(new BodyPart(Localization.Get("BP_L_FOREARM", "Left Forearm"), PedBoneId.LeftForeArm));
+            _parts.Add(new BodyPart(Localization.Get("BP_L_HAND", "Left Hand"), PedBoneId.LeftHand));
 
-            _parts.Add(new BodyPart(Localization.Get("BP_L_UPPER_ARM"), PedBoneId.LeftUpperArm));
-            _parts.Add(new BodyPart(Localization.Get("BP_L_FOREARM"), PedBoneId.LeftForeArm));
-            _parts.Add(new BodyPart(Localization.Get("BP_L_HAND"), PedBoneId.LeftHand));
+            _parts.Add(new BodyPart(Localization.Get("BP_R_UPPER_ARM", "Right Upper Arm"), PedBoneId.RightUpperArm));
+            _parts.Add(new BodyPart(Localization.Get("BP_R_FOREARM", "Right Forearm"), PedBoneId.RightForearm));
+            _parts.Add(new BodyPart(Localization.Get("BP_R_HAND", "Right Hand"), PedBoneId.RightHand));
+            _parts.Add(new BodyPart(Localization.Get("BP_L_THIGH", "Left Thigh"), PedBoneId.LeftThigh));
+            _parts.Add(new BodyPart(Localization.Get("BP_L_CALF", "Left Calf"), PedBoneId.LeftCalf));
+            _parts.Add(new BodyPart(Localization.Get("BP_L_FOOT", "Left Foot"), PedBoneId.LeftFoot));
 
-            _parts.Add(new BodyPart(Localization.Get("BP_R_UPPER_ARM"), PedBoneId.RightUpperArm));
-            _parts.Add(new BodyPart(Localization.Get("BP_R_FOREARM"), PedBoneId.RightForearm));
-            _parts.Add(new BodyPart(Localization.Get("BP_R_HAND"), PedBoneId.RightHand));
-
-            _parts.Add(new BodyPart(Localization.Get("BP_L_THIGH"), PedBoneId.LeftThigh));
-            _parts.Add(new BodyPart(Localization.Get("BP_L_CALF"), PedBoneId.LeftCalf));
-            _parts.Add(new BodyPart(Localization.Get("BP_L_FOOT"), PedBoneId.LeftFoot));
-
-            _parts.Add(new BodyPart(Localization.Get("BP_R_THIGH"), PedBoneId.RightThigh));
-            _parts.Add(new BodyPart(Localization.Get("BP_R_CALF"), PedBoneId.RightCalf));
-            _parts.Add(new BodyPart(Localization.Get("BP_R_FOOT"), PedBoneId.RightFoot));
-
+            _parts.Add(new BodyPart(Localization.Get("BP_R_THIGH", "Right Thigh"), PedBoneId.RightThigh));
+            _parts.Add(new BodyPart(Localization.Get("BP_R_CALF", "Right Calf"), PedBoneId.RightCalf));
+            _parts.Add(new BodyPart(Localization.Get("BP_R_FOOT", "Right Foot"), PedBoneId.RightFoot));
             foreach (var p in _parts) _scales[p] = 1f;
         }
 
@@ -99,9 +96,9 @@ namespace EmsPlus.UI.Custom.InspectMenu
                     if (!_activeKitParts.Any(bp => bp.LinkedEntity != null && bp.LinkedEntity.Handle == kit.Prop.Handle))
                     {
                         string kitName = kit.KitID;
-                        if (kit.KitID == "TRAUMABAG") kitName = Localization.Get("TRAUMABAG_NAME");
-                        else if (kit.KitID == "OXYGENBAG") kitName = Localization.Get("OXYGENBAG_NAME");
-                        else if (kit.KitID == "DEFIBRILLATOR") kitName = Localization.Get("DEFIBRILLATOR_NAME");
+                        if (kit.KitID == "TRAUMABAG") kitName = Localization.Get("TRAUMABAG_NAME", "Trauma Bag");
+                        else if (kit.KitID == "OXYGENBAG") kitName = Localization.Get("OXYGENBAG_NAME", "Oxygen Bag");
+                        else if (kit.KitID == "DEFIBRILLATOR") kitName = Localization.Get("DEFIBRILLATOR_NAME", "Defibrillator");
 
                         var newPart = new BodyPart(kitName, kit.Prop);
 

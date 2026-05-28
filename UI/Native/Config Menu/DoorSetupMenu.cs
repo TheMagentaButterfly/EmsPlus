@@ -12,10 +12,10 @@ namespace EmsPlus.UI.Native.ConfigMenu
         {
             string[] doorNames =
             {
-                Localization.Get("DOOR_FRONT_LEFT"),  Localization.Get("DOOR_FRONT_RIGHT"),
-                Localization.Get("DOOR_BACK_LEFT"),   Localization.Get("DOOR_BACK_RIGHT"),
-                Localization.Get("DOOR_BACK_AUX_1"),  Localization.Get("DOOR_BACK_AUX_2"),
-                Localization.Get("DOOR_EXTRA_1"),     Localization.Get("DOOR_EXTRA_2")
+                Localization.Get("DOOR_FRONT_LEFT", "Front Left"),  Localization.Get("DOOR_FRONT_RIGHT", "Front Right"),
+                Localization.Get("DOOR_BACK_LEFT", "Back Left"),   Localization.Get("DOOR_BACK_RIGHT", "Back Right"),
+                Localization.Get("DOOR_BACK_AUX_1", "Hood/Back Aux"),  Localization.Get("DOOR_BACK_AUX_2", "Trunk/Back Aux"),
+                Localization.Get("DOOR_EXTRA_1", "Extra 1"),     Localization.Get("DOOR_EXTRA_2", "Extra 2")
             };
 
             for (int i = 0; i < doorNames.Length; i++)

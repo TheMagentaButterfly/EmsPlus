@@ -19,7 +19,7 @@ namespace EmsPlus.Managers.Actions
 
             if (p.Consciousness == Medical.ConsciousnessLevel.Unresponsive)
             {
-                Game.DisplayNotification("~r~Patient is unresponsive and cannot answer.");
+                Game.DisplayNotification(Localization.Get("NOTIF_PATIENT_UNABLE_TO_ANSWER", "~r~Patient is unresponsive and cannot answer."));
                 return;
             }
 

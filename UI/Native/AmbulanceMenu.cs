@@ -1,5 +1,4 @@
-﻿using EmsPlus.Configuration;
-using EmsPlus.Managers;
+﻿using EmsPlus.Managers;
 using RAGENativeUI;
 using RAGENativeUI.Elements;
 using System.Collections.Generic;
@@ -16,32 +15,32 @@ namespace EmsPlus.UI.Native
 
         public static void Build()
         {
-            MenuCore.AmbulanceMenu = new UIMenu(Localization.Get("MENU_AMBULANCE_TITLE"), Localization.Get("MENU_AMBULANCE_SUBTITLE"));
+            MenuCore.AmbulanceMenu = new UIMenu(Localization.Get("MENU_AMBULANCE_TITLE", "Ambulance"), Localization.Get("MENU_AMBULANCE_SUBTITLE", "Manage your ambulance"));
             MenuCore.AddMenu(MenuCore.AmbulanceMenu);
 
-            itemDoors = new UIMenuItem(Localization.Get("ITEM_TOGGLE_DOORS"), Localization.Get("DESC_TOGGLE_DOORS"));
-            itemLoad = new UIMenuItem(Localization.Get("ITEM_LOAD_STRETCHER"), Localization.Get("DESC_LOAD_STRETCHER"));
-            itemUnload = new UIMenuItem(Localization.Get("ITEM_UNLOAD_STRETCHER"), Localization.Get("DESC_UNLOAD_STRETCHER"));
-            itemStore = new UIMenuItem($"~r~{Localization.Get("ITEM_STORE_CURRENT")}", Localization.Get("DESC_STORE_CURRENT"));
-            itemCabinToggle = new UIMenuItem(Localization.Get("ITEM_ENTER_CABIN"), Localization.Get("DESC_ENTER_CABIN"));
+            itemDoors = new UIMenuItem(Localization.Get("ITEM_TOGGLE_DOORS", "Toggle Doors"), Localization.Get("DESC_TOGGLE_DOORS", "Open or close the ambulance doors"));
+            itemLoad = new UIMenuItem(Localization.Get("ITEM_LOAD_STRETCHER", "Load Stretcher"), Localization.Get("DESC_LOAD_STRETCHER", "Load a stretcher into the ambulance"));
+            itemUnload = new UIMenuItem(Localization.Get("ITEM_UNLOAD_STRETCHER", "Unload Stretcher"), Localization.Get("DESC_UNLOAD_STRETCHER", "Unload a stretcher from the ambulance"));
+            itemStore = new UIMenuItem($"~r~{Localization.Get("ITEM_STORE_CURRENT", "Store Current")}", Localization.Get("DESC_STORE_CURRENT", "Store the current item"));
+            itemCabinToggle = new UIMenuItem(Localization.Get("ITEM_ENTER_CABIN", "Enter Cabin"), Localization.Get("DESC_ENTER_CABIN", "Enter or exit the ambulance cabin"));
 
             List<dynamic> kitNames = new List<dynamic>
             {
-                Localization.Get("TRAUMABAG_NAME"),
-                Localization.Get("OXYGENBAG_NAME"),
-                Localization.Get("DEFIBRILLATOR_NAME")
+                Localization.Get("TRAUMABAG_NAME", "Trauma Bag"),
+                Localization.Get("OXYGENBAG_NAME", "Oxygen Bag"),
+                Localization.Get("DEFIBRILLATOR_NAME", "Defibrillator")
             };
 
             _cachedKitDescs = new List<string>
             {
-                Localization.Get("TRAUMABAG_DESC"),
-                Localization.Get("OXYGENBAG_DESC"),
-                Localization.Get("DEFIBRILLATOR_DESC")
+                Localization.Get("TRAUMABAG_DESC", "A bag containing trauma supplies."),
+                Localization.Get("OXYGENBAG_DESC", "A bag containing oxygen supplies."),
+                Localization.Get("DEFIBRILLATOR_DESC", "A device used to deliver an electric shock to the heart.")
             };
 
             string initialDesc = _cachedKitDescs[0];
 
-            itemEquipment = new UIMenuListItem(Localization.Get("ITEM_MEDICAL_EQUIPMENT") ?? "Medical Equipment", kitNames, 0, initialDesc);
+            itemEquipment = new UIMenuListItem(Localization.Get("ITEM_MEDICAL_EQUIPMENT", "Medical Equipment"), kitNames, 0, initialDesc);
 
             MenuCore.AmbulanceMenu.OnListChange += (s, item, index) =>
             {
@@ -109,7 +108,7 @@ namespace EmsPlus.UI.Native
 
             if (inVehicleSeat && !inRearCabin)
             {
-                UIMenuItem warningItem = new UIMenuItem("", Localization.Get("DESC_EXIT_VEHICLE"));
+                UIMenuItem warningItem = new UIMenuItem("", Localization.Get("DESC_EXIT_VEHICLE", "You must exit the vehicle to access this menu."));
                 warningItem.Enabled = false;
                 MenuCore.AmbulanceMenu.AddItem(warningItem);
                 MenuCore.AmbulanceMenu.RefreshIndex();
@@ -119,13 +118,13 @@ namespace EmsPlus.UI.Native
             // 2. CABIN LOGIC
             if (inRearCabin)
             {
-                itemCabinToggle.Text = Localization.Get("ITEM_EXIT_CABIN");
-                itemCabinToggle.Description = Localization.Get("DESC_EXIT_CABIN");
+                itemCabinToggle.Text = Localization.Get("ITEM_EXIT_CABIN", "Exit Cabin");
+                itemCabinToggle.Description = Localization.Get("DESC_EXIT_CABIN", "Exit the ambulance cabin.");
 
                 if (AmbulanceManager.CurrentConfig != null && !AmbulanceManager.CurrentConfig.CanEnterCabin)
                 {
                     itemCabinToggle.Enabled = false;
-                    itemCabinToggle.Description = Localization.Get("ERR_NO_CABIN") ?? "~r~This vehicle does not have an accessible cabin.";
+                    itemCabinToggle.Description = Localization.Get("ERR_NO_CABIN", "This vehicle does not have an accessible cabin.");
                 }
                 else
                 {
@@ -148,9 +147,9 @@ namespace EmsPlus.UI.Native
                 bool atRear = AmbulanceManager.IsPlayerAtRear();
 
                 // 1. DOORS
-                itemDoors.Text = doorsOpen ? Localization.Get("ITEM_CLOSE_REAR_DOORS") : Localization.Get("ITEM_OPEN_REAR_DOORS");
+                itemDoors.Text = doorsOpen ? Localization.Get("ITEM_CLOSE_REAR_DOORS", "Close Rear Doors") : Localization.Get("ITEM_OPEN_REAR_DOORS", "Open Rear Doors");
                 itemDoors.Enabled = true;
-                itemDoors.Description = Localization.Get("DESC_TOGGLE_DOORS");
+                itemDoors.Description = Localization.Get("DESC_TOGGLE_DOORS", "Toggle the rear doors.");
                 MenuCore.AmbulanceMenu.AddItem(itemDoors);
 
                 // 2. STRETCHER LOGIC
@@ -161,7 +160,7 @@ namespace EmsPlus.UI.Native
                         if (isLoaded)
                         {
                             itemUnload.Enabled = true;
-                            itemUnload.Description = Localization.Get("DESC_UNLOAD_STRETCHER");
+                            itemUnload.Description = Localization.Get("DESC_UNLOAD_STRETCHER", "Unload the stretcher.");
                             itemUnload.SetRightBadge(UIMenuItem.BadgeStyle.None);
                             MenuCore.AmbulanceMenu.AddItem(itemUnload);
                         }
@@ -170,12 +169,12 @@ namespace EmsPlus.UI.Native
                             if (isHolding)
                             {
                                 itemLoad.Enabled = true;
-                                itemLoad.Description = Localization.Get("DESC_LOAD_STRETCHER");
+                                itemLoad.Description = Localization.Get("DESC_LOAD_STRETCHER", "Load the stretcher.");
                             }
                             else
                             {
                                 itemLoad.Enabled = false;
-                                itemLoad.Description = Localization.Get("DESC_MUST_HOLD_STRETCHER");
+                                itemLoad.Description = Localization.Get("DESC_MUST_HOLD_STRETCHER", "You must hold the stretcher to load it.");
                             }
                             MenuCore.AmbulanceMenu.AddItem(itemLoad);
                         }
@@ -183,8 +182,8 @@ namespace EmsPlus.UI.Native
                 }
                 if (isLoaded)
                 {
-                    itemCabinToggle.Text = Localization.Get("ITEM_ENTER_CABIN");
-                    itemCabinToggle.Description = Localization.Get("DESC_ENTER_CABIN");
+                    itemCabinToggle.Text = Localization.Get("ITEM_ENTER_CABIN", "Enter Cabin");
+                    itemCabinToggle.Description = Localization.Get("DESC_ENTER_CABIN", "Enter the ambulance cabin.");
                     MenuCore.AmbulanceMenu.AddItem(itemCabinToggle);
                 }
 
@@ -199,7 +198,7 @@ namespace EmsPlus.UI.Native
                 if (hasKitInHand || hasKitsOnGround)
                 {
                     itemStore.Enabled = true;
-                    itemStore.Description = Localization.Get("DESC_COLLECT_KITS");
+                    itemStore.Description = Localization.Get("DESC_COLLECT_KITS", "Collect the kits.");
                     MenuCore.AmbulanceMenu.AddItem(itemStore);
                 }
             }

@@ -183,8 +183,8 @@ namespace EmsPlus.UI.Custom.InspectMenu
                 string targetCategory = CurrentMenuCategory.StartsWith("QUESTIONS_") ? "QUESTIONS" : "MAIN";
 
                 CurrentPanelActions.Add(new InspectionAction(
-                    Localization.Get("BTN_BACK") ?? "◄ BACK",
-                    Localization.Get("BTN_BACK_DESC") ?? "Return",
+                    Localization.Get("BTN_BACK", "◄ BACK"),
+                    Localization.Get("BTN_BACK_DESC", "Return"),
                     System.Drawing.Color.FromArgb(255, 80, 80, 80),
                     true,
                     () => {
