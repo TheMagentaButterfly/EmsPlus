@@ -104,8 +104,21 @@ namespace EmsPlus.Core
         public static void SetStatus(EmsStatus newStatus)
         {
             CurrentStatus = newStatus;
-            string statusNameKey = newStatus.ToString().ToUpperInvariant();
-            string localizedStatus = Localization.Get(statusNameKey);
+
+            string defaultText = newStatus.ToString();
+            switch (newStatus)
+            {
+                case EmsStatus.AvailableAtStation: defaultText = "Available at Station"; break;
+                case EmsStatus.OnScene: defaultText = "On Scene"; break;
+                case EmsStatus.RequestToSpeak: defaultText = "Request to speak"; break;
+                case EmsStatus.OffDuty: defaultText = "Off Duty"; break;
+                case EmsStatus.AtDestination: defaultText = "At Destination"; break;
+                case EmsStatus.UrgentRequestToSpeak: defaultText = "Urgent request to speak"; break;
+            }
+
+            string statusNameKey = $"STATUS_{newStatus.ToString().ToUpperInvariant()}";
+
+            string localizedStatus = Localization.Get(statusNameKey, defaultText);
 
             Game.DisplayNotification(Localization.GetFormat("NOTIF_STATUS_UPDATE", "~b~Status Update:~w~ {0}", localizedStatus));
         }

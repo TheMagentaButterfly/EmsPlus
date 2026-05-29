@@ -83,9 +83,9 @@ namespace EmsPlus
                     Character.Health = 100;
                     Character.IsPositionFrozen = false;
 
-                    Character.IsInvincible = false;
-                    Character.CanRagdoll = true;
-                    Character.BlockPermanentEvents = false;
+                    Character.IsInvincible = true;
+                    Character.CanRagdoll = false;
+                    Character.BlockPermanentEvents = true;
 
                     NativeFunction.Natives.SET_PED_CAN_RAGDOLL<bool>(Character, true);
                     NativeFunction.Natives.SET_PED_CAN_RAGDOLL_FROM_PLAYER_IMPACT<bool>(Character, true);
@@ -153,7 +153,7 @@ namespace EmsPlus
         {
             if (IsDead) { Game.DisplayNotification(Localization.Get("NOTIF_CANNOT_TREAT_DECEASED", "~r~Cannot treat a deceased patient.")); return; }
 
-            bool treatmentWasEffective = false;
+            bool treatmentWasEffective = AnatomicalRegistry.IsUniversalTreatment(treatment);
             bool isLocalized = AnatomicalRegistry.IsLocalizedTreatment(treatment);
 
             if (treatment == EmsTreatment.CPR && IsCardiacArrest)

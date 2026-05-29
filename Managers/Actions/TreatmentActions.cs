@@ -31,7 +31,7 @@ namespace EmsPlus.Managers.Actions
             string animDict = EntryPoint.AnimationConfig.MedicTreatDict.Value;
             string animName = EntryPoint.AnimationConfig.MedicTreatName.Value;
 
-            string message = Localization.Get("ACTION_ADMINISTERING_GENERIC", "Administering {0}...", medName);
+            string message = Localization.GetFormat("ACTION_ADMINISTERING_GENERIC", "Administering {0}...", medName);
 
             if (message == "ACTION_ADMINISTERING_GENERIC") message = $"Administering {medName}...";
 

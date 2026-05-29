@@ -26,6 +26,9 @@ namespace EmsPlus.Medical
                 case EmsTreatment.EyePatch:
                 case EmsTreatment.EyeShield:
                 case EmsTreatment.AirwayManagement:
+                case EmsTreatment.Oxygen:
+                case EmsTreatment.HighFlowOxygen:
+                case EmsTreatment.BagValveMask:
                     return bone == PedBoneId.Head;
 
                 case EmsTreatment.CervicalCollar:
@@ -34,6 +37,7 @@ namespace EmsPlus.Medical
                 case EmsTreatment.ChestSeal:
                 case EmsTreatment.NeedleDecomp:
                 case EmsTreatment.CPR:
+                case EmsTreatment.Defibrillation:
                     return bone == PedBoneId.Spine3 || bone == PedBoneId.Spine2;
 
                 case EmsTreatment.PelvicBinder:
@@ -60,6 +64,18 @@ namespace EmsPlus.Medical
                    t == EmsTreatment.Irrigation || t == EmsTreatment.WetDressing || t == EmsTreatment.EyePatch ||
                    t == EmsTreatment.EyeShield || t == EmsTreatment.Suture || t == EmsTreatment.DirectPressure ||
                    t == EmsTreatment.StabiliseObject;
+        }
+
+        public static bool IsUniversalTreatment(EmsTreatment t)
+        {
+            return t == EmsTreatment.Oxygen ||
+                   t == EmsTreatment.HighFlowOxygen ||
+                   t == EmsTreatment.BagValveMask ||
+                   t == EmsTreatment.AirwayManagement ||
+                   t == EmsTreatment.CPR ||
+                   t == EmsTreatment.Defibrillation ||
+                   t == EmsTreatment.IVAccess ||
+                   t == EmsTreatment.SalineBag;
         }
     }
 }

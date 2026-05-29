@@ -120,6 +120,18 @@ namespace EmsPlus
                 w.WriteLine("; =========================================================");
                 w.WriteLine("");
 
+                w.WriteLine("STATUS_AVAILABLE=~g~Available");
+                w.WriteLine("STATUS_AVAILABLEATSTATION=~g~Available at Station");
+                w.WriteLine("STATUS_ENROUTE=~r~En Route");
+                w.WriteLine("STATUS_ONSCENE=~r~On Scene");
+                w.WriteLine("STATUS_REQUESTTOSPEAK=~r~Request to speak");
+                w.WriteLine("STATUS_OFFDUTY=~u~Off Duty");
+                w.WriteLine("STATUS_TRANSPORTING=~r~Transporting");
+                w.WriteLine("STATUS_ATDESTINATION=~y~At Destination");
+                w.WriteLine("STATUS_BUSY=~m~Busy");
+                w.WriteLine("STATUS_URGENTREQUESTTOSPEAK=~h~~p~Urgent request to speak");
+                w.WriteLine("STATUS_EMERGENCY=~h~~p~Emergency");
+
                 w.WriteLine("ACT_APPLY_NRB_MASK=Apply NRB Mask");
                 w.WriteLine("ACT_APPLY_OXYGEN_MASK=Apply Oxygen Mask");
                 w.WriteLine("ACT_APPLY_TREATMENT_COLORED=Apply {0}");
@@ -308,6 +320,7 @@ namespace EmsPlus
                 w.WriteLine("ERR_NO_CABIN=~r~This vehicle does not have an accessible cabin.");
                 w.WriteLine("ERR_NO_STRETCHER_FOR_CABIN=~r~Cannot enter cabin.~w~ The stretcher must be loaded first.");
                 w.WriteLine("ERR_STRETCHER_IN_AMBULANCE=~r~Cannot load patient:~w~ stretcher is already in ambulance.");
+                w.WriteLine("ERR_MUST_ENTER_CABIN=~r~You must enter the patient cabin to inspect the patient.");
                 w.WriteLine("HELP_AMBULANCE_MENU=Press ~y~{0}~w~ to open the equipment menu.");
                 w.WriteLine("HELP_ENTER_INTERIOR=Press ~INPUT_CONTEXT~ to enter {0}.");
                 w.WriteLine("HELP_EXIT_INTERIOR=Press ~INPUT_CONTEXT~ to exit.");

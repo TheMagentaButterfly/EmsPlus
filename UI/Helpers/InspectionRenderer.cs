@@ -85,17 +85,21 @@ namespace EmsPlus.UI.Helpers
                 {
                     bool isAnatomicallyValid = AnatomicalRegistry.IsToolValidForBone(activeTool, part.BoneId);
                     bool isLocalized = AnatomicalRegistry.IsLocalizedTreatment(activeTool);
+                    bool isUniversal = AnatomicalRegistry.IsUniversalTreatment(activeTool);
 
-                    bool needsThisTool = false;
+                    bool needsThisTool = isUniversal;
 
-                    if (isLocalized)
+                    if (!isUniversal)
                     {
-                        needsThisTool = p.Conditions.OfType<PhysicalInjury>()
-                            .Any(i => i.Bone == part.BoneId && !i.IsTreated && i.RequiredTreatments.Contains(activeTool));
-                    }
-                    else
-                    {
-                        needsThisTool = p.Conditions.Any(c => !c.IsTreated && c.RequiredTreatments.Contains(activeTool));
+                        if (isLocalized)
+                        {
+                            needsThisTool = p.Conditions.OfType<PhysicalInjury>()
+                                .Any(i => i.Bone == part.BoneId && !i.IsTreated && i.RequiredTreatments.Contains(activeTool));
+                        }
+                        else
+                        {
+                            needsThisTool = p.Conditions.Any(c => !c.IsTreated && c.RequiredTreatments.Contains(activeTool));
+                        }
                     }
 
                     if (!isAnatomicallyValid || !needsThisTool) continue;

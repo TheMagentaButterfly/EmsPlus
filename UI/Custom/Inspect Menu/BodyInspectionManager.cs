@@ -399,19 +399,28 @@ namespace EmsPlus.UI.Custom.InspectMenu
 
                                     bool isAnatomicallyValid = AnatomicalRegistry.IsToolValidForBone(activeTool, bone);
                                     bool isLocalized = AnatomicalRegistry.IsLocalizedTreatment(activeTool);
+                                    bool isUniversal = AnatomicalRegistry.IsUniversalTreatment(activeTool);
 
-                                    bool needsThisTool = false;
-                                    if (isLocalized)
+                                    bool needsThisTool = isUniversal;
+                                    if (!isUniversal)
                                     {
-                                        needsThisTool = p.Conditions.OfType<PhysicalInjury>().Any(i => i.Bone == bone && !i.IsTreated && i.RequiredTreatments.Contains(activeTool));
-                                    }
-                                    else
-                                    {
-                                        needsThisTool = p.Conditions.Any(c => !c.IsTreated && c.RequiredTreatments.Contains(activeTool));
+                                        if (isLocalized)
+                                        {
+                                            needsThisTool = p.Conditions.OfType<PhysicalInjury>().Any(i => i.Bone == bone && !i.IsTreated && i.RequiredTreatments.Contains(activeTool));
+                                        }
+                                        else
+                                        {
+                                            needsThisTool = p.Conditions.Any(c => !c.IsTreated && c.RequiredTreatments.Contains(activeTool));
+                                        }
                                     }
 
                                     if (isAnatomicallyValid && needsThisTool)
                                     {
+                                        if (activeTool == EmsTreatment.Oxygen || activeTool == EmsTreatment.HighFlowOxygen || activeTool == EmsTreatment.BagValveMask)
+                                        {
+                                            p.IsReceivingOxygen = true;
+                                        }
+
                                         HandleTreatmentLogic(activeTool, bone);
                                     }
                                     else
