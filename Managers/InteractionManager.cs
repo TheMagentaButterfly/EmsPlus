@@ -203,7 +203,6 @@ namespace EmsPlus.Managers
                             !GameState.CurrentBystander.HasBeenSpokenTo &&
                             Game.LocalPlayer.Character.DistanceTo(GameState.CurrentBystander.Character) < 3.0f)
                         {
-                            Game.DisplayHelp(Localization.Get("HELP_TALK_TO_WITNESS", "Press ~y~Y~w~ to talk to the witness."));
                             if (Game.IsKeyDown(Keys.Y))
                             {
                                 DialogueManager.StartDialogue(
@@ -218,7 +217,6 @@ namespace EmsPlus.Managers
                                  GameState.CurrentPatient.Consciousness > ConsciousnessLevel.Pain &&
                                  Game.LocalPlayer.Character.DistanceTo(GameState.CurrentPatient.Character) < 2.0f)
                         {
-                            Game.DisplayHelp(Localization.Get("HELP_TALK_TO_PATIENT", "Press ~y~Y~w~ to talk to the patient."));
                             if (Game.IsKeyDown(Keys.Y))
                             {
                                 DialogueManager.StartDialogue(

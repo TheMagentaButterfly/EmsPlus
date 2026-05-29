@@ -57,8 +57,6 @@ namespace EmsPlus.Managers
             {
                 if (GameState.CurrentBystander?.Character == _currentTarget)
                     GameState.CurrentBystander.HasBeenSpokenTo = true;
-                else if (GameState.CurrentPatient?.Character == _currentTarget)
-                    GameState.CurrentPatient.HasBeenSpokenTo = true;
             }
 
             _isActive = false;

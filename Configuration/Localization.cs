@@ -331,8 +331,6 @@ namespace EmsPlus
                 w.WriteLine("HELP_STRETCHER_CONTROL_HEIGHT=~y~{0}~w~: {1}");
                 w.WriteLine("HELP_STRETCHER_CONTROL_SIT=~y~{0}~w~: {1}");
                 w.WriteLine("HELP_TALK_BYSTANDER=Press ~y~Y~w~ to talk to the witness.");
-                w.WriteLine("HELP_TALK_TO_PATIENT=Press ~y~Y~w~ to talk to the patient.");
-                w.WriteLine("HELP_TALK_TO_WITNESS=Press ~y~Y~w~ to talk to the witness.");
                 w.WriteLine("HELP_TOGGLE_DUTY=Press ~INPUT_CONTEXT~ to go {0}.");
                 w.WriteLine("HINT_OPEN_BAG=Open your medical bag to get tools for this.");
                 w.WriteLine("ITEM_ADD_INTERACTION_POINT=Add Interaction Point");
