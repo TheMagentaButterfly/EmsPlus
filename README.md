@@ -1,4 +1,4 @@
-[EmsPlus is curretnly in Alpha. Many features are missing/incomplete!
+[EmsPlus is curretnly in Beta. Many features are missing/incomplete!
 
 EmsPlus lets you work as an EMT or Paramedic (depending on your preference) but unlike other projects this one aims to not only make you click buttons but to be interactive.
 I want to make EmsPlus as realistic and close to real life as possible. I myself am an EMT at the German Red Cross which is why many procedures / products will be based on my knowledge and equipment.
