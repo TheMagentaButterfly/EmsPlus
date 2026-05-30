@@ -38,6 +38,19 @@ $iniContent += "; English"
 $iniContent += "; ========================================================="
 $iniContent += ""
 
+$iniContent += "STATUS_AVAILABLE=~g~Available"
+$iniContent += "STATUS_AVAILABLEATSTATION=~g~Available at Station"
+$iniContent += "STATUS_ENROUTE=~r~En Route"
+$iniContent += "STATUS_ONSCENE=~r~On Scene"
+$iniContent += "STATUS_REQUESTTOSPEAK=~r~Request to speak"
+$iniContent += "STATUS_OFFDUTY=~u~Off Duty"
+$iniContent += "STATUS_TRANSPORTING=~r~Transporting"
+$iniContent += "STATUS_ATDESTINATION=~y~At Destination"
+$iniContent += "STATUS_BUSY=~m~Busy"
+$iniContent += "STATUS_URGENTREQUESTTOSPEAK=~h~~p~Urgent request to speak"
+$iniContent += "STATUS_EMERGENCY=~h~~p~Emergency"
+$iniContent += ""
+
 # 2. Setup the C# block content
 $csharpContent = @()
 
