@@ -18,7 +18,6 @@ namespace EmsPlus
 {
     public class EntryPoint
     {
-        // Configs
         public static KeyConfig KeyConfig { get; private set; }
         public static PropConfig PropConfig { get; private set; }
         public static OffsetConfig OffsetConfig { get; private set; }

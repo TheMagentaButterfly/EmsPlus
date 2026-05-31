@@ -127,19 +127,39 @@ namespace EmsPlus.Callouts
             return roadCenter;
         }
 
-        protected void SpawnEmergencyUnit(string vehModel, string pedModel, Vector3 centerPos, bool sirensOn = true)
+        protected void SpawnEmergencyUnit(string vehModelStr, string pedModelStr, Vector3 centerPos, bool sirensOn = true)
         {
             Vector3 spawnPos = World.GetNextPositionOnStreet(centerPos.Around(10f, 30f));
-            if (spawnPos == Vector3.Zero) return;
+            if (spawnPos == Vector3.Zero) spawnPos = centerPos.Around(15f);
 
+            Model vehModel = new Model(vehModelStr);
+            if (!vehModel.IsValid)
+            {
+                Game.Console.Print($"[EmsPlus] Error: Invalid vehicle model '{vehModelStr}' requested.");
+                return;
+            }
+
+            vehModel.LoadAndWait();
             Vehicle veh = new Vehicle(vehModel, spawnPos);
+            vehModel.Dismiss();
+
             if (veh.Exists())
             {
                 veh.IsPersistent = true;
                 if (sirensOn) veh.IsSirenOn = true;
                 SceneEntities.Add(veh);
 
+                Model pedModel = new Model(pedModelStr);
+                if (!pedModel.IsValid)
+                {
+                    Game.Console.Print($"[EmsPlus] Error: Invalid ped model '{pedModelStr}' requested.");
+                    return;
+                }
+
+                pedModel.LoadAndWait();
                 Ped responder = new Ped(pedModel, veh.GetOffsetPosition(new Vector3(2.5f, 0, 0)), veh.Heading);
+                pedModel.Dismiss();
+
                 if (responder.Exists())
                 {
                     responder.IsPersistent = true;
@@ -150,10 +170,20 @@ namespace EmsPlus.Callouts
             }
         }
 
-        protected Ped SpawnBystander(string pedModel, Vector3 centerPos)
+        protected Ped SpawnBystander(string pedModelStr, Vector3 centerPos)
         {
+            Model pedModel = new Model(pedModelStr);
+            if (!pedModel.IsValid)
+            {
+                Game.Console.Print($"[EmsPlus] Error: Invalid bystander ped model '{pedModelStr}' requested.");
+                return null;
+            }
+
+            pedModel.LoadAndWait();
             Vector3 spawnPos = GetSidewalkPosition(centerPos.Around(2f, 6f));
             Ped ped = new Ped(pedModel, spawnPos, 0f);
+            pedModel.Dismiss();
+
             if (ped.Exists())
             {
                 ped.IsPersistent = true;
