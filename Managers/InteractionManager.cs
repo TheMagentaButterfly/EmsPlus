@@ -3,6 +3,7 @@ using EmsPlus.Medical;
 using EmsPlus.UI.Custom.InspectMenu;
 using EmsPlus.UI.Native;
 using EmsPlus.UI.Native.PatientMenu;
+using EmsPlus.UI.Native.BackupMenu;
 using Rage;
 using Rage.Native;
 using System;
@@ -12,8 +13,6 @@ namespace EmsPlus.Managers
 {
     public static class InteractionManager
     {
-        private static Keys DefaultInteractionKey => Keys.E;
-
         private static DateTime _lastKeyPressTime = DateTime.MinValue;
         private static uint _lastCabinToggleTime = 0;
         private static uint _lastStretcherToggleTime = 0;
@@ -27,7 +26,7 @@ namespace EmsPlus.Managers
             if (EntryPoint.KeyConfig.InteractionKey != null)
                 return EntryPoint.KeyConfig.InteractionKey.Value.IsPressed;
 
-            return Game.IsKeyDown(DefaultInteractionKey);
+            return Game.IsKeyDown(Keys.E);
         }
 
         private static bool IsCabinToggleKeyDown()
@@ -60,6 +59,7 @@ namespace EmsPlus.Managers
 
                 StationManager.Process();
                 InteriorManager.Process();
+                BackupManager.Process();
 
                 if (Game.LocalPlayer.Character.IsInAnyVehicle(false))
                 {
@@ -224,6 +224,24 @@ namespace EmsPlus.Managers
                                     GameState.CurrentPatient.Dialogue
                                 );
                             }
+                        }
+                    }
+
+                    // =======================================================
+                    // DISPATCH & COMMAND MENU HOTKEYS
+                    // =======================================================
+                    if (EmsService.IsOnDuty && !MenuCore.IsAnyMenuOpen)
+                    {
+                        bool commandModPressed = EntryPoint.KeyConfig.OpenBackupManagerMenuKeyModifier?.Value?.IsPressed ?? Game.IsKeyDown(Keys.LShiftKey);
+                        bool commandKeyPressed = EntryPoint.KeyConfig.OpenBackupManagerMenuKey?.Value?.IsPressed ?? Game.IsKeyDown(Keys.U);
+
+                        if (commandModPressed && commandKeyPressed)
+                        {
+                            BackupManagerMenuBuilder.BackupManagerMenu.Visible = true;
+                        }
+                        else if (!commandModPressed && !commandKeyPressed && (EntryPoint.KeyConfig.OpenBackupMenuKey?.Value?.IsPressed ?? Game.IsKeyDown(Keys.B)))
+                        {
+                            BackupMenuBuilder.BackupMenu.Visible = true;
                         }
                     }
 

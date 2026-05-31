@@ -15,6 +15,11 @@ namespace EmsPlus.Configuration
         public SettingKeyCombo OpenAmbulanceMenuKey = new SettingKeyCombo("Ambulance Menu", "OpenAmbulanceMenu", "The key used to open the Ambulance Interaction menu.");
         public SettingKeyCombo OpenAmbulanceMenuKeyModifier = new SettingKeyCombo("Ambulance Menu", "OpenAmbulanceMenuModifier", "The Modifier key used to open the Ambulance Interaction menu.");
 
+        public SettingKeyCombo OpenBackupMenuKey = new SettingKeyCombo("Backup Menu", "OpenBackupMenu", "The key used to open the Backup menu.");
+        public SettingKeyCombo OpenBackupMenuKeyModifier = new SettingKeyCombo("Backup Menu", "OpenBackupMenuModifier", "The Modifier key used to open the Backup menu.");
+        public SettingKeyCombo OpenBackupManagerMenuKey = new SettingKeyCombo("Backup Menu", "OpenBackupManagerMenu", "The key used to open the Backup Manager menu.");
+        public SettingKeyCombo OpenBackupManagerMenuKeyModifier = new SettingKeyCombo("Backup Menu", "OpenBackupManagerMenuModifier", "The Modifier key used to open the Backup Manager menu.");
+
         public SettingKeyCombo StretcherGrabKey = new SettingKeyCombo("Stretcher", "StretcherGrabKey", "Key to grab or release the stretcher.");
         public SettingKeyCombo StretcherHeightKey = new SettingKeyCombo("Stretcher", "StretcherHeightKey", "Key to raise or lower the stretcher.");
         public SettingKeyCombo StretcherSitKey = new SettingKeyCombo("Stretcher", "StretcherSitKey", "Key to toggle patient sitting.");
@@ -64,6 +69,14 @@ namespace EmsPlus.Configuration
                     w.WriteLine($"OpenAmbulanceMenu=T");
                     w.WriteLine($"OpenAmbulanceMenuModifier=LMenu");
                     w.WriteLine("");
+
+                    w.WriteLine("[Backup Menu]");
+                    w.WriteLine("; Used to open the backup request menu.");
+                    w.WriteLine($"OpenBackupMenu=B");
+                    w.WriteLine($"OpenBackupMenuModifier=None");
+                    w.WriteLine("; Used to open the backup management menu for AI units.");
+                    w.WriteLine($"OpenBackupManagerMenu=B");
+                    w.WriteLine($"OpenBackupManagerMenuModifier=LMenu");
                     w.WriteLine("");
 
                     w.WriteLine("; =========================================================");

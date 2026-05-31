@@ -6,8 +6,19 @@ namespace EmsPlus.Core
     public static class GameState
     {
         public static List<Patient> ActivePatients { get; set; } = new List<Patient>();
-
-        public static Patient CurrentPatient { get; set; }
+        private static Patient _currentPatient;
+        public static Patient CurrentPatient
+        {
+            get => _currentPatient;
+            set
+            {
+                _currentPatient = value;
+                if (value != null && !ActivePatients.Contains(value))
+                {
+                    ActivePatients.Add(value);
+                }
+            }
+        }
 
         public static Bystander CurrentBystander { get; set; }
         public static bool IsPlayerBusy { get; set; } = false;

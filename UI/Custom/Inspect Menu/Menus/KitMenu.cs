@@ -140,11 +140,12 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
         {
             bool inCabin = AmbulanceManager.IsPlayerInRearCabin;
             bool hasSupply = InventoryManager.HasSupply(tool);
-            
+            bool isAlreadyEquipped = InventoryManager.ActiveTool == tool;
+
             int count = InventoryManager.CurrentSupplies.ContainsKey(tool) ? InventoryManager.CurrentSupplies[tool] : 99;
             
             string displayLabel = (inCabin || count == 99) ? label : $"{label} [{count}]";
-            string desc = hasSupply ? Localization.Get("BTN_TAKE_ITEM_DESC", "Take item from bag") : Localization.Get("BTN_ITEM_EMPTY_DESC", "~r~Empty! Restock at ambulance.");
+            string desc = isAlreadyEquipped ? Localization.Get("BTN_UNEQUIP_ITEM_DESC", "Click to unequip item.") :  hasSupply ? Localization.Get("BTN_TAKE_ITEM_DESC", "Take item from bag") : Localization.Get("BTN_ITEM_EMPTY_DESC", "~r~Empty! Restock at ambulance.");
 
             BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
                 $"{displayLabel}", 
@@ -152,9 +153,16 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
                 hasSupply ? Color.LightBlue : Color.FromArgb(255, 60, 60, 60), 
                 hasSupply, 
                 () => {
-                    InventoryManager.ActiveTool = tool;
+                    if (isAlreadyEquipped)
+                    {
+                        InventoryManager.ActiveTool = EmsTreatment.None;
+                    }
+                    else
+                    {
+                        InventoryManager.ActiveTool = tool;
+                    }
                     BodyInspectionManager.RefreshActions();
-            }));
+                }));
         }
     }
 }

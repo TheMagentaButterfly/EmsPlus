@@ -34,7 +34,7 @@ namespace EmsPlus.Managers
                 try
                 {
                     Blip b = new Blip(loc.Position);
-                    b.Sprite = (BlipSprite)61;
+                    b.Sprite = BlipSprite.PoliceStation2;
                     b.Color = Color.Red;
                     b.Name = loc.Name;
                     _blipMap.Add(loc, b);

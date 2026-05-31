@@ -451,6 +451,13 @@ namespace EmsPlus.Managers
             }
         }
 
+        public static void ForgetProp()
+        {
+            Prop = null;
+            IsAttachedToPlayer = false;
+            StretcherGhostManager.DeleteGhosts();
+        }
+
         public static void Cleanup()
         {
             if (Prop != null && Prop.Exists()) Prop.Delete();

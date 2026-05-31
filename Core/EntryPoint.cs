@@ -54,6 +54,7 @@ namespace EmsPlus
             GameFiber.Sleep(2000);
 
             StationManager.Initialize();
+            HospitalManager.Initialize();
             _stationFiber = GameFiber.StartNew(StationManager.StationLoop);
 
             Game.Console.Print($"============[EmsPlus] v{Assembly.GetExecutingAssembly().GetName().Version} Initialized!============");
@@ -159,6 +160,7 @@ namespace EmsPlus
             AddonManager.LoadAddons();
 
             MenuCore.Initialize();
+            BackupManager.Initialize();
 
             _inputHandler = new InputHandler(KeyConfig);
             _inputHandler.Start();
@@ -184,11 +186,13 @@ namespace EmsPlus
             try { Game.FrameRender -= OnGameFrameRender; } catch { }
 
             try { StationManager.Cleanup(); } catch { }
+            try { HospitalManager.CleanupStaticBlips(); } catch { }
             try { CalloutManager.ForceCleanUp(); } catch { }
             try { StretcherManager.Cleanup(); } catch { }
             try { StretcherGhostManager.DeleteGhosts(); } catch { }
             try { InventoryManager.Cleanup(); } catch { }
             try { DialogueManager.Cleanup(); } catch { }
+            try { BackupManager.Shutdown(); } catch { }
 
             try { MenuCore.CloseAll(); } catch { }
             try { BodyInspectionManager.Cleanup(); } catch { }

@@ -2,6 +2,7 @@
 using EmsPlus.UI.Custom.InspectMenu;
 using EmsPlus.UI.Native.ConfigMenu;
 using EmsPlus.UI.Native.PatientMenu;
+using EmsPlus.UI.Native.BackupMenu;
 using IPT.Common.User.Inputs;
 using Rage;
 using RAGENativeUI;
@@ -29,6 +30,8 @@ namespace EmsPlus.UI.Native
             PatientMenuBuilder.Build();
             Native.AmbulanceMenu.Build();
             ConfigMenuBuilder.Build();
+            BackupMenuBuilder.Build();
+            BackupManagerMenuBuilder.Build();
 
             AmbulanceManager.OnStateUpdate += Native.AmbulanceMenu.RefreshState;
             StretcherManager.OnUpdate += Native.AmbulanceMenu.RefreshState;

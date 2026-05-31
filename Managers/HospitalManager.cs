@@ -1,6 +1,7 @@
 ﻿using EmsPlus.Core;
 using Rage;
 using Rage.Native;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -8,7 +9,31 @@ namespace EmsPlus.Managers
 {
     public static class HospitalManager
     {
-        private static Blip hospitalBlip;
+        private static Blip _routingBlip;
+        private static List<Blip> _staticBlips = new List<Blip>();
+
+        public static void Initialize()
+        {
+            CleanupStaticBlips();
+            foreach (var loc in EntryPoint.HospitalsConfig.Locations)
+            {
+                try
+                {
+                    Blip b = new Blip(loc.Position);
+                    b.Sprite = loc.IsHelipad ? BlipSprite.Helipad : BlipSprite.Hospital;
+                    b.Color = Color.Green;
+                    b.Name = loc.Name;
+
+                    NativeFunction.Natives.SET_BLIP_AS_SHORT_RANGE(b, true);
+
+                    _staticBlips.Add(b);
+                }
+                catch (System.Exception ex)
+                {
+                    Game.Console.Print($"[EmsPlus] Warning: Could not create hospital blip for {loc.Name}. {ex.Message}");
+                }
+            }
+        }
 
         public static void SetWaypointToClosest()
         {
@@ -16,17 +41,16 @@ namespace EmsPlus.Managers
             if (locs.Count == 0) return;
 
             Vector3 playerPos = Game.LocalPlayer.Character.Position;
-
             var closest = locs.OrderBy(loc => loc.Position.DistanceTo(playerPos)).FirstOrDefault();
 
             if (closest != null)
             {
                 CleanupBlip();
 
-                hospitalBlip = new Blip(closest.Position);
-                hospitalBlip.Color = Color.Green;
-                hospitalBlip.Name = closest.Name;
-                hospitalBlip.IsRouteEnabled = true;
+                _routingBlip = new Blip(closest.Position);
+                _routingBlip.Color = Color.Green;
+                _routingBlip.Name = $"Routing: {closest.Name}";
+                _routingBlip.IsRouteEnabled = true;
 
                 Game.DisplayNotification(Localization.Get("NOTIF_HOSPITAL_WAYPOINT_SET", "~b~Dispatch:~w~ Route to nearest hospital set."));
             }
@@ -43,7 +67,6 @@ namespace EmsPlus.Managers
             foreach (var hospital in EntryPoint.HospitalsConfig.Locations)
             {
                 float dist2D = drivingVeh.DistanceTo2D(hospital.Position);
-
                 float zDiff = System.Math.Abs(drivingVeh.Position.Z - hospital.Position.Z);
 
                 if (dist2D < 80.0f && zDiff < 15.0f)
@@ -83,14 +106,12 @@ namespace EmsPlus.Managers
             }
 
             GameState.Clear();
-
             StretcherManager.Cleanup();
             InventoryManager.Cleanup();
             InventoryManager.RestockSupplies(true);
             AmbulanceManager.ResetVehicleState(v);
 
             CalloutManager.EndCurrent();
-
             EmsService.SetStatus(EmsStatus.Available);
 
             Game.FadeScreenIn(1000);
@@ -99,11 +120,28 @@ namespace EmsPlus.Managers
 
         public static void CleanupBlip()
         {
-            if (hospitalBlip != null && hospitalBlip.Exists())
+            if (_routingBlip != null && _routingBlip.Exists())
             {
-                hospitalBlip.Delete();
+                _routingBlip.Delete();
             }
-            hospitalBlip = null;
+            _routingBlip = null;
+        }
+
+        public static void CleanupStaticBlips()
+        {
+            var blips = _staticBlips.ToList();
+            foreach (var b in blips)
+            {
+                try
+                {
+                    if (b != null && b.Exists()) b.Delete();
+
+                    uint handle = b.Handle;
+                    if (handle != 0) NativeFunction.Natives.REMOVE_BLIP(ref handle);
+                }
+                catch { }
+            }
+            _staticBlips.Clear();
         }
     }
 }

@@ -192,6 +192,11 @@ namespace EmsPlus.UI.Helpers
             }
 
             NativeUITools.DrawNativeText(panelTitle, x + 15, y + 10, 0.5f, Color.FromArgb(pta, 255, 255, 255));
+            NativeUITools.DrawNativeText(panelTitle, x + 15, y + 10, 0.5f, Color.FromArgb(pta, 255, 255, 255));
+
+            input.PanelCloseButton = new RectangleF(x + w - 35, y + 10, 25, 25);
+            bool hoverX = input.ClickedPanelClose();
+            NativeUITools.DrawNativeText("X", x + w - 22, y + 10, 0.4f, hoverX ? Color.Red : Color.FromArgb(pta, 200, 200, 200), true);
 
             // ==========================================
             // CUSTOM PANEL STATUS

@@ -29,18 +29,6 @@ namespace EmsPlus
             }
         }
 
-        [ConsoleCommand(Name = "ForceRandomCallout", Description = "Force a random medical callout from the entire pool.")]
-        public static void Command_ForceCallout_Random()
-        {
-            if (!EmsService.IsOnDuty)
-            {
-                Game.Console.Print("[EmsPlus] You must be On Duty to receive callouts.");
-                return;
-            }
-
-            CalloutManager.StartRandomCallout();
-        }
-
         [ConsoleCommand(Name = "StartCallout", Description = "Start a specific callout by name (e.g. StartCallout AnimalAttack).")]
         public static void Command_StartCallout(string calloutName)
         {

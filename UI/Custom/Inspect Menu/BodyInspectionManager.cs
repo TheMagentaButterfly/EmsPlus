@@ -49,7 +49,7 @@ namespace EmsPlus.UI.Custom.InspectMenu
 
         public static List<InspectionAction> CurrentPanelActions { get; private set; } = new List<InspectionAction>();
 
-        public static void StartInspection(Ped patient)
+        public static void StartInspection(Ped patient, bool resetCategory = true)
         {
             if (_active) return;
 
@@ -65,7 +65,10 @@ namespace EmsPlus.UI.Custom.InspectMenu
             _patient = patient;
             _active = true;
 
-            CurrentMenuCategory = "MAIN";
+            if (resetCategory)
+            {
+                CurrentMenuCategory = "MAIN";
+            }
 
             _state = new InspectionState();
             _state.ToggleDiagnostics();
@@ -185,7 +188,7 @@ namespace EmsPlus.UI.Custom.InspectMenu
                 CurrentPanelActions.Add(new InspectionAction(
                     Localization.Get("BTN_BACK", "◄ BACK"),
                     Localization.Get("BTN_BACK_DESC", "Return"),
-                    System.Drawing.Color.FromArgb(255, 80, 80, 80),
+                    Color.FromArgb(255, 80, 80, 80),
                     true,
                     () => {
                         CurrentMenuCategory = targetCategory;
@@ -346,6 +349,12 @@ namespace EmsPlus.UI.Custom.InspectMenu
                     if (_input.IsClicking())
                     {
                         if (_input.ClickedExit()) { StopInspection(true); break; }
+                        if (_input.ClickedPanelClose())
+                        {
+                            _bodyParts.SelectPart(null);
+                            AudioHelper.PlayBack();
+                            continue;
+                        }
                         if (_input.ClickedDiagnostics()) { _state.ToggleDiagnostics(); AudioHelper.PlaySelect(); }
                         if (_input.ClickedData()) { _state.ToggleData(); AudioHelper.PlaySelect(); }
 
@@ -482,7 +491,7 @@ namespace EmsPlus.UI.Custom.InspectMenu
 
                 if (GameState.CurrentPatient != null && GameState.CurrentPatient.Character.Exists())
                 {
-                    StartInspection(GameState.CurrentPatient.Character);
+                    StartInspection(GameState.CurrentPatient.Character, false);
                 }
             });
         }
