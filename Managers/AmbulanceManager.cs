@@ -130,8 +130,8 @@ namespace EmsPlus.Managers
 
             if (!EntryPoint.EmsPlusConfig.UseCustomInteractionPoints.Value)
             {
-                Vector3 rearPos = veh.GetOffsetPosition(new Vector3(0, -4.0f, 0));
-                return Game.LocalPlayer.Character.DistanceTo(rearPos) < 2.5f;
+                Vector3 rearPos = GetRearPosition(veh, 0f);
+                return Game.LocalPlayer.Character.DistanceTo(rearPos) < 3.0f;
             }
 
             if (CurrentConfig.InteractionPoints.Count == 0) return false;
@@ -239,16 +239,18 @@ namespace EmsPlus.Managers
             Vehicle veh;
             if (!TryGetClosestAmbulance(out veh)) return false;
 
-            return Game.LocalPlayer.Character.DistanceTo(veh) < 5.5f;
+            veh.Model.GetDimensions(out Vector3 min, out Vector3 max);
+            float radius = Math.Max(max.Y - min.Y, max.X - min.X) / 2f + 3.5f;
+
+            return Game.LocalPlayer.Character.DistanceTo(veh) < radius;
         }
 
         public static bool IsPlayerAtRear()
         {
             if (CurrentVehicle == null || !CurrentVehicle.Exists()) return false;
 
-            Vector3 rearPos = CurrentVehicle.GetOffsetPosition(new Vector3(0, -4.0f, 0));
-
-            return Game.LocalPlayer.Character.DistanceTo(rearPos) < 1.5f;
+            Vector3 rearPos = GetRearPosition(CurrentVehicle, 0f);
+            return Game.LocalPlayer.Character.DistanceTo(rearPos) < 2.5f;
         }
 
         public static bool TryGetClosestAmbulance(out Vehicle vehicle)
@@ -655,6 +657,14 @@ namespace EmsPlus.Managers
             if (v == null || !v.Exists()) return;
 
             SetCurrentVehicle(v);
+        }
+
+        public static Vector3 GetRearPosition(Vehicle veh, float extraOffset = 0f)
+        {
+            if (veh == null || !veh.Exists()) return Vector3.Zero;
+
+            veh.Model.GetDimensions(out Vector3 min, out Vector3 max);
+            return veh.GetOffsetPosition(new Vector3(0, min.Y + extraOffset, 0));
         }
     }
 }

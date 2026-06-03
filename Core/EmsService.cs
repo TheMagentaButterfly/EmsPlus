@@ -16,23 +16,17 @@ namespace EmsPlus.Core
 
             if (IsOnDuty)
             {
-                Game.DisplayNotification(Localization.Get("NOTIF_ON_DUTY", "~b~EmsPlus:~w~ You are now ~g~On Duty~w~."));
                 SetStatus(EmsStatus.Available);
 
                 LoadoutManager.EquipLoadout();
                 InventoryManager.RestockSupplies(false);
 
-                player.RelationshipGroup = "COP";
+                player.RelationshipGroup = "MEDIC";
+
                 NativeFunction.Natives.SET_PED_AS_COP(player, true);
 
-                Game.SetRelationshipBetweenRelationshipGroups("COP", "COP", Relationship.Companion);
-                Game.SetRelationshipBetweenRelationshipGroups("COP", "FIREMAN", Relationship.Companion);
-                Game.SetRelationshipBetweenRelationshipGroups("COP", "MEDIC", Relationship.Companion);
-                Game.SetRelationshipBetweenRelationshipGroups("COP", "ARMY", Relationship.Companion);
-
-                Game.SetRelationshipBetweenRelationshipGroups("FIREMAN", "COP", Relationship.Companion);
-                Game.SetRelationshipBetweenRelationshipGroups("MEDIC", "COP", Relationship.Companion);
-                Game.SetRelationshipBetweenRelationshipGroups("ARMY", "COP", Relationship.Companion);
+                SetEmsRelationships(true);
+                SetTaxiDisabled(true);
 
                 NativeFunction.Natives.SET_MAX_WANTED_LEVEL(0);
                 NativeFunction.Natives.SET_DISPATCH_COPS_FOR_PLAYER(Game.LocalPlayer, false);
@@ -43,13 +37,15 @@ namespace EmsPlus.Core
             }
             else
             {
-                Game.DisplayNotification(Localization.Get("NOTIF_ON_DUTY", "~b~EmsPlus:~w~ You are now ~r~Off Duty~w~."));
                 SetStatus(EmsStatus.OffDuty);
 
                 DialogueManager.Cleanup();
 
                 player.RelationshipGroup = "PLAYER";
                 NativeFunction.Natives.SET_PED_AS_COP(player, false);
+
+                SetEmsRelationships(false);
+                SetTaxiDisabled(false);
 
                 NativeFunction.Natives.SET_MAX_WANTED_LEVEL(5);
                 NativeFunction.Natives.SET_DISPATCH_COPS_FOR_PLAYER(Game.LocalPlayer, true);
@@ -66,37 +62,30 @@ namespace EmsPlus.Core
 
         private static void SetEmsRelationships(bool onDuty)
         {
-            Ped player = Game.LocalPlayer.Character;
-
-            string[] emergencyGroups = { "COP", "FIREMAN", "MEDIC", "SECURITY_GUARD", "PRIVATE_SECURITY" };
+            string[] emergencyGroups = { "COP", "FIREMAN", "MEDIC", "ARMY", "SECURITY_GUARD", "PRIVATE_SECURITY", "PLAYER" };
 
             if (onDuty)
             {
-                player.RelationshipGroup = "MEDIC";
-
-                uint playerGroupHash = Game.GetHashKey("MEDIC");
-
-                foreach (string groupName in emergencyGroups)
+                foreach (string groupA in emergencyGroups)
                 {
-                    uint targetGroupHash = Game.GetHashKey(groupName);
-
-                    NativeFunction.Natives.SET_RELATIONSHIP_BETWEEN_GROUPS(0, targetGroupHash, playerGroupHash);
-                    NativeFunction.Natives.SET_RELATIONSHIP_BETWEEN_GROUPS(0, playerGroupHash, targetGroupHash);
+                    foreach (string groupB in emergencyGroups)
+                    {
+                        Game.SetRelationshipBetweenRelationshipGroups(groupA, groupB, Relationship.Respect);
+                    }
                 }
 
                 NativeFunction.Natives.SET_EVERYONE_IGNORE_PLAYER(Game.LocalPlayer, true);
+                NativeFunction.Natives.SET_POLICE_IGNORE_PLAYER(Game.LocalPlayer, true);
             }
             else
             {
-                player.RelationshipGroup = "PLAYER";
                 NativeFunction.Natives.SET_EVERYONE_IGNORE_PLAYER(Game.LocalPlayer, false);
+                NativeFunction.Natives.SET_POLICE_IGNORE_PLAYER(Game.LocalPlayer, false);
 
-                uint playerGroupHash = Game.GetHashKey("PLAYER");
-                foreach (string groupName in emergencyGroups)
+                foreach (string group in emergencyGroups)
                 {
-                    uint targetGroupHash = Game.GetHashKey(groupName);
-                    NativeFunction.Natives.SET_RELATIONSHIP_BETWEEN_GROUPS(3, targetGroupHash, playerGroupHash);
-                    NativeFunction.Natives.SET_RELATIONSHIP_BETWEEN_GROUPS(3, playerGroupHash, targetGroupHash);
+                    Game.SetRelationshipBetweenRelationshipGroups("PLAYER", group, Relationship.Neutral);
+                    Game.SetRelationshipBetweenRelationshipGroups(group, "PLAYER", Relationship.Neutral);
                 }
             }
         }

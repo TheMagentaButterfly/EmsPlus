@@ -164,6 +164,16 @@ namespace EmsPlus.Callouts
                 {
                     responder.IsPersistent = true;
                     responder.BlockPermanentEvents = true;
+
+                    if (pedModelStr.ToLower().Contains("fire")) responder.RelationshipGroup = "FIREMAN";
+                    else if (pedModelStr.ToLower().Contains("cop")) responder.RelationshipGroup = "COP";
+                    else responder.RelationshipGroup = "MEDIC";
+
+                    responder.Inventory.Weapons.Clear();
+                    NativeFunction.Natives.SET_BLOCKING_OF_NON_TEMPORARY_EVENTS(responder, true);
+                    NativeFunction.Natives.SET_PED_FLEE_ATTRIBUTES(responder, 0, false);
+                    NativeFunction.Natives.SET_PED_COMBAT_ATTRIBUTES(responder, 17, true);
+
                     SceneEntities.Add(responder);
                     NativeFunction.Natives.TASK_TURN_PED_TO_FACE_COORD(responder, centerPos.X, centerPos.Y, centerPos.Z, -1);
                 }

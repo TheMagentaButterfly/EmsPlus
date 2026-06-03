@@ -341,9 +341,11 @@ namespace EmsPlus.Managers
 
                 if (!isAlreadyLoaded && !alreadyAttached)
                 {
-                    Vector3 rearPos = amb.GetOffsetPosition(new Vector3(0, -4.5f, 0));
+                    amb.Model.GetDimensions(out Vector3 min, out Vector3 max);
+                    Vector3 rearPos = amb.GetOffsetPosition(new Vector3(0, min.Y - 0.5f, 0));
+
                     if (m1.Exists()) m1.Tasks.GoStraightToPosition(rearPos, 1.5f, amb.Heading, 1.0f, 10000);
-                    if (m2.Exists()) m2.Tasks.GoStraightToPosition(amb.GetOffsetPosition(new Vector3(2f, -4.5f, 0)), 1.5f, amb.Heading, 1.0f, 10000);
+                    if (m2.Exists()) m2.Tasks.GoStraightToPosition(amb.GetOffsetPosition(new Vector3(2f, min.Y - 0.5f, 0)), 1.5f, amb.Heading, 1.0f, 10000);
 
                     WaitUntilClose(m1, rearPos, 2.5f, 150);
 
@@ -385,9 +387,10 @@ namespace EmsPlus.Managers
                     pat.Tasks.PlayAnimation(patDict, patName, 8f, AnimationFlags.Loop);
                     unit.AssignedPatient.IsOnStretcher = true;
 
-                    rearPos = amb.GetOffsetPosition(new Vector3(0, -4.5f, 0));
+                    amb.Model.GetDimensions(out Vector3 min2, out Vector3 max2);
+                    rearPos = amb.GetOffsetPosition(new Vector3(0, min2.Y - 0.5f, 0));
                     if (m1.Exists()) m1.Tasks.GoStraightToPosition(rearPos, 1.5f, amb.Heading, 1.0f, 15000);
-                    if (m2.Exists()) m2.Tasks.GoStraightToPosition(amb.GetOffsetPosition(new Vector3(2f, -4.5f, 0)), 1.5f, amb.Heading, 1.0f, 15000);
+                    if (m2.Exists()) m2.Tasks.GoStraightToPosition(amb.GetOffsetPosition(new Vector3(2f, min2.Y - 0.5f, 0)), 1.5f, amb.Heading, 1.0f, 15000);
 
                     WaitUntilClose(m1, rearPos, 2.5f, 250);
 
