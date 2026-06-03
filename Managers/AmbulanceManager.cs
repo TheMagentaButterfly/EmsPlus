@@ -198,13 +198,27 @@ namespace EmsPlus.Managers
 
         private static void ToggleDoorsInternal()
         {
+            if (CurrentVehicle == null || !CurrentVehicle.Exists()) return;
+
             AreDoorsOpen = !AreDoorsOpen;
             foreach (int doorIndex in CurrentConfig.DoorIndices)
             {
-                if (doorIndex >= 0 && doorIndex <= 7)
+                try
                 {
-                    if (AreDoorsOpen) CurrentVehicle.Doors[doorIndex].Open(false);
-                    else CurrentVehicle.Doors[doorIndex].Close(false);
+                    if (doorIndex >= 0 && doorIndex <= 7)
+                    {
+                        var door = CurrentVehicle.Doors[doorIndex];
+                        
+                        if (door.IsValid())
+                        {
+                            if (AreDoorsOpen) door.Open(false);
+                            else door.Close(false);
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Game.Console.Print($"[EmsPlus] Warning: Could not toggle door index {doorIndex}. {ex.Message}");
                 }
             }
         }

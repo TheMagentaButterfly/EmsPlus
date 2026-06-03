@@ -347,7 +347,7 @@ namespace EmsPlus.Managers
 
                     WaitUntilClose(m1, rearPos, 2.5f, 150);
 
-                    if (amb.Exists()) { amb.Doors[2].Open(false); amb.Doors[3].Open(false); }
+                    ToggleAIDoors(amb, true);
                     GameFiber.Sleep(1000);
 
                     Model stretcherModel = new Model(EntryPoint.PropConfig.StretcherModel);
@@ -401,7 +401,7 @@ namespace EmsPlus.Managers
                     if (cfg.HideStretcherInVehicle) NativeFunction.Natives.SET_ENTITY_ALPHA(aiStretcher, 0, false);
                 }
 
-                if (amb.Exists()) { amb.Doors[2].Close(false); amb.Doors[3].Close(false); }
+                ToggleAIDoors(amb, false);
                 GameState.ActivePatients.Remove(unit.AssignedPatient);
 
                 if (!driveToHospital)
@@ -513,6 +513,31 @@ namespace EmsPlus.Managers
             if (count >= maxIterations && ped.Exists())
             {
                 ped.Position = target;
+            }
+        }
+
+        private static void ToggleAIDoors(Vehicle amb, bool openDoors)
+        {
+            if (amb == null || !amb.Exists()) return;
+
+            var cfg = new Configuration.VehicleConfig(amb.Model.Name);
+            cfg.Load();
+
+            foreach (int doorIndex in cfg.DoorIndices)
+            {
+                try
+                {
+                    if (doorIndex >= 0 && doorIndex <= 7)
+                    {
+                        var door = amb.Doors[doorIndex];
+                        if (door.IsValid())
+                        {
+                            if (openDoors) door.Open(false);
+                            else door.Close(false);
+                        }
+                    }
+                }
+                catch { /* Ignore invalid doors safely */ }
             }
         }
 
