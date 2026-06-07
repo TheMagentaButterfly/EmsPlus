@@ -44,7 +44,6 @@ namespace EmsPlus.Managers
             _fixedSpawnPos = Vector3.Zero;
         }
 
-        // 1. CARRY GHOST
         public static void UpdateCarryGhost()
         {
             if (StretcherManager.IsAttachedToPlayer && StretcherManager.Prop != null && StretcherManager.Prop.Exists())
@@ -62,7 +61,6 @@ namespace EmsPlus.Managers
 
                 _ghostStretcher = new Object(m, Game.LocalPlayer.Character.Position);
                 _ghostStretcher.IsCollisionEnabled = false;
-                //_ghostStretcher.Opacity = 150;
                 m.Dismiss();
             }
 
@@ -79,8 +77,6 @@ namespace EmsPlus.Managers
             );
         }
 
-        // 2. PATIENT GHOST
-        // mode: 0 = Normal, 1 = Lowered, 2 = Sitting
         public static void UpdatePatientGhost(int mode)
         {
             if (EntryPoint.PropConfig == null || EntryPoint.OffsetConfig == null) return;
@@ -109,7 +105,6 @@ namespace EmsPlus.Managers
                 Vector3 spawnPos = Game.LocalPlayer.Character.GetOffsetPosition(new Vector3(0f, 1.5f, -1f));
                 _ghostStretcher = new Rage.Object(targetModel, spawnPos);
                 _ghostStretcher.IsCollisionEnabled = false;
-                // _ghostStretcher.Opacity = 200;
                 _ghostStretcher.IsPositionFrozen = true;
                 targetModel.Dismiss();
             }
@@ -123,7 +118,6 @@ namespace EmsPlus.Managers
                 _ghostPatient = new Ped(_ghostStretcher.Position);
                 _ghostPatient.BlockPermanentEvents = true;
                 _ghostPatient.IsCollisionEnabled = false;
-                // _ghostPatient.Opacity = 200;
                 _ghostPatient.IsPositionFrozen = true;
             }
 
@@ -175,7 +169,6 @@ namespace EmsPlus.Managers
             }
         }
 
-        // 3. VEHICLE GHOST
         public static void UpdateVehicleGhost(Vehicle v, VehicleConfig cfg, int mode)
         {
             if (v == null || !v.Exists() || !cfg.CanHaveStretcher)
@@ -184,7 +177,6 @@ namespace EmsPlus.Managers
                 return;
             }
 
-            // MODE 2: MEDIC SEAT
             if (mode == 2)
             {
                 if (_ghostStretcher != null && _ghostStretcher.Exists()) _ghostStretcher.Delete();
@@ -208,7 +200,6 @@ namespace EmsPlus.Managers
                     _ghostMedic.Tasks.PlayAnimation(dict, name, 8.0f, AnimationFlags.Loop);
                 }
             }
-            // MODE 0 / 1: STRETCHER
             else
             {
                 if (_ghostMedic != null && _ghostMedic.Exists()) _ghostMedic.Delete();

@@ -12,7 +12,6 @@ namespace EmsPlus.Managers.Actions
         {
             if (GameState.CurrentPatient == null) return;
 
-            // NATIVE-UI BYPASS
             if (EntryPoint.EmsPlusConfig.UseNativeUIPatientMenu.Value)
             {
                 ActionsCore.Run(Localization.Get("ACT_CHECKING_BGL", "Checking Blood Glucose..."), 4000,
@@ -35,7 +34,6 @@ namespace EmsPlus.Managers.Actions
                 return;
             }
 
-            // CUSTOM 3D MENU
             GameState.IsPlayerBusy = true;
             MenuCore.CloseAll();
 

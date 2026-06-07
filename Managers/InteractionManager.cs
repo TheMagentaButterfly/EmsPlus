@@ -70,12 +70,8 @@ namespace EmsPlus.Managers
                     AmbulanceManager.DrawInteractionMarkers();
                 }
 
-                // =======================================================
-                // TOP-LEFT PROMPT LOGIC (Priority System)
-                // =======================================================
                 bool promptShown = false;
 
-                // Priority 1: Patient Inspection Prompt
                 if (GameState.CurrentPatient != null && GameState.CurrentPatient.Character.Exists())
                 {
                     float dist = Game.LocalPlayer.Character.DistanceTo(GameState.CurrentPatient.Character);
@@ -92,7 +88,6 @@ namespace EmsPlus.Managers
                     }
                 }
 
-                // Priority 2: Bystander Interview Prompt
                 if (!promptShown && GameState.CurrentBystander?.Character.Exists() == true && !GameState.CurrentBystander.HasBeenSpokenTo)
                 {
                     if (Game.LocalPlayer.Character.DistanceTo(GameState.CurrentBystander.Character) < 3.0f)
@@ -102,7 +97,6 @@ namespace EmsPlus.Managers
                     }
                 }
 
-                // Priority 3: Stretcher Prompt
                 if (!promptShown && StretcherManager.Prop != null && StretcherManager.Prop.Exists() && !StretcherManager.IsAttachedToVehicle)
                 {
                     StretcherManager.Prop.Model.GetDimensions(out Vector3 min, out Vector3 max);
@@ -130,7 +124,6 @@ namespace EmsPlus.Managers
                     }
                 }
 
-                // Priority 4: Ambulance Prompt
                 if (!promptShown && AmbulanceManager.IsPlayerNearInteractionPoint())
                 {
                     string keyName = EntryPoint.KeyConfig.OpenAmbulanceMenuKey.Value.ToString();
@@ -153,9 +146,6 @@ namespace EmsPlus.Managers
                 {
                     StretcherManager.Process();
 
-                    // =======================================================
-                    // QUICK ACTION: CABIN TOGGLE LOGIC
-                    // =======================================================
                     if (IsCabinToggleKeyDown() && Game.GameTime > _lastCabinToggleTime + 1000)
                     {
                         _lastCabinToggleTime = Game.GameTime;
@@ -184,21 +174,14 @@ namespace EmsPlus.Managers
                             }
                         }
                     }
-                    // =======================================================
-                    // QUICK ACTION: STRETCHER TOGGLE LOGIC
-                    // =======================================================
                     if (IsStretcherToggleKeyDown() && Game.GameTime > _lastStretcherToggleTime + 1000)
                     {
                         _lastStretcherToggleTime = Game.GameTime;
                         AmbulanceManager.QuickToggleStretcher();
                     }
 
-                    // =======================================================
-                    // DIALOGUE INITIATION LOGIC
-                    // =======================================================
                     if (!DialogueManager.IsActive && !MenuCore.IsAnyMenuOpen)
                     {
-                        // Check for Bystander
                         if (GameState.CurrentBystander?.Character.Exists() == true &&
                             !GameState.CurrentBystander.HasBeenSpokenTo &&
                             Game.LocalPlayer.Character.DistanceTo(GameState.CurrentBystander.Character) < 3.0f)
@@ -211,7 +194,6 @@ namespace EmsPlus.Managers
                                 );
                             }
                         }
-                        // Check for Conscious Patient
                         else if (GameState.CurrentPatient?.Character.Exists() == true &&
                                  !GameState.CurrentPatient.HasBeenSpokenTo &&
                                  GameState.CurrentPatient.Consciousness > ConsciousnessLevel.Pain &&
@@ -227,9 +209,6 @@ namespace EmsPlus.Managers
                         }
                     }
 
-                    // =======================================================
-                    // DISPATCH & COMMAND MENU HOTKEYS
-                    // =======================================================
                     if (EmsService.IsOnDuty && !MenuCore.IsAnyMenuOpen)
                     {
                         bool commandModPressed = EntryPoint.KeyConfig.OpenBackupManagerMenuKeyModifier?.Value?.IsPressed ?? Game.IsKeyDown(Keys.LShiftKey);
@@ -245,9 +224,6 @@ namespace EmsPlus.Managers
                         }
                     }
 
-                    // =======================================================
-                    // MAIN INTERACTION LOGIC
-                    // =======================================================
                     bool keyDown = IsInteractionKeyDown();
                     if (!keyDown) continue;
 

@@ -502,9 +502,6 @@ namespace EmsPlus.Managers
             _unitCounter = 1;
         }
 
-        // ==========================================
-        // HELPERS
-        // ==========================================
         private static void WaitUntilClose(Ped ped, Vector3 target, float distance, int maxIterations)
         {
             int count = 0;
@@ -540,7 +537,7 @@ namespace EmsPlus.Managers
                         }
                     }
                 }
-                catch { /* Ignore invalid doors safely */ }
+                catch { }
             }
         }
 

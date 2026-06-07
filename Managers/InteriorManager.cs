@@ -47,7 +47,6 @@ namespace EmsPlus.Managers
 
             if (CurrentInterior == null)
             {
-                // Player is outside: Only check the TARGET entrance assigned by the active callout
                 if (TargetEntrance != null && TargetInterior != null)
                 {
                     float dist = pPos.DistanceTo(TargetEntrance.Coords);
@@ -67,7 +66,6 @@ namespace EmsPlus.Managers
             }
             else
             {
-                // Player is inside: Check the interior's exit door
                 float dist = pPos.DistanceTo(CurrentInterior.ExitCoords);
                 if (dist < 20f)
                 {

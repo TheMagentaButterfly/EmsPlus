@@ -88,7 +88,6 @@ namespace EmsPlus.Managers.Actions
             Vector3 patientPos = GameState.CurrentPatient?.Character?.Position ?? Game.LocalPlayer.Character.Position;
             if (!InventoryManager.IsKitAvailable("TRAUMABAG", patientPos)) return;
 
-            // NATIVE-UI BYPASS
             if (EntryPoint.EmsPlusConfig.UseNativeUIPatientMenu.Value)
             {
                 ActionsCore.Run(Localization.Get("ACT_ESTABLISHING_IV", "Establishing IV..."), 5000,
@@ -105,7 +104,6 @@ namespace EmsPlus.Managers.Actions
                 return;
             }
 
-            // CUSTOM 3D MENU
             GameState.IsPlayerBusy = true;
             MenuCore.CloseAll();
             BodyInspectionManager.StopInspection(false);

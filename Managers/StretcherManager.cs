@@ -23,7 +23,6 @@ namespace EmsPlus.Managers
         private static bool IsHeightPressed() => EntryPoint.KeyConfig.StretcherHeightKey?.Value?.IsPressed ?? Game.IsKeyDown(Keys.H);
         private static bool IsSitPressed() => EntryPoint.KeyConfig.StretcherSitKey?.Value?.IsPressed ?? Game.IsKeyDown(Keys.J);
 
-        // --- PROPERTIES ---
         public static bool IsAttachedToVehicle
         {
             get
@@ -41,7 +40,6 @@ namespace EmsPlus.Managers
             }
         }
 
-        // --- PROCESS LOOP ---
         public static void Process()
         {
             if (Prop == null || !Prop.Exists()) return;
@@ -78,8 +76,6 @@ namespace EmsPlus.Managers
             }
         }
 
-
-        // --- SWAP FUNCTION ---
         public static void SwitchState(StretcherState newState)
         {
             if (CurrentState == newState) return;
@@ -200,7 +196,6 @@ namespace EmsPlus.Managers
             });
         }
 
-        // --- ATTACHMENT LOGIC ---
         public static void AttachToPlayer()
         {
             Prop.IsPositionFrozen = false;
@@ -288,7 +283,6 @@ namespace EmsPlus.Managers
             OnUpdate?.Invoke();
         }
 
-        // --- SPAWNING LOGIC ---
         public static void Deploy()
         {
             if (Prop != null && Prop.Exists()) return;
@@ -372,7 +366,6 @@ namespace EmsPlus.Managers
             if (wasAttached) AttachToPlayer();
         }
 
-        // --- HELPER: SAFE SPAWN ---
         private static Rage.Object SafeSpawn(string modelName, Vector3 targetPos, float heading)
         {
             Model model = new Model(modelName);

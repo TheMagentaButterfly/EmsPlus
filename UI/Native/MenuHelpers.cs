@@ -13,7 +13,7 @@ namespace EmsPlus.UI.Native
         public static void Initialize()
         {
             FloatValues = new List<dynamic>();
-            for (decimal d = -5.00m; d <= 5.00m; d += 0.01m) FloatValues.Add((float)d);
+            for (decimal d = -15.00m; d <= 15.00m; d += 0.01m) FloatValues.Add((float)d);
 
             DegreeValues = new List<dynamic>();
             for (int i = -180; i <= 360; i++) DegreeValues.Add((float)i);

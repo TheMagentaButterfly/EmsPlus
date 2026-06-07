@@ -7,10 +7,7 @@ namespace EmsPlus.Managers
 {
     public static class UpdateManager
     {
-        // ------------------------------
-        // REPLACE THIS WITH YOUR FILE ID
-        // ------------------------------
-        private const string LCPDFR_FILE_ID = "52105"; //52105 is the file ID for EmsPlus on LCPDFR.com
+        private const string LCPDFR_FILE_ID = "52105";
 
         public static void CheckForUpdates()
         {
@@ -20,7 +17,6 @@ namespace EmsPlus.Managers
                 {
                     using (WebClient client = new WebClient())
                     {
-                        // LCPDFR Version API Endpoint
                         string url = $"http://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId={LCPDFR_FILE_ID}&textOnly=1";
 
                         string remoteVersionString = client.DownloadString(url).Trim();
@@ -29,7 +25,6 @@ namespace EmsPlus.Managers
 
                         if (Version.TryParse(remoteVersionString, out Version remoteVersion))
                         {
-                            // Update Available Logic
                             if (remoteVersion > localVersion)
                             {
                                 Game.Console.Print($"[EmsPlus] UPDATE AVAILABLE: v{remoteVersion} is out! (Current: v{localVersion})");
@@ -41,7 +36,6 @@ namespace EmsPlus.Managers
                                 });
                             }
 
-                            // Developer Version Logic
                             else if (remoteVersion < localVersion)
                             {
                                 Game.Console.Print($"[EmsPlus] You are using the developer version (v{localVersion}).");
@@ -53,7 +47,6 @@ namespace EmsPlus.Managers
                                 });
                             }
 
-                            // Up to Date Logic
                             else if (remoteVersion == localVersion)
                             {
                                 Game.Console.Print($"[EmsPlus] Plugin is up to date (v{localVersion}).");

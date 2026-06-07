@@ -7,10 +7,10 @@ namespace EmsPlus.Managers
 {
     public class CustomAction
     {
-        public string ID { get; set; }           // e.g., "APPLY_TOURNIQUET"
-        public string Label { get; set; }        // e.g., "Apply Tourniquet"
-        public string SubLabel { get; set; }     // e.g., "Stop arterial bleeding"
-        public string RequiredKitID { get; set; } // e.g., "TRAUMABAG"
+        public string ID { get; set; }
+        public string Label { get; set; }
+        public string SubLabel { get; set; }
+        public string RequiredKitID { get; set; }
         public Action<Patient, PedBoneId> OnExecute { get; set; }
     }
 
