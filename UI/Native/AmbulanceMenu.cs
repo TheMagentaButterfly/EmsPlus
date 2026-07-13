@@ -83,7 +83,7 @@ namespace EmsPlus.UI.Native
                 }
                 else if (item == itemStore)
                 {
-                    InventoryManager.StowKit();
+                    InventoryManager.StowAllKits();
                     InventoryManager.StoreAllKits();
                     RefreshState();
                 }
@@ -192,13 +192,13 @@ namespace EmsPlus.UI.Native
                 MenuCore.AmbulanceMenu.AddItem(itemEquipment);
 
                 // 4. STORE KITS
-                bool hasKitInHand = InventoryManager.CurrentKitID != "NONE";
+                bool hasKitInHand = InventoryManager.EquippedKits.Count > 0;
                 bool hasKitsOnGround = InventoryManager.PlacedKits.Count > 0;
 
                 if (hasKitInHand || hasKitsOnGround)
                 {
                     itemStore.Enabled = true;
-                    itemStore.Description = Localization.Get("DESC_COLLECT_KITS", "Collect the kits.");
+                    itemStore.Description = Localization.Get("DESC_COLLECT_KITS");
                     MenuCore.AmbulanceMenu.AddItem(itemStore);
                 }
             }

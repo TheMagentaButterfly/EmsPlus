@@ -12,13 +12,19 @@ namespace EmsPlus.Managers
         public string KitID { get; set; }
     }
 
+    public class EquippedKit
+    {
+        public string KitID { get; set; }
+        public Object Prop { get; set; }
+    }
+
     public static class InventoryManager
     {
-        public static string CurrentKitID { get; private set; } = "NONE";
+        public static List<EquippedKit> EquippedKits { get; private set; } = new List<EquippedKit>();
         public static List<PlacedKit> PlacedKits { get; private set; } = new List<PlacedKit>();
         public static EmsTreatment ActiveTool { get; set; } = EmsTreatment.None;
+
         public static void ClearActiveTool() => ActiveTool = (EmsTreatment)999;
-        private static Object _equippedProp;
         public static Dictionary<EmsTreatment, int> CurrentSupplies { get; private set; } = new Dictionary<EmsTreatment, int>();
 
         static InventoryManager()
@@ -42,11 +48,11 @@ namespace EmsPlus.Managers
             CurrentSupplies[EmsTreatment.PelvicBinder] = 1;
             CurrentSupplies[EmsTreatment.CervicalCollar] = 1;
             // IV / Meds
-            //CurrentSupplies[EmsTreatment.IVAccess] = 4;
-            //CurrentSupplies[EmsTreatment.SalineBag] = 2;
-            //CurrentSupplies[EmsTreatment.Adrenaline] = 2;
-            //CurrentSupplies[EmsTreatment.Naloxone] = 2;
-            //CurrentSupplies[EmsTreatment.Glucose] = 2;
+            CurrentSupplies[EmsTreatment.IVAccess] = 4;
+            CurrentSupplies[EmsTreatment.SalineBag] = 2;
+            CurrentSupplies[EmsTreatment.Adrenaline] = 2;
+            CurrentSupplies[EmsTreatment.Naloxone] = 2;
+            CurrentSupplies[EmsTreatment.Glucose] = 2;
             // Airway / Chest
             CurrentSupplies[EmsTreatment.ChestSeal] = 2;
             CurrentSupplies[EmsTreatment.NeedleDecomp] = 2;
@@ -59,7 +65,7 @@ namespace EmsPlus.Managers
 
             if (notify)
             {
-                Game.DisplayNotification(Localization.Get("NOTIF_MEDICALBAGS_RESTOCKED", "~b~Dispatch:~w~ Medical bags ~g~restocked~w~."));
+                Game.DisplayNotification(Localization.Get("NOTIF_MEDICALBAGS_RESTOCKED"));
             }
         }
 
@@ -67,7 +73,6 @@ namespace EmsPlus.Managers
         {
             if (AmbulanceManager.IsPlayerInRearCabin) return true;
             if (!CurrentSupplies.ContainsKey(treatment)) return true;
-
             return CurrentSupplies[treatment] > 0;
         }
 
@@ -84,17 +89,24 @@ namespace EmsPlus.Managers
         {
             if (kitID == "NONE") return true;
             if (AmbulanceManager.IsPlayerInRearCabin) return true;
-            if (CurrentKitID == kitID) return true;
+            if (HasKit(kitID)) return true;
 
             return PlacedKits.Any(k => k.KitID == kitID && k.Prop != null && k.Prop.Exists() && k.Prop.DistanceTo(position) <= range);
         }
 
+        public static bool HasKit(string kitID)
+        {
+            return EquippedKits.Any(k => k.KitID == kitID);
+        }
+
         public static void EquipKit(string kitID)
         {
-            if (PlacedKits.Any(k => k.KitID == kitID))
+            if (HasKit(kitID))
             {
+                StowKit(kitID);
                 return;
             }
+
             Ped player = Game.LocalPlayer.Character;
             string animDict = EntryPoint.AnimationConfig.InteractDict.Value;
             string animName = EntryPoint.AnimationConfig.InteractName.Value;
@@ -112,83 +124,151 @@ namespace EmsPlus.Managers
 
             if (string.IsNullOrEmpty(modelName)) return;
 
-            if (CurrentKitID == kitID) { StowKit(); return; }
-            StowKit();
+            Model m = new Model(modelName);
+            m.LoadAndWait();
+            if (!m.IsValid) return;
 
-            CurrentKitID = kitID;
-            SpawnAndAttach(modelName);
+            Object newProp = new Object(m, player.Position);
+            m.Dismiss();
 
-            string localizedKitName = Localization.Get($"KIT_NAME_{kitID.ToUpperInvariant()}");
+            EquippedKits.Add(new EquippedKit { KitID = kitID, Prop = newProp });
+            ReAttachProps();
         }
 
-        public static void StowKit()
+        public static void StowKit(string kitID)
         {
-            if (_equippedProp != null && _equippedProp.Exists())
+            var kit = EquippedKits.FirstOrDefault(k => k.KitID == kitID);
+            if (kit != null)
             {
-                _equippedProp.Delete();
+                if (kit.Prop != null && kit.Prop.Exists()) kit.Prop.Delete();
+                EquippedKits.Remove(kit);
             }
-            _equippedProp = null;
-            CurrentKitID = "NONE";
         }
 
-        public static bool HasKit(string kitID)
+        public static void StowAllKits()
         {
-            return CurrentKitID == kitID;
+            foreach (var kit in EquippedKits)
+            {
+                if (kit.Prop != null && kit.Prop.Exists()) kit.Prop.Delete();
+            }
+            EquippedKits.Clear();
         }
 
-        public static void PlaceKitOnGround(Ped targetPed = null)
+        public static void ReAttachProps()
         {
-            if (CurrentKitID == "NONE") return;
-            string modelName = "";
-            if (CurrentKitID == "TRAUMABAG") modelName = EntryPoint.PropConfig.TraumaBagModel;
-            else if (CurrentKitID == "OXYGENBAG") modelName = EntryPoint.PropConfig.OxygenBagModel;
-            else if (CurrentKitID == "DEFIBRILLATOR") modelName = EntryPoint.PropConfig.DefibrillatorModel;
+            Ped player = Game.LocalPlayer.Character;
+            var c = EntryPoint.OffsetConfig;
 
-            if (string.IsNullOrEmpty(modelName)) return;
+            foreach (var kit in EquippedKits)
+            {
+                if (kit.Prop == null || !kit.Prop.Exists()) continue;
 
-            Vector3 targetPos;
-            float heading;
+                int boneIndex = 0;
+                float x = 0, y = 0, z = 0, p = 0, r = 0, yaw = 0;
+
+                if (kit.KitID == "TRAUMABAG")
+                {
+                    boneIndex = player.GetBoneIndex(ParseBone(c.TraumaAttachBone));
+                    x = c.TraumaAttachX; y = c.TraumaAttachY; z = c.TraumaAttachZ;
+                    p = c.TraumaAttachPitch; r = c.TraumaAttachRoll; yaw = c.TraumaAttachYaw;
+                }
+                else if (kit.KitID == "OXYGENBAG")
+                {
+                    boneIndex = player.GetBoneIndex(ParseBone(c.OxygenAttachBone));
+                    x = c.OxygenAttachX; y = c.OxygenAttachY; z = c.OxygenAttachZ;
+                    p = c.OxygenAttachPitch; r = c.OxygenAttachRoll; yaw = c.OxygenAttachYaw;
+                }
+                else if (kit.KitID == "DEFIBRILLATOR")
+                {
+                    boneIndex = player.GetBoneIndex(ParseBone(c.DefibAttachBone));
+                    x = c.DefibAttachX; y = c.DefibAttachY; z = c.DefibAttachZ;
+                    p = c.DefibAttachPitch; r = c.DefibAttachRoll; yaw = c.DefibAttachYaw;
+                }
+
+                NativeFunction.Natives.ATTACH_ENTITY_TO_ENTITY(kit.Prop, player, boneIndex, x, y, z, p, r, yaw, true, true, false, false, 2, true);
+            }
+        }
+
+        public static void PlaceKitsOnGround(Ped targetPed = null)
+        {
+            if (EquippedKits.Count == 0) return;
+
+            Vector3 basePos;
+            float baseHeading;
 
             if (targetPed != null && targetPed.Exists())
             {
                 Vector3 headPos = targetPed.GetBonePosition(PedBoneId.Head);
                 Vector3 pelvisPos = targetPed.GetBonePosition(PedBoneId.SpineRoot);
-
-                Vector3 bodyUpDir = (headPos - pelvisPos);
-                bodyUpDir.Normalize();
-
-                Vector3 bodyRightDir = Vector3.Cross(bodyUpDir, Vector3.WorldUp);
-                bodyRightDir.Normalize();
-
-                if (CurrentKitID == "TRAUMABAG") targetPos = headPos - (bodyRightDir * 0.75f);
-                else if (CurrentKitID == "DEFIBRILLATOR") targetPos = headPos + (bodyRightDir * 0.75f);
-                else if (CurrentKitID == "OXYGENBAG") targetPos = headPos + (bodyUpDir * 0.55f);
-                else targetPos = pelvisPos + (bodyUpDir * 0.3f) + (bodyRightDir * 0.8f);
-
-                heading = (float)System.Math.Atan2(pelvisPos.Y - targetPos.Y, pelvisPos.X - targetPos.X) * 57.29578f;
+                basePos = headPos;
+                baseHeading = (float)System.Math.Atan2(pelvisPos.Y - headPos.Y, pelvisPos.X - headPos.X) * 57.29578f;
             }
             else
             {
-                targetPos = Game.LocalPlayer.Character.GetOffsetPosition(new Vector3(0.5f, 0.5f, 0));
-                heading = Game.LocalPlayer.Character.Heading;
+                basePos = Game.LocalPlayer.Character.GetOffsetPosition(new Vector3(0.5f, 0.5f, 0));
+                baseHeading = Game.LocalPlayer.Character.Heading;
             }
 
-            float groundZ;
-            NativeFunction.Natives.GET_GROUND_Z_FOR_3D_COORD(targetPos.X, targetPos.Y, targetPos.Z + 1.0f, out groundZ, false);
+            int index = 0;
+            foreach (var kit in EquippedKits.ToList())
+            {
+                if (kit.Prop != null && kit.Prop.Exists()) kit.Prop.Delete();
 
-            if (_equippedProp != null && _equippedProp.Exists()) _equippedProp.Delete();
-            _equippedProp = null;
+                string modelName = "";
+                if (kit.KitID == "TRAUMABAG") modelName = EntryPoint.PropConfig.TraumaBagModel;
+                else if (kit.KitID == "OXYGENBAG") modelName = EntryPoint.PropConfig.OxygenBagModel;
+                else if (kit.KitID == "DEFIBRILLATOR") modelName = EntryPoint.PropConfig.DefibrillatorModel;
 
-            Model m = new Model(modelName);
-            m.LoadAndWait();
-            Rage.Object newProp = new Rage.Object(m, new Vector3(targetPos.X, targetPos.Y, groundZ));
-            newProp.Heading = heading;
-            newProp.IsPositionFrozen = true;
-            newProp.IsCollisionEnabled = false;
-            m.Dismiss();
+                if (string.IsNullOrEmpty(modelName)) continue;
 
-            PlacedKits.Add(new PlacedKit { Prop = newProp, KitID = CurrentKitID });
-            CurrentKitID = "NONE";
+                Model m = new Model(modelName);
+                m.LoadAndWait();
+                if (!m.IsValid) { m.Dismiss(); continue; }
+
+                Vector3 targetPos = basePos;
+
+                if (targetPed != null && targetPed.Exists())
+                {
+                    Vector3 headPos = targetPed.GetBonePosition(PedBoneId.Head);
+                    Vector3 pelvisPos = targetPed.GetBonePosition(PedBoneId.SpineRoot);
+                    Vector3 bodyUpDir = (headPos - pelvisPos); bodyUpDir.Normalize();
+                    Vector3 bodyRightDir = Vector3.Cross(bodyUpDir, Vector3.WorldUp); bodyRightDir.Normalize();
+
+                    if (kit.KitID == "TRAUMABAG") targetPos = headPos - (bodyRightDir * 0.75f);
+                    else if (kit.KitID == "DEFIBRILLATOR") targetPos = headPos + (bodyRightDir * 0.75f);
+                    else if (kit.KitID == "OXYGENBAG") targetPos = headPos + (bodyUpDir * 0.55f);
+                }
+                else
+                {
+                    targetPos = basePos + new Vector3(index * 0.6f - 0.6f, 0, 0);
+                }
+
+                float groundZ;
+                NativeFunction.Natives.GET_GROUND_Z_FOR_3D_COORD(targetPos.X, targetPos.Y, targetPos.Z + 1.0f, out groundZ, false);
+
+                Rage.Object newProp = new Rage.Object(m, new Vector3(targetPos.X, targetPos.Y, groundZ));
+
+                if (newProp != null && newProp.Exists())
+                {
+                    newProp.Heading = baseHeading;
+                    newProp.IsPositionFrozen = true;
+                    newProp.IsCollisionEnabled = false;
+
+                    PlacedKits.Add(new PlacedKit { Prop = newProp, KitID = kit.KitID });
+                }
+
+                m.Dismiss();
+                index++;
+            }
+
+            EquippedKits.Clear();
+        }
+
+        private static PedBoneId ParseBone(string boneName)
+        {
+            if (boneName == "LeftHand") return PedBoneId.LeftHand;
+            if (boneName == "Back") return PedBoneId.Spine3;
+            return PedBoneId.RightHand;
         }
 
         public static void PickupKit(Entity propEntity)
@@ -231,12 +311,11 @@ namespace EmsPlus.Managers
             }
 
             PlacedKits.Clear();
-            Game.Console.Print("[EmsPlus] Equipment stored in ambulance.");
         }
 
         public static void Cleanup()
         {
-            StowKit();
+            StowAllKits();
             foreach (var k in PlacedKits)
             {
                 if (k.Prop != null && k.Prop.Exists()) k.Prop.Delete();
@@ -244,33 +323,6 @@ namespace EmsPlus.Managers
             PlacedKits.Clear();
             StoreAllKits();
             ActiveTool = EmsTreatment.None;
-        }
-
-        private static void SpawnAndAttach(string modelName)
-        {
-            Ped player = Game.LocalPlayer.Character;
-            Model m = new Model(modelName);
-            m.LoadAndWait();
-            _equippedProp = new Rage.Object(m, player.Position);
-            ReAttachProp();
-            m.Dismiss();
-        }
-
-        public static void ReAttachProp()
-        {
-            if (_equippedProp == null || !_equippedProp.Exists()) return;
-
-            Ped player = Game.LocalPlayer.Character;
-            int boneIndex = player.GetBoneIndex(PedBoneId.RightHand);
-            var c = EntryPoint.OffsetConfig;
-
-            float x = 0, y = 0, z = 0, p = 0, r = 0, yaw = 0;
-
-            if (CurrentKitID == "TRAUMABAG") { x = c.TraumaAttachX; y = c.TraumaAttachY; z = c.TraumaAttachZ; p = c.TraumaAttachPitch; r = c.TraumaAttachRoll; yaw = c.TraumaAttachYaw; }
-            else if (CurrentKitID == "OXYGENBAG") { x = c.OxygenAttachX; y = c.OxygenAttachY; z = c.OxygenAttachZ; p = c.OxygenAttachPitch; r = c.OxygenAttachRoll; yaw = c.OxygenAttachYaw; }
-            else if (CurrentKitID == "DEFIBRILLATOR") { x = c.DefibAttachX; y = c.DefibAttachY; z = c.DefibAttachZ; p = c.DefibAttachPitch; r = c.DefibAttachRoll; yaw = c.DefibAttachYaw; }
-
-            NativeFunction.Natives.ATTACH_ENTITY_TO_ENTITY(_equippedProp, player, boneIndex, x, y, z, p, r, yaw, true, true, false, false, 2, true);
         }
     }
 }

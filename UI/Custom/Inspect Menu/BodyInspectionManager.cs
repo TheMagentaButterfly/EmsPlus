@@ -60,7 +60,7 @@ namespace EmsPlus.UI.Custom.InspectMenu
             }
             catch { }
 
-            InventoryManager.PlaceKitOnGround(patient);
+            InventoryManager.PlaceKitsOnGround(patient);
 
             _patient = patient;
             _active = true;

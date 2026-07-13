@@ -22,6 +22,17 @@ namespace EmsPlus.UI.Native.ConfigMenu
             var itemKit = new UIMenuListItem($"{C_HIGHLIGHT}{Localization.Get("ITEM_SELECT_KIT", "Select Kit")}", listKits, 0, Localization.Get("ITEM_SELECT_KIT_DESC_PROP", "Select the kit to edit"));
             PropPosMenu.AddItem(itemKit);
 
+            var listBones = new List<dynamic>
+            {
+                Localization.Get("BONE_RIGHT_HAND", "Right Hand"),
+                Localization.Get("BONE_LEFT_HAND", "Left Hand"),
+                Localization.Get("BONE_BACK", "Back")
+            };
+            var internalBones = new List<string> { "RightHand", "LeftHand", "Back" };
+
+            var itemBone = new UIMenuListItem($"{C_HEADER}{Localization.Get("LABEL_ATTACH_BONE", "Attach Bone")}", listBones, 0, Localization.Get("DESC_ATTACH_BONE", "Select which body part to attach the bag to."));
+            PropPosMenu.AddItem(itemBone);
+
             Func<Vector3> getPos = () =>
             {
                 var c = EntryPoint.OffsetConfig;
@@ -54,31 +65,72 @@ namespace EmsPlus.UI.Native.ConfigMenu
                 else if (_editingKitType == "DEFIBRILLATOR") { c.DefibAttachPitch = r.Pitch; c.DefibAttachRoll = r.Roll; c.DefibAttachYaw = r.Yaw; }
             };
 
+            Func<string> getBone = () =>
+            {
+                var c = EntryPoint.OffsetConfig;
+                if (_editingKitType == "TRAUMABAG") return c.TraumaAttachBone;
+                if (_editingKitType == "OXYGENBAG") return c.OxygenAttachBone;
+                return c.DefibAttachBone;
+            };
+
+            Action<string> setBone = (b) =>
+            {
+                var c = EntryPoint.OffsetConfig;
+                if (_editingKitType == "TRAUMABAG") c.TraumaAttachBone = b;
+                else if (_editingKitType == "OXYGENBAG") c.OxygenAttachBone = b;
+                else if (_editingKitType == "DEFIBRILLATOR") c.DefibAttachBone = b;
+            };
+
             UIMenuListItem sX = null, sY = null, sZ = null, sP = null, sR = null, sYaw = null;
 
             Action sync = () =>
             {
                 Vector3 p = getPos();
                 Rotator r = getRot();
+                string currentBone = getBone();
+                int boneIndex = internalBones.IndexOf(currentBone);
+                itemBone.Index = boneIndex != -1 ? boneIndex : 0;
                 MenuHelpers.SyncListItem(sX, p.X, MenuHelpers.FloatValues);
                 MenuHelpers.SyncListItem(sY, p.Y, MenuHelpers.FloatValues);
                 MenuHelpers.SyncListItem(sZ, p.Z, MenuHelpers.FloatValues);
                 MenuHelpers.SyncListItem(sP, r.Pitch, MenuHelpers.DegreeValues);
                 MenuHelpers.SyncListItem(sR, r.Roll, MenuHelpers.DegreeValues);
                 MenuHelpers.SyncListItem(sYaw, r.Yaw, MenuHelpers.DegreeValues);
-                InventoryManager.ReAttachProp();
+                InventoryManager.ReAttachProps();
             };
 
-            sX = MenuHelpers.AddListControl(PropPosMenu, $"{C_HEADER}X {C_INFO}{Localization.Get("LABEL_LEFT_RIGHT", "Left/Right")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(v, p.Y, p.Z)); InventoryManager.ReAttachProp(); }, null);
-            sY = MenuHelpers.AddListControl(PropPosMenu, $"{C_HEADER}Y {C_INFO}{Localization.Get("LABEL_FORWARD_BACK", "Forward/Back")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(p.X, v, p.Z)); InventoryManager.ReAttachProp(); }, null);
-            sZ = MenuHelpers.AddListControl(PropPosMenu, $"{C_HEADER}Z {C_INFO}{Localization.Get("LABEL_UP_DOWN", "Up/Down")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(p.X, p.Y, v)); InventoryManager.ReAttachProp(); }, null);
-            sP = MenuHelpers.AddDegreeListControl(PropPosMenu, $"{C_HEADER}{Localization.Get("LABEL_PITCH", "Pitch")} {C_INFO}{Localization.Get("LABEL_TILT", "Tilt")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(v, r.Roll, r.Yaw)); InventoryManager.ReAttachProp(); }, null);
-            sR = MenuHelpers.AddDegreeListControl(PropPosMenu, $"{C_HEADER}{Localization.Get("LABEL_ROLL", "Roll")} {C_INFO}{Localization.Get("LABEL_LEAN", "Lean")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(r.Pitch, v, r.Yaw)); InventoryManager.ReAttachProp(); }, null);
-            sYaw = MenuHelpers.AddDegreeListControl(PropPosMenu, $"{C_HEADER}{Localization.Get("LABEL_YAW", "Yaw")} {C_INFO}{Localization.Get("LABEL_ROTATE", "Rotate")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(r.Pitch, r.Roll, v)); InventoryManager.ReAttachProp(); }, null);
+            sX = MenuHelpers.AddListControl(PropPosMenu, $"{C_HEADER}X {C_INFO}{Localization.Get("LABEL_LEFT_RIGHT", "Left/Right")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(v, p.Y, p.Z)); InventoryManager.ReAttachProps(); }, null);
+            sY = MenuHelpers.AddListControl(PropPosMenu, $"{C_HEADER}Y {C_INFO}{Localization.Get("LABEL_FORWARD_BACK", "Forward/Back")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(p.X, v, p.Z)); InventoryManager.ReAttachProps(); }, null);
+            sZ = MenuHelpers.AddListControl(PropPosMenu, $"{C_HEADER}Z {C_INFO}{Localization.Get("LABEL_UP_DOWN", "Up/Down")}", 0f, v => { Vector3 p = getPos(); setPos(new Vector3(p.X, p.Y, v)); InventoryManager.ReAttachProps(); }, null);
+            sP = MenuHelpers.AddDegreeListControl(PropPosMenu, $"{C_HEADER}{Localization.Get("LABEL_PITCH", "Pitch")} {C_INFO}{Localization.Get("LABEL_TILT", "Tilt")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(v, r.Roll, r.Yaw)); InventoryManager.ReAttachProps(); }, null);
+            sR = MenuHelpers.AddDegreeListControl(PropPosMenu, $"{C_HEADER}{Localization.Get("LABEL_ROLL", "Roll")} {C_INFO}{Localization.Get("LABEL_LEAN", "Lean")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(r.Pitch, v, r.Yaw)); InventoryManager.ReAttachProps(); }, null);
+            sYaw = MenuHelpers.AddDegreeListControl(PropPosMenu, $"{C_HEADER}{Localization.Get("LABEL_YAW", "Yaw")} {C_INFO}{Localization.Get("LABEL_ROTATE", "Rotate")}", 0f, v => { Rotator r = getRot(); setRot(new Rotator(r.Pitch, r.Roll, v)); InventoryManager.ReAttachProps(); }, null);
+
+            PropPosMenu.OnListChange += (s, item, index) =>
+            {
+                if (item == itemKit)
+                {
+                    InventoryManager.StowAllKits();
+
+                    if (index == 0) _editingKitType = "TRAUMABAG";
+                    else if (index == 1) _editingKitType = "OXYGENBAG";
+                    else if (index == 2) _editingKitType = "DEFIBRILLATOR";
+
+                    InventoryManager.EquipKit(_editingKitType);
+                    sync();
+                }
+                else if (item == itemBone)
+                {
+                    setBone(internalBones[index]);
+                    InventoryManager.ReAttachProps();
+                }
+            };
 
             PropPosMenu.OnListChange += (s, item, index) =>
             {
                 if (item != itemKit) return;
+
+                InventoryManager.StowAllKits();
 
                 if (index == 0) _editingKitType = "TRAUMABAG";
                 else if (index == 1) _editingKitType = "OXYGENBAG";
@@ -90,12 +142,12 @@ namespace EmsPlus.UI.Native.ConfigMenu
 
             PropPosMenu.OnMenuOpen += (s) =>
             {
-                if (!InventoryManager.CurrentKitID.Equals(_editingKitType))
-                    InventoryManager.EquipKit(_editingKitType);
+                InventoryManager.StowAllKits();
+                InventoryManager.EquipKit(_editingKitType);
                 sync();
             };
 
-            PropPosMenu.OnMenuClose += (s) => InventoryManager.StowKit();
+            PropPosMenu.OnMenuClose += (s) => InventoryManager.StowAllKits();
         }
 
         #endregion

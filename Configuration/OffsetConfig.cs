@@ -43,6 +43,7 @@ namespace EmsPlus.Configuration
 
         // --- PROP CARRY OFFSETS ---
         // 1. Trauma Bag
+        public string TraumaAttachBone = "RightHand";
         public float TraumaAttachX = 0.44f;
         public float TraumaAttachY = 0.01f;
         public float TraumaAttachZ = 0.0f;
@@ -51,6 +52,7 @@ namespace EmsPlus.Configuration
         public float TraumaAttachYaw = 0.0f;
 
         // 2. Oxygen Bag
+        public string OxygenAttachBone = "Back";
         public float OxygenAttachX = 0.44f;
         public float OxygenAttachY = 0.01f;
         public float OxygenAttachZ = 0.0f;
@@ -59,6 +61,7 @@ namespace EmsPlus.Configuration
         public float OxygenAttachYaw = 0.0f;
 
         // 3. Defibrilator Kit
+        public string DefibAttachBone = "LeftHand";
         public float DefibAttachX = 0.44f;
         public float DefibAttachY = 0.01f;
         public float DefibAttachZ = 0.0f;
@@ -67,6 +70,7 @@ namespace EmsPlus.Configuration
         public float DefibAttachYaw = 0.0f;
 
         // 4. Lucas Kit
+        public string LucasAttachBone = "LeftHand";
         public float LucasAttachX = 0.44f;
         public float LucasAttachY = 0.01f;
         public float LucasAttachZ = 0.0f;
@@ -109,6 +113,7 @@ namespace EmsPlus.Configuration
             PatientAttachSittingYaw = ReadFloat(ini, "PatientAttachmentSitting", "Yaw", 0);
 
 
+            TraumaAttachBone = ini.ReadString("TraumaBag", "Bone", "RightHand");
             TraumaAttachX = ReadFloat(ini, "TraumaBag", "X", 0.44f);
             TraumaAttachY = ReadFloat(ini, "TraumaBag", "Y", 0.01f);
             TraumaAttachZ = ReadFloat(ini, "TraumaBag", "Z", 0.0f);
@@ -116,6 +121,7 @@ namespace EmsPlus.Configuration
             TraumaAttachRoll = ReadFloat(ini, "TraumaBag", "Roll", 270.0f);
             TraumaAttachYaw = ReadFloat(ini, "TraumaBag", "Yaw", 0.0f);
 
+            OxygenAttachBone = ini.ReadString("OxygenBag", "Bone", "Back");
             OxygenAttachX = ReadFloat(ini, "OxygenBag", "X", 0.44f);
             OxygenAttachY = ReadFloat(ini, "OxygenBag", "Y", 0.01f);
             OxygenAttachZ = ReadFloat(ini, "OxygenBag", "Z", 0.0f);
@@ -123,6 +129,7 @@ namespace EmsPlus.Configuration
             OxygenAttachRoll = ReadFloat(ini, "OxygenBag", "Roll", 270.0f);
             OxygenAttachYaw = ReadFloat(ini, "OxygenBag", "Yaw", 0.0f);
 
+            DefibAttachBone = ini.ReadString("DefibKit", "Bone", "LeftHand");
             DefibAttachX = ReadFloat(ini, "DefibKit", "X", 0.44f);
             DefibAttachY = ReadFloat(ini, "DefibKit", "Y", 0.01f);
             DefibAttachZ = ReadFloat(ini, "DefibKit", "Z", 0.0f);
@@ -164,6 +171,7 @@ namespace EmsPlus.Configuration
             ini.Write("PatientAttachmentSitting", "Yaw", PatientAttachSittingYaw);
 
 
+            ini.Write("TraumaBag", "Bone", TraumaAttachBone);
             ini.Write("TraumaBag", "X", TraumaAttachX);
             ini.Write("TraumaBag", "Y", TraumaAttachY);
             ini.Write("TraumaBag", "Z", TraumaAttachZ);
@@ -171,6 +179,7 @@ namespace EmsPlus.Configuration
             ini.Write("TraumaBag", "Roll", TraumaAttachRoll);
             ini.Write("TraumaBag", "Yaw", TraumaAttachYaw);
 
+            ini.Write("OxygenBag", "Bone", OxygenAttachBone);
             ini.Write("OxygenBag", "X", OxygenAttachX);
             ini.Write("OxygenBag", "Y", OxygenAttachY);
             ini.Write("OxygenBag", "Z", OxygenAttachZ);
@@ -178,6 +187,7 @@ namespace EmsPlus.Configuration
             ini.Write("OxygenBag", "Roll", OxygenAttachRoll);
             ini.Write("OxygenBag", "Yaw", OxygenAttachYaw);
 
+            ini.Write("DefibKit", "Bone", DefibAttachBone);
             ini.Write("DefibKit", "X", DefibAttachX);
             ini.Write("DefibKit", "Y", DefibAttachY);
             ini.Write("DefibKit", "Z", DefibAttachZ);

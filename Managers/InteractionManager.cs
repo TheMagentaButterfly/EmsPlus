@@ -226,27 +226,29 @@ namespace EmsPlus.Managers
 
                     bool keyDown = IsInteractionKeyDown();
                     if (!keyDown) continue;
-
-                    if (GameState.CurrentPatient != null && Game.LocalPlayer.Character.DistanceTo(GameState.CurrentPatient.Character) < PatientInteractDistance)
+                    if (IsInteractionKeyDown())
                     {
-                        bool isPatientLoaded = GameState.CurrentPatient.IsOnStretcher && AmbulanceManager.IsStretcherLoaded;
-
-                        if (!isPatientLoaded || AmbulanceManager.IsPlayerInRearCabin)
+                        if (GameState.CurrentPatient != null && Game.LocalPlayer.Character.DistanceTo(GameState.CurrentPatient.Character) < PatientInteractDistance)
                         {
-                            if (EntryPoint.EmsPlusConfig.UseNativeUIPatientMenu.Value)
+                            bool isPatientLoaded = GameState.CurrentPatient.IsOnStretcher && AmbulanceManager.IsStretcherLoaded;
+
+                            if (!isPatientLoaded || AmbulanceManager.IsPlayerInRearCabin)
                             {
-                                InventoryManager.PlaceKitOnGround(GameState.CurrentPatient.Character);
-                                PatientMenuBuilder.RefreshAll();
-                                PatientMenuBuilder.PatientMenu.Visible = true;
+                                if (EntryPoint.EmsPlusConfig.UseNativeUIPatientMenu.Value)
+                                {
+                                    InventoryManager.PlaceKitsOnGround(GameState.CurrentPatient.Character);
+                                    PatientMenuBuilder.RefreshAll();
+                                    PatientMenuBuilder.PatientMenu.Visible = true;
+                                }
+                                else
+                                {
+                                    BodyInspectionManager.StartInspection(GameState.CurrentPatient.Character);
+                                }
                             }
                             else
                             {
-                                BodyInspectionManager.StartInspection(GameState.CurrentPatient.Character);
+                                Game.DisplayNotification(Localization.Get("ERR_MUST_ENTER_CABIN", "~r~You must enter the patient cabin to inspect the patient."));
                             }
-                        }
-                        else
-                        {
-                            Game.DisplayNotification(Localization.Get("ERR_MUST_ENTER_CABIN", "~r~You must enter the patient cabin to inspect the patient."));
                         }
                     }
                 }

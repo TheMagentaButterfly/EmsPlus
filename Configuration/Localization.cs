@@ -149,6 +149,7 @@ namespace EmsPlus
                 w.WriteLine("ACT_CHECKING_BGL=Checking Blood Glucose...");
                 w.WriteLine("ACT_DELEGATE_TREATMENT=~y~Order: Delegate Treatment");
                 w.WriteLine("ACT_DISMISS_UNIT=~r~Dismiss Unit");
+                w.WriteLine("ACT_DRIVE_TO_HOSPITAL=~o~Order: Drive to Hospital");
                 w.WriteLine("ACT_ESTABLISH_IV=Establish IV");
                 w.WriteLine("ACT_ESTABLISHING_IV=Establishing IV...");
                 w.WriteLine("ACT_GLUCOMETER=Use Glucometer");
@@ -156,6 +157,7 @@ namespace EmsPlus
                 w.WriteLine("ACT_LOAD_PATIENT=Load Patient");
                 w.WriteLine("ACT_MANAGING_AIRWAY=Managing Airway...");
                 w.WriteLine("ACT_MANUAL_AIRWAY=Manual Airway Management");
+                w.WriteLine("ACT_ORDER_LOAD_ONLY=~p~Order: Load Patient Only");
                 w.WriteLine("ACT_ORDER_TRANSPORT=~o~Order: Transport Patient");
                 w.WriteLine("ACT_PICK_UP_KIT_FORMAT=Pick Up {0}");
                 w.WriteLine("ACT_QUESTION_PATIENT=QUESTION PATIENT");
@@ -184,6 +186,9 @@ namespace EmsPlus
                 w.WriteLine("ACTION_RAISE=Raise");
                 w.WriteLine("ACTION_SIT=Sit Patient Up");
                 w.WriteLine("AVAILABLE_ACTIONS=AVAILABLE ACTIONS");
+                w.WriteLine("BONE_BACK=Back");
+                w.WriteLine("BONE_LEFT_HAND=Left Hand");
+                w.WriteLine("BONE_RIGHT_HAND=Right Hand");
                 w.WriteLine("BP_CHEST=Chest");
                 w.WriteLine("BP_HEAD=Head");
                 w.WriteLine("BP_L_CALF=Left Calf");
@@ -211,6 +216,7 @@ namespace EmsPlus
                 w.WriteLine("BTN_PICKUP_KIT=PICK UP KIT");
                 w.WriteLine("BTN_PICKUP_KIT_DESC=Equip to hands");
                 w.WriteLine("BTN_TAKE_ITEM_DESC=Take item from bag");
+                w.WriteLine("BTN_UNEQUIP_ITEM_DESC=Click to unequip item.");
                 w.WriteLine("CAT_AIRWAY=Airway / Breathing");
                 w.WriteLine("CAT_AIRWAY_DESC=Oxygen & Masks");
                 w.WriteLine("CAT_CIRCULATION=");
@@ -248,12 +254,12 @@ namespace EmsPlus
                 w.WriteLine("DESC_ADD_INTERACTION_POINT=Add a new interaction point.");
                 w.WriteLine("DESC_AIRWAY=Manage airway");
                 w.WriteLine("DESC_ASSIST_VENTILATIONS=Assist Ventilations");
+                w.WriteLine("DESC_ATTACH_BONE=Select which body part to attach the bag to.");
                 w.WriteLine("DESC_ATTACH_BP_CUFF=Auto-Cycle BP");
                 w.WriteLine("DESC_ATTACH_MONITOR=Connect ECG/SpO2 Leads");
                 w.WriteLine("DESC_CODE_1=Routine response (obey traffic laws, no lights or sirens).");
                 w.WriteLine("DESC_CODE_2=Urgent response (lights only, no sirens).");
                 w.WriteLine("DESC_CODE_3=Emergency response (lights and sirens).");
-                w.WriteLine("DESC_COLLECT_KITS=Collect the kits.");
                 w.WriteLine("DESC_DELEGATE_TREATMENT=Unit will approach the patient and stabilize their vitals.");
                 w.WriteLine("DESC_DELETE_POINT=Delete this interaction point.");
                 w.WriteLine("DESC_DIAGNOSTICS=Assess patient");
@@ -287,7 +293,6 @@ namespace EmsPlus
                 w.WriteLine("DESC_QUESTION_PATIENT=Question the patient");
                 w.WriteLine("DESC_REMOVE_BP_CUFF=Remove Cuff");
                 w.WriteLine("DESC_REMOVE_MONITOR=Disconnect ECG/SpO2 Leads");
-                w.WriteLine("DESC_REQ_AMBULANCE=Request an additional ambulance unit to your location.");
                 w.WriteLine("DESC_SELECT_PATIENT=Choose a patient on scene.");
                 w.WriteLine("DESC_SELECT_QUESTION=Select a question");
                 w.WriteLine("DESC_SELECT_UNIT=Choose which AI unit to give orders to.");
@@ -304,10 +309,6 @@ namespace EmsPlus
                 w.WriteLine("DIAG_BGL=Blood Glucose");
                 w.WriteLine("DIAG_BP=Blood Pressure");
                 w.WriteLine("DIAG_CONSCIOUSNESS=Consciousness");
-                w.WriteLine("CONSC_PAIN=Pain");
-                w.WriteLine("CONSC_ALERT=Alert");
-                w.WriteLine("CONSC_VERBAL=Verbal");
-                w.WriteLine("CONSC_UNRESPONSIVE=Unresponsive");
                 w.WriteLine("DIAG_DISPATCH_DIAGNOSIS=DISPATCH DIAGNOSIS");
                 w.WriteLine("DIAG_HR=Heart Rate");
                 w.WriteLine("DIAG_INJURY_DETECTED=INJURY DETECTED");
@@ -383,7 +384,6 @@ namespace EmsPlus
                 w.WriteLine("ITEM_PROP_CARRY_OFFSETS_DESC=Configure prop carry offsets");
                 w.WriteLine("ITEM_RELOAD_VEHICLE=Reload Vehicle");
                 w.WriteLine("ITEM_RELOAD_VEHICLE_DESC=Reload the current vehicle configuration");
-                w.WriteLine("ITEM_RESPONSE_CODE=Response Code");
                 w.WriteLine("ITEM_SAVE_SETTINGS=Save Settings");
                 w.WriteLine("ITEM_SAVE_SETTINGS_DESC=Save the current settings");
                 w.WriteLine("ITEM_SELECT_KIT=Select Kit");
@@ -395,6 +395,7 @@ namespace EmsPlus
                 w.WriteLine("ITEM_TOGGLE_DOORS=Toggle Doors");
                 w.WriteLine("ITEM_UNLOAD_STRETCHER=Unload Stretcher");
                 w.WriteLine("ITEM_VEHICLE_LOADING_POS=Vehicle Loading Positions");
+                w.WriteLine("LABEL_ATTACH_BONE=Attach Bone");
                 w.WriteLine("LABEL_FORWARD_BACK=Forward/Back");
                 w.WriteLine("LABEL_LEAN=Lean");
                 w.WriteLine("LABEL_LEFT_RIGHT=Left/Right");
@@ -454,7 +455,6 @@ namespace EmsPlus
                 w.WriteLine("MODE_STOWED_POS=Stowed Position");
                 w.WriteLine("NOTIF_ADMINISTERED=~g~Administered {0}.");
                 w.WriteLine("NOTIF_AIRWAY_OPENED=~g~Airway manually opened.");
-                w.WriteLine("NOTIF_BACKUP_ARRIVED=~b~Dispatch:~w~ Backup unit has arrived on scene.");
                 w.WriteLine("NOTIF_BACKUP_ENROUTE=~b~Dispatch:~w~ Copy that, additional EMS unit is en route.");
                 w.WriteLine("NOTIF_BGL_HIGH=~r~BGL Result: HIGH.");
                 w.WriteLine("NOTIF_BGL_LOW=~y~BGL Result: LOW.");
@@ -468,12 +468,10 @@ namespace EmsPlus
                 w.WriteLine("NOTIF_FLUIDS_STOPPED=IV Fluids stopped.");
                 w.WriteLine("NOTIF_HOSPITAL_WAYPOINT_SET=~b~Dispatch:~w~ Route to nearest hospital set.");
                 w.WriteLine("NOTIF_IV_ESTABLISHED=~g~IV Established.");
-                w.WriteLine("NOTIF_MEDICALBAGS_RESTOCKED=~b~Dispatch:~w~ Medical bags ~g~restocked~w~.");
                 w.WriteLine("NOTIF_MONITOR_CONNECTED=~g~Monitor connected.");
                 w.WriteLine("NOTIF_MONITOR_DISCONNECTED=~r~Monitor disconnected.");
                 w.WriteLine("NOTIF_MUST_HOLD_STRETCHER=~r~You must be holding the stretcher.");
                 w.WriteLine("NOTIF_NO_VEHICLE_NEARBY=No vehicle nearby.");
-                w.WriteLine("NOTIF_ON_DUTY=~b~EmsPlus:~w~ You are now ~g~On Duty~w~.");
                 w.WriteLine("NOTIF_PATIENT_FLATLINED=~b~Dispatch:~r~ Patient has flatlined. Time of death recorded.");
                 w.WriteLine("NOTIF_PATIENT_HANDED_OVER=~g~Transport Complete:~w~ Patient handed over to hospital staff.");
                 w.WriteLine("NOTIF_PATIENT_REGAINED_CONSCIOUSNESS=~g~Patient has regained consciousness.");
@@ -504,7 +502,7 @@ namespace EmsPlus
                 w.WriteLine("REQ_OXYGEN_BAG=Requires Oxygen Bag");
                 w.WriteLine("REQ_TRAUMA_BAG=Requires Trauma Bag");
                 w.WriteLine("SUBTITLE_AIRWAY=~b~Airway & Breathing");
-                w.WriteLine("SUBTITLE_BACKUP=~b~Request Backup");
+                w.WriteLine("SUBTITLE_BACKUP=~b~Request Resources");
                 w.WriteLine("SUBTITLE_COMMAND=~b~Manage AI Resources");
                 w.WriteLine("SUBTITLE_DIAGNOSTICS=~b~Assess Patient");
                 w.WriteLine("SUBTITLE_GROUND_KITS=~b~Interact with Medical Kits");
