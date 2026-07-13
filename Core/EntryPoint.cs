@@ -29,6 +29,7 @@ namespace EmsPlus
         public static MedicationConfig MedicationConfig;
         public static InteriorConfig InteriorConfig;
         public static QuestionConfig QuestionConfig;
+        public static BackupConfig BackupConfig;
 
         private static InputHandler _inputHandler;
         private static GameFiber _mainLogicFiber, _uiLogicFiber, _simulationFiber, _calloutFiber, _stationFiber;
@@ -108,6 +109,7 @@ namespace EmsPlus
             MedicationConfig = new MedicationConfig(); MedicationConfig.Load();
             InteriorConfig = new InteriorConfig(); InteriorConfig.Load();
             QuestionConfig = new QuestionConfig(); QuestionConfig.Load();
+            BackupConfig = new BackupConfig(); BackupConfig.Load();
             Localization.Load();
         }
 

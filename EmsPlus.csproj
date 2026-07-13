@@ -78,6 +78,7 @@
     <Compile Include="Callouts\PaletoRescueCallout.cs" />
     <Compile Include="Callouts\ProceduralTraumaCallout.cs" />
     <Compile Include="Configuration\AnimationConfig.cs" />
+    <Compile Include="Configuration\BackupConfig.cs" />
     <Compile Include="Configuration\EmsPlusConfig.cs" />
     <Compile Include="Configuration\InteriorConfig.cs" />
     <Compile Include="Configuration\Localization.cs" />

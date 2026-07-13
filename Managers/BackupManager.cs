@@ -1,9 +1,7 @@
 ﻿using EmsPlus.Core;
-using EmsPlus.UI.Helpers;
 using Rage;
 using Rage.Native;
 using RAGENativeUI.Elements;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -28,7 +26,7 @@ namespace EmsPlus.Managers
         public Ped Medic2 { get; set; }
         public Patient AssignedPatient { get; set; }
         public Blip UnitBlip { get; set; }
-
+        public Rage.Object TransportStretcher { get; set; }
         public Vector3 SceneParkingLocation { get; set; }
         public bool IsSlowingDown { get; set; } = false;
     }
@@ -42,17 +40,26 @@ namespace EmsPlus.Managers
         private static bool _isHoldingFastDispatch = false;
         private static uint _fastDispatchStartTime = 0;
 
+        private static bool _isHoldingFastDismiss = false;
+        private static uint _fastDismissStartTime = 0;
+
         private static TimerBarPool _timerBarPool;
         private static BarTimerBar _dispatchTimerBar;
+        private static BarTimerBar _dismissTimerBar;
 
         public static void Initialize()
         {
             if (_isInitialized) return;
 
             _timerBarPool = new TimerBarPool();
+
             _dispatchTimerBar = new BarTimerBar(Localization.Get("LBL_FAST_DISPATCH", "FAST DISPATCH"));
-            _dispatchTimerBar.BackgroundColor = Color.Cyan;
+            _dispatchTimerBar.BackgroundColor = Color.DarkBlue;
             _dispatchTimerBar.ForegroundColor = Color.Blue;
+
+            _dismissTimerBar = new BarTimerBar(Localization.Get("LBL_FAST_DISMISS", "FAST DISMISS"));
+            _dismissTimerBar.BackgroundColor = Color.DarkRed;
+            _dismissTimerBar.ForegroundColor = Color.Red;
 
             Game.FrameRender += OnFrameRender;
             _isInitialized = true;
@@ -108,26 +115,49 @@ namespace EmsPlus.Managers
             {
                 Vector3 spawnPos = GetFacilitySpawnLocation(Game.LocalPlayer.Character.Position);
 
-                string modelName = EntryPoint.EmsPlusConfig.ValidAmbulanceModels.FirstOrDefault() ?? "ambulance";
+                var dept = EntryPoint.BackupConfig.GetRandomDepartment();
+                if (dept == null)
+                {
+                    Game.Console.Print("[EmsPlus] CRITICAL: No Backup Departments loaded in Backup.xml!");
+                    return;
+                }
 
-                Model vehModel = new Model(modelName);
+                var vehDef = dept.GetRandomVehicle();
+                var pedDef1 = dept.GetRandomPed();
+                var pedDef2 = dept.GetRandomPed();
+
+                if (vehDef == null || pedDef1 == null || pedDef2 == null) return;
+
+                Model vehModel = new Model(vehDef.Model);
+                if (!vehModel.IsValid)
+                {
+                    Game.Console.Print($"[EmsPlus] Error: Invalid backup vehicle model '{vehDef.Model}'.");
+                    return;
+                }
                 vehModel.LoadAndWait();
                 Vehicle ambulance = new Vehicle(vehModel, spawnPos);
                 vehModel.Dismiss();
 
                 if (!ambulance.Exists()) return;
-
                 ambulance.IsPersistent = true;
 
-                Model pedModel = new Model("s_m_m_paramedic_01");
-                pedModel.LoadAndWait();
+                Model pedModel1 = new Model(pedDef1.Model);
+                if (!pedModel1.IsValid) return;
+                pedModel1.LoadAndWait();
+                Ped driver = new Ped(pedModel1, spawnPos, 0f);
+                pedModel1.Dismiss();
 
-                Ped driver = new Ped(pedModel, spawnPos, 0f);
-                Ped passenger = new Ped(pedModel, spawnPos, 0f);
-                pedModel.Dismiss();
+                Model pedModel2 = new Model(pedDef2.Model);
+                if (!pedModel2.IsValid) return;
+                pedModel2.LoadAndWait();
+                Ped passenger = new Ped(pedModel2, spawnPos, 0f);
+                pedModel2.Dismiss();
 
                 driver.IsPersistent = true; passenger.IsPersistent = true;
                 driver.BlockPermanentEvents = true; passenger.BlockPermanentEvents = true;
+
+                pedDef1.ApplyTo(driver);
+                pedDef2.ApplyTo(passenger);
 
                 driver.WarpIntoVehicle(ambulance, -1);
                 passenger.WarpIntoVehicle(ambulance, 0);
@@ -137,7 +167,6 @@ namespace EmsPlus.Managers
                 unitBlip.Name = $"EMS Backup {_unitCounter}";
 
                 Vector3 parkingNode = World.GetNextPositionOnStreet(Game.LocalPlayer.Character.Position.Around(10f, 20f));
-
                 if (parkingNode == Vector3.Zero || parkingNode.DistanceTo2D(Game.LocalPlayer.Character.Position) > 40f)
                 {
                     parkingNode = Game.LocalPlayer.Character.Position;
@@ -157,21 +186,18 @@ namespace EmsPlus.Managers
 
                 if (responseCode == 1)
                 {
-                    ambulance.IsSirenOn = false;
-                    ambulance.IsSirenSilent = true;
+                    ambulance.IsSirenOn = false; ambulance.IsSirenSilent = true;
                     driver.Tasks.DriveToPosition(ambulance, parkingNode, 15f, VehicleDrivingFlags.Normal, 10f);
                 }
                 else if (responseCode == 2)
                 {
-                    ambulance.IsSirenOn = true;
-                    ambulance.IsSirenSilent = true;
-                    driver.Tasks.DriveToPosition(ambulance, parkingNode, 20f, VehicleDrivingFlags.Emergency, 10f);
+                    ambulance.IsSirenOn = true; ambulance.IsSirenSilent = true;
+                    driver.Tasks.DriveToPosition(ambulance, parkingNode, 22f, VehicleDrivingFlags.Emergency, 10f);
                 }
                 else
                 {
-                    ambulance.IsSirenOn = true;
-                    ambulance.IsSirenSilent = false;
-                    driver.Tasks.DriveToPosition(ambulance, parkingNode, 25f, VehicleDrivingFlags.Emergency, 10f);
+                    ambulance.IsSirenOn = true; ambulance.IsSirenSilent = false;
+                    driver.Tasks.DriveToPosition(ambulance, parkingNode, 28f, VehicleDrivingFlags.Emergency, 10f);
                 }
             });
         }
@@ -180,6 +206,9 @@ namespace EmsPlus.Managers
         {
             if (ActiveUnits.Count == 0) return;
 
+            // ==========================================
+            // 1. FAST DISPATCH (Hold Backspace)
+            // ==========================================
             bool hasRespondingUnits = ActiveUnits.Any(u => u.State == AIUnitState.Responding);
             if (hasRespondingUnits && Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Back))
             {
@@ -193,7 +222,7 @@ namespace EmsPlus.Managers
                 else
                 {
                     float progress = (Game.GameTime - _fastDispatchStartTime) / 2000f;
-                    _dispatchTimerBar.Percentage = UI.Helpers.MathHelper.ClampFloat(progress, 0f, 1f);
+                    _dispatchTimerBar.Percentage = MathHelper.Clamp(progress, 0f, 1f);
 
                     if (Game.GameTime > _fastDispatchStartTime + 2000)
                     {
@@ -212,20 +241,55 @@ namespace EmsPlus.Managers
                 }
             }
 
+            // ==========================================
+            // 2. FAST DISMISS (Hold Enter)
+            // ==========================================
+            if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Enter))
+            {
+                if (!_isHoldingFastDismiss)
+                {
+                    _isHoldingFastDismiss = true;
+                    _fastDismissStartTime = Game.GameTime;
+                    _dismissTimerBar.Percentage = 0f;
+                    _timerBarPool.Add(_dismissTimerBar);
+                }
+                else
+                {
+                    float progress = (Game.GameTime - _fastDismissStartTime) / 2000f;
+                    _dismissTimerBar.Percentage = MathHelper.Clamp(progress, 0f, 1f);
+
+                    if (Game.GameTime > _fastDismissStartTime + 2000)
+                    {
+                        ForceDismissAllUnits();
+                        _isHoldingFastDismiss = false;
+                        _timerBarPool.Remove(_dismissTimerBar);
+                    }
+                }
+            }
+            else
+            {
+                if (_isHoldingFastDismiss)
+                {
+                    _isHoldingFastDismiss = false;
+                    _timerBarPool.Remove(_dismissTimerBar);
+                }
+            }
+
+            Vector3 targetPos = Game.LocalPlayer.Character.Position;
             foreach (var unit in ActiveUnits.ToList())
             {
                 if (unit.State == AIUnitState.Responding && unit.Ambulance.Exists() && unit.Medic1.Exists())
                 {
                     float distToPark = unit.Ambulance.DistanceTo(unit.SceneParkingLocation);
 
-                    if (!unit.IsSlowingDown && distToPark < 100f)
+                    if (!unit.IsSlowingDown && distToPark < 65f)
                     {
                         unit.IsSlowingDown = true;
                         unit.Ambulance.IsSirenSilent = true;
-                        unit.Medic1.Tasks.DriveToPosition(unit.Ambulance, unit.SceneParkingLocation, 8f, VehicleDrivingFlags.Normal, 5f);
+                        unit.Medic1.Tasks.DriveToPosition(unit.Ambulance, unit.SceneParkingLocation, 12f, VehicleDrivingFlags.Normal, 8f);
                     }
 
-                    if (distToPark < 12f || (unit.Ambulance.Speed < 0.5f && distToPark < 30f))
+                    if (distToPark < 12f || (unit.Ambulance.Speed < 0.5f && distToPark < 25f))
                     {
                         unit.State = AIUnitState.Idle;
                         unit.Ambulance.IsSirenSilent = true;
@@ -239,6 +303,7 @@ namespace EmsPlus.Managers
                             GameFiber.Sleep(2500);
                             if (unit.Medic1.Exists()) unit.Medic1.Tasks.GoToOffsetFromEntity(Game.LocalPlayer.Character, 3f, 0f, 1.0f);
                             if (unit.Medic2.Exists()) unit.Medic2.Tasks.GoToOffsetFromEntity(Game.LocalPlayer.Character, -3f, 0f, 1.0f);
+                            Game.DisplayNotification(Localization.Get("NOTIF_BACKUP_ARRIVED", "~b~Dispatch:~w~ Backup unit has arrived on scene."));
                         });
                     }
                 }
@@ -330,6 +395,7 @@ namespace EmsPlus.Managers
                             {
                                 alreadyAttached = true;
                                 transportStretcher = parent as Rage.Object;
+                                unit.TransportStretcher = transportStretcher;
                                 if (StretcherManager.Prop != null && parentHandle == StretcherManager.Prop.Handle.Value)
                                 {
                                     StretcherManager.ForgetProp();
@@ -357,6 +423,7 @@ namespace EmsPlus.Managers
                     Rage.Object aiStretcher = new Rage.Object(stretcherModel, m1.Position);
                     stretcherModel.Dismiss();
                     transportStretcher = aiStretcher;
+                    unit.TransportStretcher = transportStretcher;
 
                     aiStretcher.AttachTo(m1, 0, new Vector3(offsets.StretcherAttachOffsetX, offsets.StretcherAttachOffsetY, offsets.StretcherAttachOffsetZ), new Rotator(offsets.StretcherAttachPitch, offsets.StretcherAttachRoll, offsets.StretcherAttachYaw));
                     string carryDict = EntryPoint.AnimationConfig.MedicStretcherCarryDict.Value;
@@ -436,7 +503,6 @@ namespace EmsPlus.Managers
                     m1.Tasks.DriveToPosition(amb, hospitalPos, 25f, VehicleDrivingFlags.Emergency, 10f);
                 }
                 if (unit.UnitBlip != null && unit.UnitBlip.Exists()) unit.UnitBlip.Delete();
-                GameFiber.Sleep(20000);
                 if (amb.Exists()) amb.Dismiss();
                 if (m1.Exists()) m1.Dismiss();
                 if (m2.Exists()) m2.Dismiss();
@@ -449,6 +515,8 @@ namespace EmsPlus.Managers
         {
             if (unit == null) return;
             ActiveUnits.Remove(unit);
+
+            Game.DisplayNotification($"~b~Unit {unit.UnitID}:~w~ Returning to service.");
 
             GameFiber.StartNew(delegate
             {
@@ -476,27 +544,53 @@ namespace EmsPlus.Managers
                     m1.Tasks.CruiseWithVehicle(amb, 15f, VehicleDrivingFlags.Normal);
                 }
 
-                if (unit.UnitBlip != null && unit.UnitBlip.Exists()) unit.UnitBlip.Delete();
                 GameFiber.Sleep(10000);
+                if (unit.UnitBlip != null && unit.UnitBlip.Exists()) unit.UnitBlip.Delete();
                 if (amb.Exists()) amb.Dismiss();
                 if (m1.Exists()) m1.Dismiss();
                 if (m2.Exists()) m2.Dismiss();
+
+                if (unit.TransportStretcher != null && unit.TransportStretcher.Exists()) unit.TransportStretcher.Delete();
             });
+        }
+
+        private static void ForceDismissAllUnits()
+        {
+            Cleanup();
+            Game.DisplayNotification(Localization.Get("NOTIF_FAST_DISMISS", "~b~Dispatch:~w~ All backup units have been forcefully dismissed."));
         }
 
         public static void Cleanup()
         {
-            if (_timerBarPool != null && _dispatchTimerBar != null)
-            {
-                _timerBarPool.Remove(_dispatchTimerBar);
-            }
+            if (_timerBarPool != null && _dispatchTimerBar != null) _timerBarPool.Remove(_dispatchTimerBar);
+            if (_timerBarPool != null && _dismissTimerBar != null) _timerBarPool.Remove(_dismissTimerBar);
 
-            foreach (var unit in ActiveUnits)
+            foreach (var unit in ActiveUnits.ToList())
             {
-                if (unit.UnitBlip != null && unit.UnitBlip.Exists()) unit.UnitBlip.Delete();
-                if (unit.Ambulance != null && unit.Ambulance.Exists()) unit.Ambulance.Delete();
-                if (unit.Medic1 != null && unit.Medic1.Exists()) unit.Medic1.Delete();
-                if (unit.Medic2 != null && unit.Medic2.Exists()) unit.Medic2.Delete();
+                try
+                {
+                    if (unit.UnitBlip != null)
+                    {
+                        if (unit.UnitBlip.Exists()) unit.UnitBlip.Delete();
+                        uint handle = unit.UnitBlip.Handle;
+                        if (handle != 0) NativeFunction.Natives.REMOVE_BLIP(ref handle);
+                    }
+
+                    if (unit.Ambulance != null && unit.Ambulance.Exists()) unit.Ambulance.Delete();
+                    if (unit.Medic1 != null && unit.Medic1.Exists()) unit.Medic1.Delete();
+                    if (unit.Medic2 != null && unit.Medic2.Exists()) unit.Medic2.Delete();
+                    if (unit.TransportStretcher != null && unit.TransportStretcher.Exists()) unit.TransportStretcher.Delete();
+
+                    if (unit.AssignedPatient != null && unit.AssignedPatient.Character != null && unit.AssignedPatient.Character.Exists())
+                    {
+                        if (unit.State == AIUnitState.LoadedOnScene || unit.State == AIUnitState.Transporting)
+                        {
+                            unit.AssignedPatient.Character.Delete();
+                            GameState.ActivePatients.Remove(unit.AssignedPatient);
+                        }
+                    }
+                }
+                catch { }
             }
             ActiveUnits.Clear();
             _unitCounter = 1;
@@ -543,7 +637,7 @@ namespace EmsPlus.Managers
 
         private static void OnFrameRender(object sender, GraphicsEventArgs e)
         {
-            if (_isHoldingFastDispatch && _timerBarPool != null)
+            if ((_isHoldingFastDispatch || _isHoldingFastDismiss) && _timerBarPool != null)
             {
                 _timerBarPool.Draw();
             }
