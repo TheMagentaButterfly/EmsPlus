@@ -99,6 +99,7 @@
     <Compile Include="Managers\DialogueManager.cs" />
     <Compile Include="Managers\DispatchManager.cs" />
     <Compile Include="Managers\InteriorManager.cs" />
+    <Compile Include="Managers\MdtManager.cs" />
     <Compile Include="Managers\SceneManager.cs" />
     <Compile Include="Managers\TreatmentManager.cs" />
     <Compile Include="Callouts\AnaphylaxisCallout.cs" />

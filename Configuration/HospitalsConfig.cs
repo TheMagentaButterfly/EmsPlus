@@ -13,6 +13,11 @@ namespace EmsPlus.Configuration
             public Vector3 Position { get; set; }
             public string Name { get; set; }
             public bool IsHelipad { get; set; }
+
+            internal static object OrderBy(Func<object, float> value)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         private const string FilePath = "Plugins/EmsPlus/Settings/Data/Hospitals.xml";

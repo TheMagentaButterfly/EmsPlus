@@ -31,6 +31,8 @@ namespace EmsPlus.Configuration
         public SettingKeyCombo ToggleStretcherKey = new SettingKeyCombo("Stretcher Toggle", "ToggleStretcherKey", "The key used to quickly load or unload the stretcher.");
         public SettingKeyCombo ToggleStretcherKeyModifier = new SettingKeyCombo("Stretcher Toggle", "ToggleStretcherKeyModifier", "Modifier for stretcher toggle.");
 
+        public SettingKeyCombo OpenMdtKey = new SettingKeyCombo("MDT", "OpenMdtKey", "Hold to open MDT, tap to close.");
+
         public override void Load()
         {
             if (!File.Exists(IniFilePath))
@@ -77,6 +79,11 @@ namespace EmsPlus.Configuration
                     w.WriteLine("; Used to open the backup management menu for AI units.");
                     w.WriteLine($"OpenBackupManagerMenu=B");
                     w.WriteLine($"OpenBackupManagerMenuModifier=LMenu");
+                    w.WriteLine("");
+
+                    w.WriteLine("[MDT]");
+                    w.WriteLine("; Hold this key to open the MDT screen. Tap it while open to close.");
+                    w.WriteLine($"OpenMdtKey=F5");
                     w.WriteLine("");
 
                     w.WriteLine("; =========================================================");

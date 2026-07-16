@@ -18,6 +18,9 @@ namespace EmsPlus.Managers
         private static uint NextCalloutTime;
         private static uint CalloutExpireTime;
         private const int TimeoutDurationMs = 30000;
+        public static EmsCallout ActiveCallout { get; private set; }
+        public static string CalloutAcceptTime { get; private set; } = "N/A";
+        public static string CalloutLocationString { get; private set; } = "N/A";
         private static Random Rnd = new Random();
 
         public static void Initialize()
@@ -78,6 +81,14 @@ namespace EmsPlus.Managers
                                     IsCalloutDisplayed = false;
                                     EmsService.SetStatus(EmsStatus.EnRoute);
                                     TutorialManager.TriggerCalloutAcceptedTutorial();
+
+                                    ActiveCallout = CurrentCallout;
+                                    CalloutAcceptTime = System.DateTime.Now.ToString("HH:mm:ss");
+
+                                    NativeFunction.Natives.GET_STREET_NAME_AT_COORD(CurrentCallout.CalloutPosition.X, CurrentCallout.CalloutPosition.Y, CurrentCallout.CalloutPosition.Z, out uint sHash, out uint cHash);
+                                    string street = NativeFunction.Natives.GET_STREET_NAME_FROM_HASH_KEY<string>(sHash);
+                                    string zone = NativeFunction.Natives.GET_NAME_OF_ZONE<string>(CurrentCallout.CalloutPosition.X, CurrentCallout.CalloutPosition.Y, CurrentCallout.CalloutPosition.Z);
+                                    CalloutLocationString = string.IsNullOrEmpty(street) ? Game.GetLocalizedString(zone) : $"{street}, {Game.GetLocalizedString(zone)}";
                                 }
                                 else EndCurrent();
                             }
@@ -200,6 +211,10 @@ namespace EmsPlus.Managers
 
             SceneManager.ClearScene();
             DismissCurrent();
+
+            ActiveCallout = null;
+            CalloutAcceptTime = "N/A";
+            CalloutLocationString = "N/A";
         }
 
         private static void SetNextCalloutTime(int min, int max)

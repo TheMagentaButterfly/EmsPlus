@@ -21,6 +21,10 @@ namespace EmsPlus.Managers
         private const float PatientMarkDistance = 6.0f;
         private const float FacingAngleDegrees = 45.0f;
 
+        private static uint _mdtHoldStartTime = 0;
+        private static bool _mdtKeyWasDown = false;
+        private static bool _mdtHoldTriggered = false;
+
         private static bool IsInteractionKeyDown()
         {
             if (EntryPoint.KeyConfig.InteractionKey != null)
@@ -50,6 +54,40 @@ namespace EmsPlus.Managers
             while (true)
             {
                 GameFiber.Yield();
+
+                bool isMdtDown = EntryPoint.KeyConfig.OpenMdtKey?.Value?.IsPressed ?? Game.IsKeyDown(Keys.N);
+                if (isMdtDown)
+                {
+                    if (!_mdtKeyWasDown)
+                    {
+                        _mdtKeyWasDown = true;
+                        _mdtHoldStartTime = Game.GameTime;
+                        _mdtHoldTriggered = false;
+                    }
+                    else if (!_mdtHoldTriggered && (Game.GameTime - _mdtHoldStartTime > 400))
+                    {
+                        _mdtHoldTriggered = true;
+                        if (!MdtManager.IsVisible) MdtManager.Toggle(true);
+                    }
+                }
+                else
+                {
+                    if (_mdtKeyWasDown)
+                    {
+                        _mdtKeyWasDown = false;
+                        if (!_mdtHoldTriggered && MdtManager.IsVisible)
+                        {
+                            MdtManager.Toggle(false);
+                        }
+                    }
+                }
+
+                if (MdtManager.IsVisible)
+                {
+                    MdtManager.Process();
+                    continue;
+                }
+
 
                 DialogueManager.Process();
                 TutorialManager.Process();

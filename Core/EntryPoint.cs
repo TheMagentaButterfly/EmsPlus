@@ -197,6 +197,7 @@ namespace EmsPlus
 
             try { MenuCore.CloseAll(); } catch { }
             try { BodyInspectionManager.Cleanup(); } catch { }
+            try { MdtManager.Cleanup(); } catch { }
 
             if (_inputHandler != null)
             {
