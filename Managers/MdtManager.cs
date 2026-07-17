@@ -84,8 +84,8 @@ namespace EmsPlus.Managers
             else
             {
                 IsMouseUnlocked = false;
-                Game.RawFrameRender -= OnRawRender;
                 NativeFunction.Natives.SET_MOUSE_CURSOR_VISIBLE(false);
+                Game.RawFrameRender -= OnRawRender;
             }
         }
 
@@ -98,15 +98,14 @@ namespace EmsPlus.Managers
         {
             if (!IsVisible) return;
 
-            NativeFunction.Natives.DISABLE_ALL_CONTROL_ACTIONS(0);
-            NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 239, true);
-            NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 240, true);
-            NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 24, true);
-            NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 237, true);
-            NativeFunction.Natives.SET_MOUSE_CURSOR_VISIBLE(IsMouseUnlocked);
-
             if (IsMouseUnlocked)
             {
+                NativeFunction.Natives.DISABLE_ALL_CONTROL_ACTIONS(0);
+                NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 239, true);
+                NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 240, true);
+                NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 24, true);
+                NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 237, true);
+
                 _mouseX = NativeFunction.Natives.GET_CONTROL_NORMAL<float>(0, 239) * Game.Resolution.Width;
                 _mouseY = NativeFunction.Natives.GET_CONTROL_NORMAL<float>(0, 240) * Game.Resolution.Height;
 
@@ -116,6 +115,8 @@ namespace EmsPlus.Managers
                     HandleClick();
                 }
             }
+
+            NativeFunction.Natives.SET_MOUSE_CURSOR_VISIBLE(IsMouseUnlocked);
         }
 
         private static void HandleClick()
