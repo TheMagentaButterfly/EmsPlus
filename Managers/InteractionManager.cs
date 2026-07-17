@@ -55,7 +55,7 @@ namespace EmsPlus.Managers
             {
                 GameFiber.Yield();
 
-                bool isMdtDown = EntryPoint.KeyConfig.OpenMdtKey?.Value?.IsPressed ?? Game.IsKeyDown(Keys.N);
+                bool isMdtDown = EntryPoint.KeyConfig.OpenMdtKey?.Value?.IsPressed ?? Game.IsKeyDown(Keys.F5);
                 if (isMdtDown)
                 {
                     if (!_mdtKeyWasDown)
@@ -64,10 +64,11 @@ namespace EmsPlus.Managers
                         _mdtHoldStartTime = Game.GameTime;
                         _mdtHoldTriggered = false;
                     }
-                    else if (!_mdtHoldTriggered && (Game.GameTime - _mdtHoldStartTime > 400))
+                    else if (!_mdtHoldTriggered && (Game.GameTime - _mdtHoldStartTime > 300)) // 300ms hold
                     {
                         _mdtHoldTriggered = true;
                         if (!MdtManager.IsVisible) MdtManager.Toggle(true);
+                        MdtManager.SetMouseUnlocked(true);
                     }
                 }
                 else
@@ -75,9 +76,9 @@ namespace EmsPlus.Managers
                     if (_mdtKeyWasDown)
                     {
                         _mdtKeyWasDown = false;
-                        if (!_mdtHoldTriggered && MdtManager.IsVisible)
+                        if (!_mdtHoldTriggered)
                         {
-                            MdtManager.Toggle(false);
+                            MdtManager.Toggle(!MdtManager.IsVisible);
                         }
                     }
                 }
@@ -85,9 +86,12 @@ namespace EmsPlus.Managers
                 if (MdtManager.IsVisible)
                 {
                     MdtManager.Process();
-                    continue;
-                }
 
+                    if (_mdtHoldTriggered && MdtManager.IsVisible)
+                    {
+                        MdtManager.SetMouseUnlocked(true);
+                    }
+                }
 
                 DialogueManager.Process();
                 TutorialManager.Process();

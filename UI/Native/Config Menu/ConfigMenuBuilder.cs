@@ -18,8 +18,9 @@ namespace EmsPlus.UI.Native.ConfigMenu
 
         internal static UIMenu ForceCalloutMenu;
         internal static UIMenu OffsetsRootMenu;
-        internal static UIMenu StretcherPosMenu, PatientPosMenu, VehiclePosMenu;//, StretcherDockingMenu;
+        internal static UIMenu StretcherPosMenu, PatientPosMenu, VehiclePosMenu;
         internal static UIMenu PropPosMenu;
+        internal static UIMenu MdtPosMenu;
 
         internal static string _editingKitType = "TRAUMABAG";
         internal static int _editingPatientMode = 0; // 0 = Normal, 1 = Lowered, 2 = Sitting
@@ -41,6 +42,7 @@ namespace EmsPlus.UI.Native.ConfigMenu
             BuildPatientMenu();
             BuildVehicleMenu();
             BuildPropPosMenu();
+            BuildMdtPosMenu();
         }
 
         #endregion

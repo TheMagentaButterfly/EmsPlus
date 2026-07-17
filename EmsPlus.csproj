@@ -153,6 +153,7 @@
     <Compile Include="UI\Native\Config Menu\DoorSetupMenu.cs" />
     <Compile Include="UI\Native\Config Menu\ForceCalloutMenu.cs" />
     <Compile Include="UI\Native\Config Menu\InteractionspointsMenu.cs" />
+    <Compile Include="UI\Native\Config Menu\MDTPositionMenu.cs" />
     <Compile Include="UI\Native\Config Menu\OffsetsRootMenu.cs" />
     <Compile Include="UI\Native\Config Menu\PatientPositionMenu.cs" />
     <Compile Include="UI\Native\Config Menu\PropPositionMenu.cs" />

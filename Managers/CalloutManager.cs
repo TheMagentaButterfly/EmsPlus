@@ -19,6 +19,7 @@ namespace EmsPlus.Managers
         private static uint CalloutExpireTime;
         private const int TimeoutDurationMs = 30000;
         public static EmsCallout ActiveCallout { get; private set; }
+        public static EmsCallout PendingCallout { get; private set; }
         public static string CalloutAcceptTime { get; private set; } = "N/A";
         public static string CalloutLocationString { get; private set; } = "N/A";
         private static Random Rnd = new Random();
@@ -83,7 +84,8 @@ namespace EmsPlus.Managers
                                     TutorialManager.TriggerCalloutAcceptedTutorial();
 
                                     ActiveCallout = CurrentCallout;
-                                    CalloutAcceptTime = System.DateTime.Now.ToString("HH:mm:ss");
+                                    PendingCallout = null;
+                                    CalloutAcceptTime = DateTime.Now.ToString("HH:mm:ss");
 
                                     NativeFunction.Natives.GET_STREET_NAME_AT_COORD(CurrentCallout.CalloutPosition.X, CurrentCallout.CalloutPosition.Y, CurrentCallout.CalloutPosition.Z, out uint sHash, out uint cHash);
                                     string street = NativeFunction.Natives.GET_STREET_NAME_FROM_HASH_KEY<string>(sHash);
@@ -106,7 +108,7 @@ namespace EmsPlus.Managers
                         }
                     }
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     Game.Console.Print($"[EmsPlus] CRITICAL ERROR: {ex}");
                     EndCurrent();
@@ -162,6 +164,10 @@ namespace EmsPlus.Managers
                     IsCalloutDisplayed = true;
                     CalloutExpireTime = Game.GameTime + TimeoutDurationMs;
 
+                    PendingCallout = callout;
+                    CalloutAcceptTime = "PENDING...";
+                    MdtManager.ShowCalloutPage();
+
                     if (EntryPoint.EmsPlusConfig.EnableCalloutAudio.Value)
                     {
                         GameFiber.StartNew(delegate {
@@ -187,6 +193,7 @@ namespace EmsPlus.Managers
         {
             if (CurrentCallout != null) { CurrentCallout.End(); CurrentCallout = null; }
             IsCalloutDisplayed = false;
+            PendingCallout = null;
             EmsService.SetStatus(EmsStatus.Available);
             SetNextCalloutTime(30000, 90000);
         }
@@ -210,6 +217,7 @@ namespace EmsPlus.Managers
             BodyInspectionManager.Cleanup();
 
             SceneManager.ClearScene();
+            PendingCallout = null;
             DismissCurrent();
 
             ActiveCallout = null;

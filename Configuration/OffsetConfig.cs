@@ -78,6 +78,11 @@ namespace EmsPlus.Configuration
         public float LucasAttachRoll = 270.0f;
         public float LucasAttachYaw = 0.0f;
 
+        // --- MDT OFFSETS ---
+        public float MdtScale = 1.0f;
+        public float MdtOffsetX = 0.0f;
+        public float MdtOffsetY = 0.0f;
+
         public override void Load()
         {
             if (!File.Exists(IniFilePath)) Save();
@@ -136,6 +141,11 @@ namespace EmsPlus.Configuration
             DefibAttachPitch = ReadFloat(ini, "DefibKit", "Pitch", -45.0f);
             DefibAttachRoll = ReadFloat(ini, "DefibKit", "Roll", 270.0f);
             DefibAttachYaw = ReadFloat(ini, "DefibKit", "Yaw", 0.0f);
+
+
+            MdtScale = ReadFloat(ini, "MDT", "Scale", 1.0f);
+            MdtOffsetX = ReadFloat(ini, "MDT", "OffsetX", 0.0f);
+            MdtOffsetY = ReadFloat(ini, "MDT", "OffsetY", 0.0f);
         }
 
         public void Save()
@@ -201,6 +211,10 @@ namespace EmsPlus.Configuration
             ini.Write("LucasKit", "Pitch", LucasAttachPitch);
             ini.Write("LucasKit", "Roll", LucasAttachRoll);
             ini.Write("LucasKit", "Yaw", LucasAttachYaw);
+
+            ini.Write("MDT", "Scale", MdtScale);
+            ini.Write("MDT", "OffsetX", MdtOffsetX);
+            ini.Write("MDT", "OffsetY", MdtOffsetY);
         }
 
         private float ReadFloat(InitializationFile ini, string section, string key, float defaultVal)

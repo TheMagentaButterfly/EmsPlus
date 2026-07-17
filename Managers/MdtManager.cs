@@ -4,6 +4,7 @@ using Rage;
 using Rage.Native;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 
 namespace EmsPlus.Managers
 {
@@ -23,26 +24,32 @@ namespace EmsPlus.Managers
         private static RectangleF BtnCallout, BtnPatient, BtnHospital, BtnStatus, BtnShift, BtnClose;
         private static RectangleF BtnAvailable, BtnEnRoute, BtnOnScene, BtnTransporting, BtnAtStation, BtnBusy, BtnStatusBack;
 
+        public static void ShowCalloutPage()
+        {
+            if (!IsVisible) Toggle(true);
+            CurrentPage = MdtPage.Main;
+        }
+
         private static void UpdateLayout()
         {
             float w = Game.Resolution.Width;
             float h = Game.Resolution.Height;
 
-            MdtW = w * 0.45f;
+            var c = EntryPoint.OffsetConfig;
+            float scale = c != null ? c.MdtScale : 1.0f;
+            float offX = c != null ? c.MdtOffsetX : 0.0f;
+            float offY = c != null ? c.MdtOffsetY : 0.0f;
+
+            MdtW = w * 0.45f * scale;
             MdtH = MdtW * (1080f / 1920f);
-            MdtX = w - MdtW - 25f;
-            MdtY = h - MdtH - 25f;
-            FontScale = h / 1080f;
+
+            MdtX = w - MdtW - 25f + (w * offX);
+            MdtY = h - MdtH - 25f + (h * offY);
+
+            FontScale = (h / 1080f) * scale;
 
             BtnNavHome = new RectangleF(MdtX + (MdtW * 0.084f), MdtY + (MdtH * 0.849f), MdtW * 0.12f, MdtH * 0.06f);
             BtnNavStatus = new RectangleF(MdtX + (MdtW * 0.796f), MdtY + (MdtH * 0.849f), MdtW * 0.12f, MdtH * 0.06f);
-
-            BtnCallout = new RectangleF(MdtX + (MdtW * 0.26f), MdtY + (MdtH * 0.22f), MdtW * 0.15f, MdtH * 0.25f);
-            BtnPatient = new RectangleF(MdtX + (MdtW * 0.43f), MdtY + (MdtH * 0.22f), MdtW * 0.15f, MdtH * 0.25f);
-            BtnHospital = new RectangleF(MdtX + (MdtW * 0.59f), MdtY + (MdtH * 0.22f), MdtW * 0.15f, MdtH * 0.25f);
-            BtnStatus = new RectangleF(MdtX + (MdtW * 0.26f), MdtY + (MdtH * 0.49f), MdtW * 0.15f, MdtH * 0.25f);
-            BtnShift = new RectangleF(MdtX + (MdtW * 0.43f), MdtY + (MdtH * 0.49f), MdtW * 0.15f, MdtH * 0.25f);
-            BtnClose = new RectangleF(MdtX + (MdtW * 0.59f), MdtY + (MdtH * 0.49f), MdtW * 0.15f, MdtH * 0.25f);
 
             BtnAvailable = new RectangleF(MdtX + (MdtW * 0.3f), MdtY + (MdtH * 0.3f), MdtW * 0.18f, MdtH * 0.1f);
             BtnEnRoute = new RectangleF(MdtX + (MdtW * 0.52f), MdtY + (MdtH * 0.3f), MdtW * 0.18f, MdtH * 0.1f);
@@ -52,6 +59,9 @@ namespace EmsPlus.Managers
             BtnBusy = new RectangleF(MdtX + (MdtW * 0.52f), MdtY + (MdtH * 0.6f), MdtW * 0.18f, MdtH * 0.1f);
             BtnStatusBack = new RectangleF(MdtX + (MdtW * 0.4f), MdtY + (MdtH * 0.8f), MdtW * 0.2f, MdtH * 0.08f);
         }
+        public static void ForceUpdateLayout() => UpdateLayout();
+
+        public static bool IsMouseUnlocked = false;
 
         public static void Toggle(bool state)
         {
@@ -73,9 +83,15 @@ namespace EmsPlus.Managers
             }
             else
             {
+                IsMouseUnlocked = false;
                 Game.RawFrameRender -= OnRawRender;
                 NativeFunction.Natives.SET_MOUSE_CURSOR_VISIBLE(false);
             }
+        }
+
+        public static void SetMouseUnlocked(bool state)
+        {
+            IsMouseUnlocked = state;
         }
 
         public static void Process()
@@ -87,15 +103,18 @@ namespace EmsPlus.Managers
             NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 240, true);
             NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 24, true);
             NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 237, true);
-            NativeFunction.Natives.SET_MOUSE_CURSOR_VISIBLE(true);
+            NativeFunction.Natives.SET_MOUSE_CURSOR_VISIBLE(IsMouseUnlocked);
 
-            _mouseX = NativeFunction.Natives.GET_CONTROL_NORMAL<float>(0, 239) * Game.Resolution.Width;
-            _mouseY = NativeFunction.Natives.GET_CONTROL_NORMAL<float>(0, 240) * Game.Resolution.Height;
-
-            if (NativeFunction.Natives.IS_DISABLED_CONTROL_JUST_PRESSED<bool>(0, 24) ||
-                NativeFunction.Natives.IS_DISABLED_CONTROL_JUST_PRESSED<bool>(0, 237))
+            if (IsMouseUnlocked)
             {
-                HandleClick();
+                _mouseX = NativeFunction.Natives.GET_CONTROL_NORMAL<float>(0, 239) * Game.Resolution.Width;
+                _mouseY = NativeFunction.Natives.GET_CONTROL_NORMAL<float>(0, 240) * Game.Resolution.Height;
+
+                if (NativeFunction.Natives.IS_DISABLED_CONTROL_JUST_PRESSED<bool>(0, 24) ||
+                    NativeFunction.Natives.IS_DISABLED_CONTROL_JUST_PRESSED<bool>(0, 237))
+                {
+                    HandleClick();
+                }
             }
         }
 
@@ -167,11 +186,19 @@ namespace EmsPlus.Managers
             string patGender = p != null ? p.Details.Gender : "---";
             string patAge = p != null ? p.Details.Age.ToString() : "---";
 
+            string dest = "TBD";
+            if (EmsService.CurrentStatus == EmsStatus.Transporting)
+            {
+                var nearestHosp = EntryPoint.HospitalsConfig.Locations.OrderBy(l => Game.LocalPlayer.Character.Position.DistanceTo(l.Position)).FirstOrDefault();
+                if (nearestHosp != null) dest = nearestHosp.Name;
+            }
+
             float col1X = MdtX + (MdtW * 0.09f);
             g.DrawText($"{time}{incType}", "Arial", scale, new PointF(col1X, MdtY + (MdtH * 0.25f)), textColor);
             g.DrawText(loc, "Arial", scale, new PointF(col1X, MdtY + (MdtH * 0.385f)), textColor);
             g.DrawText(patFullName, "Arial", scale, new PointF(col1X, MdtY + (MdtH * 0.515f)), textColor);
             g.DrawText("LSPD Dispatch", "Arial", scale, new PointF(col1X, MdtY + (MdtH * 0.645f)), textColor);
+            g.DrawText(dest, "Arial", scale, new PointF(col1X, MdtY + (MdtH * 0.775f)), textColor);
 
             float col2X = MdtX + (MdtW * 0.53f);
             float col3X = MdtX + (MdtW * 0.75f);
