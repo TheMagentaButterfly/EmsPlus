@@ -286,10 +286,12 @@ namespace EmsPlus
                 w.WriteLine("DESC_IV=Manage IV");
                 w.WriteLine("DESC_IV_ESTABLISHED=Access available");
                 w.WriteLine("DESC_LOAD_STRETCHER=Load a stretcher into the ambulance");
+                w.WriteLine("DESC_MDT_POS_MENU=Adjust the size and position of the Mobile Data Terminal on your screen.");
                 w.WriteLine("DESC_MUST_HOLD_STRETCHER=You must hold the stretcher to load it.");
                 w.WriteLine("DESC_NO_INJURIES_NATIVEUI=Patient has no visible untreated trauma. Make sure to perform a Trauma Sweep from the Diagnostics menu first.");
                 w.WriteLine("DESC_NO_KITS_NEARBY=There are no kits nearby.");
                 w.WriteLine("DESC_NO_VEHICLE=No vehicle is currently selected.");
+                w.WriteLine("DESC_ORAL=Oral Meds");
                 w.WriteLine("DESC_ORDER_TRANSPORT=Unit will load the patient and transport them to the hospital.");
                 w.WriteLine("DESC_PATIENT_DATA=View patient data");
                 w.WriteLine("DESC_PATIENT_ON_STRETCHER=Configure patient positions on stretcher");
@@ -378,6 +380,7 @@ namespace EmsPlus
                 w.WriteLine("ITEM_HIDE_STRETCHER_DESC=Hides the stretcher when inside.");
                 w.WriteLine("ITEM_IV_ESTABLISHED_COLORED=~g~IV ESTABLISHED");
                 w.WriteLine("ITEM_LOAD_STRETCHER=Load Stretcher");
+                w.WriteLine("ITEM_MDT_POS_MENU=MDT Position & Scale");
                 w.WriteLine("ITEM_MEDICAL_EQUIPMENT=Medical Equipment");
                 w.WriteLine("ITEM_NO_INJURIES_COLORED=~g~No Injuries Found");
                 w.WriteLine("ITEM_NO_KITS_NEARBY=No Kits Nearby");
@@ -408,6 +411,7 @@ namespace EmsPlus
                 w.WriteLine("LABEL_PITCH=Pitch");
                 w.WriteLine("LABEL_ROLL=Roll");
                 w.WriteLine("LABEL_ROTATE=Rotate");
+                w.WriteLine("LABEL_SCALE=Scale");
                 w.WriteLine("LABEL_SCALE_SIZE=Scale/Size");
                 w.WriteLine("LABEL_TILT=Tilt");
                 w.WriteLine("LABEL_UP_DOWN=Up/Down");
@@ -435,6 +439,8 @@ namespace EmsPlus
                 w.WriteLine("MENU_INTERACTION_POINTS_SUBTITLE=Configure interaction points");
                 w.WriteLine("MENU_INTERACTION_POINTS_TITLE=Interaction Points");
                 w.WriteLine("MENU_IV_TITLE=IV / Access");
+                w.WriteLine("MENU_MDT_POS_SUBTITLE=~b~Adjust MDT UI");
+                w.WriteLine("MENU_MDT_POS_TITLE=MDT Position");
                 w.WriteLine("MENU_OFFSETS_ROOT_SUBTITLE=Configure various offsets");
                 w.WriteLine("MENU_OFFSETS_ROOT_TITLE=Offsets");
                 w.WriteLine("MENU_ORAL_TITLE=Oral Meds");

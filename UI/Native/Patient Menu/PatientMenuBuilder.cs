@@ -103,7 +103,7 @@ namespace EmsPlus.UI.Native.PatientMenu
             PatientMenu.BindMenuToItem(IvMenu, ivItem);
 
             AddMenuSeparator(PatientMenu, Localization.Get("CAT_SEP_MEDICATIONS", "~c~=== ~g~MEDICATIONS ~c~==="));
-            var oralItem = new UIMenuItem($"~g~{Localization.Get("MENU_ORAL_TITLE")}", Localization.Get("DESC_ORAL"));
+            var oralItem = new UIMenuItem($"~g~{Localization.Get("MENU_ORAL_TITLE", "Oral Meds")}", Localization.Get("DESC_ORAL", "Oral Meds"));
             PatientMenu.AddItem(oralItem);
             PatientMenu.BindMenuToItem(OralMenu, oralItem);
 
