@@ -33,10 +33,12 @@ namespace EmsPlus.UI.Tasks
         {
             float cX = Game.Resolution.Width / 2f;
             float hY = Game.Resolution.Height * 0.15f;
+
             string title = Localization.Get("TASK_BGL_TITLE", "BLOOD GLUCOSE TEST");
             string instr = GetInstruction();
-            NativeUITools.DrawNativeText(title, cX, hY, 0.5f, Color.FromArgb(255, 0, 200, 255), true);
-            NativeUITools.DrawNativeText(instr, cX, hY + 45, 0.35f, Color.FromArgb(200, 200, 220, 240), true);
+
+            DrawTextCentered(g, title, cX, hY, 24f * FontScale, Color.FromArgb(255, 0, 200, 255));
+            DrawTextCentered(g, instr, cX, hY + (45f * FontScale), 18f * FontScale, Color.FromArgb(200, 200, 220, 240));
         }
 
         protected override void OnElementDropped(UIElement d, UIElement t)

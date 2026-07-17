@@ -132,6 +132,11 @@ namespace EmsPlus
                 w.WriteLine("STATUS_URGENTREQUESTTOSPEAK=~h~~p~Urgent request to speak");
                 w.WriteLine("STATUS_EMERGENCY=~h~~p~Emergency");
 
+                w.WriteLine("CONSC_PAIN=Pain");
+                w.WriteLine("CONSC_ALERT=Alert");
+                w.WriteLine("CONSC_VERBAL=Verbal");
+                w.WriteLine("CONSC_UNRESPONSIVE=Unresponsive");
+
                 w.WriteLine("ACT_APPLY_NRB_MASK=Apply NRB Mask");
                 w.WriteLine("ACT_APPLY_OXYGEN_MASK=Apply Oxygen Mask");
                 w.WriteLine("ACT_APPLY_TREATMENT_COLORED=Apply {0}");
@@ -209,7 +214,7 @@ namespace EmsPlus
                 w.WriteLine("BTN_BACK=◄ BACK");
                 w.WriteLine("BTN_BACK_DESC=Return");
                 w.WriteLine("BTN_DIAGNOSTICS=[TAB] Diagnostics");
-                w.WriteLine("BTN_EXIT=[ESC] Exit");
+                w.WriteLine("BTN_EXIT=EXIT");
                 w.WriteLine("BTN_ITEM_EMPTY_DESC=~r~Empty! Restock at ambulance.");
                 w.WriteLine("BTN_PATIENT_DATA=[TAB] Patient Data");
                 w.WriteLine("BTN_PERFORM_ACTION=Perform {0}");
@@ -299,6 +304,7 @@ namespace EmsPlus
                 w.WriteLine("DESC_STANDARD_O2=Standard O2 Therapy");
                 w.WriteLine("DESC_STOP_FLUIDS=Stop IV Fluids");
                 w.WriteLine("DESC_STORE_CURRENT=Store the current item");
+                w.WriteLine("DESC_STORE_KITS=Store all kits.");
                 w.WriteLine("DESC_STRETCHER_CARRY_POS=Configure stretcher carry positions");
                 w.WriteLine("DESC_TIP_FORMAT=Status: {0}\nRequired: {1}");
                 w.WriteLine("DESC_TOGGLE_DOORS=Open or close the ambulance doors");
@@ -409,6 +415,7 @@ namespace EmsPlus
                 w.WriteLine("LBL_CODE_1=Code 1");
                 w.WriteLine("LBL_CODE_2=Code 2");
                 w.WriteLine("LBL_CODE_3=Code 3");
+                w.WriteLine("LBL_FAST_DISMISS=FAST DISMISS");
                 w.WriteLine("LBL_FAST_DISPATCH=FAST DISPATCH");
                 w.WriteLine("LBL_SYSTEMIC=Systemic");
                 w.WriteLine("MENU_AIRWAY_TITLE=Airway");
@@ -455,6 +462,7 @@ namespace EmsPlus
                 w.WriteLine("MODE_STOWED_POS=Stowed Position");
                 w.WriteLine("NOTIF_ADMINISTERED=~g~Administered {0}.");
                 w.WriteLine("NOTIF_AIRWAY_OPENED=~g~Airway manually opened.");
+                w.WriteLine("NOTIF_BACKUP_ARRIVED=~b~Dispatch:~w~ Backup unit has arrived on scene.");
                 w.WriteLine("NOTIF_BACKUP_ENROUTE=~b~Dispatch:~w~ Copy that, additional EMS unit is en route.");
                 w.WriteLine("NOTIF_BGL_HIGH=~r~BGL Result: HIGH.");
                 w.WriteLine("NOTIF_BGL_LOW=~y~BGL Result: LOW.");
@@ -465,9 +473,11 @@ namespace EmsPlus
                 w.WriteLine("NOTIF_CANNOT_TREAT_DECEASED=~r~Cannot treat a deceased patient.");
                 w.WriteLine("NOTIF_CONFIG_NOT_SAVED=Configuration not saved.");
                 w.WriteLine("NOTIF_CONFIGSRELOADED=~b~EmsPlus~w~: All configurations reloaded!");
+                w.WriteLine("NOTIF_FAST_DISMISS=~b~Dispatch:~w~ All backup units have been forcefully dismissed.");
                 w.WriteLine("NOTIF_FLUIDS_STOPPED=IV Fluids stopped.");
                 w.WriteLine("NOTIF_HOSPITAL_WAYPOINT_SET=~b~Dispatch:~w~ Route to nearest hospital set.");
                 w.WriteLine("NOTIF_IV_ESTABLISHED=~g~IV Established.");
+                w.WriteLine("NOTIF_MEDICALBAGS_RESTOCKED=~w~Medical bags ~g~restocked~w~.");
                 w.WriteLine("NOTIF_MONITOR_CONNECTED=~g~Monitor connected.");
                 w.WriteLine("NOTIF_MONITOR_DISCONNECTED=~r~Monitor disconnected.");
                 w.WriteLine("NOTIF_MUST_HOLD_STRETCHER=~r~You must be holding the stretcher.");

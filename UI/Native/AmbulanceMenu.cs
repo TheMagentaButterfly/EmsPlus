@@ -115,7 +115,6 @@ namespace EmsPlus.UI.Native
                 return;
             }
 
-            // 2. CABIN LOGIC
             if (inRearCabin)
             {
                 itemCabinToggle.Text = Localization.Get("ITEM_EXIT_CABIN", "Exit Cabin");
@@ -146,13 +145,11 @@ namespace EmsPlus.UI.Native
                 bool doorsOpen = AmbulanceManager.AreDoorsOpen;
                 bool atRear = AmbulanceManager.IsPlayerAtRear();
 
-                // 1. DOORS
                 itemDoors.Text = doorsOpen ? Localization.Get("ITEM_CLOSE_REAR_DOORS", "Close Rear Doors") : Localization.Get("ITEM_OPEN_REAR_DOORS", "Open Rear Doors");
                 itemDoors.Enabled = true;
                 itemDoors.Description = Localization.Get("DESC_TOGGLE_DOORS", "Toggle the rear doors.");
                 MenuCore.AmbulanceMenu.AddItem(itemDoors);
 
-                // 2. STRETCHER LOGIC
                 if (doorsOpen)
                 {
                     if (atRear)
@@ -187,18 +184,16 @@ namespace EmsPlus.UI.Native
                     MenuCore.AmbulanceMenu.AddItem(itemCabinToggle);
                 }
 
-                // 3. EQUIPMENT
                 itemEquipment.Enabled = true;
                 MenuCore.AmbulanceMenu.AddItem(itemEquipment);
 
-                // 4. STORE KITS
                 bool hasKitInHand = InventoryManager.EquippedKits.Count > 0;
                 bool hasKitsOnGround = InventoryManager.PlacedKits.Count > 0;
 
                 if (hasKitInHand || hasKitsOnGround)
                 {
                     itemStore.Enabled = true;
-                    itemStore.Description = Localization.Get("DESC_COLLECT_KITS");
+                    itemStore.Description = Localization.Get("DESC_STORE_KITS", "Store all kits.");
                     MenuCore.AmbulanceMenu.AddItem(itemStore);
                 }
             }

@@ -1,9 +1,9 @@
 ﻿using EmsPlus.Core;
+using EmsPlus.UI.Helpers;
 using Rage;
 using Rage.Native;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 
 namespace EmsPlus.Managers
 {
@@ -15,23 +15,43 @@ namespace EmsPlus.Managers
         public static MdtPage CurrentPage { get; private set; } = MdtPage.Main;
         private static Texture _bgTexture;
 
-        private static float MdtW => Game.Resolution.Width * 0.45f;
-        private static float MdtH => MdtW * (1080f / 1920f);
-        private static float MdtX => Game.Resolution.Width - MdtW - 25f;
-        private static float MdtY => Game.Resolution.Height - MdtH - 25f;
+        private static float _mouseX = 0f;
+        private static float _mouseY = 0f;
 
-        private static float FontScale => Game.Resolution.Height / 1080f;
+        private static float MdtX, MdtY, MdtW, MdtH, FontScale;
+        private static RectangleF BtnNavHome, BtnNavStatus;
+        private static RectangleF BtnCallout, BtnPatient, BtnHospital, BtnStatus, BtnShift, BtnClose;
+        private static RectangleF BtnAvailable, BtnEnRoute, BtnOnScene, BtnTransporting, BtnAtStation, BtnBusy, BtnStatusBack;
 
-        private static RectangleF BtnHome => new RectangleF(MdtX + (MdtW * 0.084f), MdtY + (MdtH * 0.849f), MdtW * 0.12f, MdtH * 0.06f);
-        private static RectangleF BtnStatus => new RectangleF(MdtX + (MdtW * 0.796f), MdtY + (MdtH * 0.849f), MdtW * 0.12f, MdtH * 0.06f);
+        private static void UpdateLayout()
+        {
+            float w = Game.Resolution.Width;
+            float h = Game.Resolution.Height;
 
-        private static RectangleF BtnAvailable => new RectangleF(MdtX + (MdtW * 0.3f), MdtY + (MdtH * 0.3f), MdtW * 0.18f, MdtH * 0.1f);
-        private static RectangleF BtnEnRoute => new RectangleF(MdtX + (MdtW * 0.52f), MdtY + (MdtH * 0.3f), MdtW * 0.18f, MdtH * 0.1f);
-        private static RectangleF BtnOnScene => new RectangleF(MdtX + (MdtW * 0.3f), MdtY + (MdtH * 0.45f), MdtW * 0.18f, MdtH * 0.1f);
-        private static RectangleF BtnTransporting => new RectangleF(MdtX + (MdtW * 0.52f), MdtY + (MdtH * 0.45f), MdtW * 0.18f, MdtH * 0.1f);
-        private static RectangleF BtnAtStation => new RectangleF(MdtX + (MdtW * 0.3f), MdtY + (MdtH * 0.6f), MdtW * 0.18f, MdtH * 0.1f);
-        private static RectangleF BtnBusy => new RectangleF(MdtX + (MdtW * 0.52f), MdtY + (MdtH * 0.6f), MdtW * 0.18f, MdtH * 0.1f);
-        private static RectangleF BtnStatusBack => new RectangleF(MdtX + (MdtW * 0.4f), MdtY + (MdtH * 0.8f), MdtW * 0.2f, MdtH * 0.08f);
+            MdtW = w * 0.45f;
+            MdtH = MdtW * (1080f / 1920f);
+            MdtX = w - MdtW - 25f;
+            MdtY = h - MdtH - 25f;
+            FontScale = h / 1080f;
+
+            BtnNavHome = new RectangleF(MdtX + (MdtW * 0.084f), MdtY + (MdtH * 0.849f), MdtW * 0.12f, MdtH * 0.06f);
+            BtnNavStatus = new RectangleF(MdtX + (MdtW * 0.796f), MdtY + (MdtH * 0.849f), MdtW * 0.12f, MdtH * 0.06f);
+
+            BtnCallout = new RectangleF(MdtX + (MdtW * 0.26f), MdtY + (MdtH * 0.22f), MdtW * 0.15f, MdtH * 0.25f);
+            BtnPatient = new RectangleF(MdtX + (MdtW * 0.43f), MdtY + (MdtH * 0.22f), MdtW * 0.15f, MdtH * 0.25f);
+            BtnHospital = new RectangleF(MdtX + (MdtW * 0.59f), MdtY + (MdtH * 0.22f), MdtW * 0.15f, MdtH * 0.25f);
+            BtnStatus = new RectangleF(MdtX + (MdtW * 0.26f), MdtY + (MdtH * 0.49f), MdtW * 0.15f, MdtH * 0.25f);
+            BtnShift = new RectangleF(MdtX + (MdtW * 0.43f), MdtY + (MdtH * 0.49f), MdtW * 0.15f, MdtH * 0.25f);
+            BtnClose = new RectangleF(MdtX + (MdtW * 0.59f), MdtY + (MdtH * 0.49f), MdtW * 0.15f, MdtH * 0.25f);
+
+            BtnAvailable = new RectangleF(MdtX + (MdtW * 0.3f), MdtY + (MdtH * 0.3f), MdtW * 0.18f, MdtH * 0.1f);
+            BtnEnRoute = new RectangleF(MdtX + (MdtW * 0.52f), MdtY + (MdtH * 0.3f), MdtW * 0.18f, MdtH * 0.1f);
+            BtnOnScene = new RectangleF(MdtX + (MdtW * 0.3f), MdtY + (MdtH * 0.45f), MdtW * 0.18f, MdtH * 0.1f);
+            BtnTransporting = new RectangleF(MdtX + (MdtW * 0.52f), MdtY + (MdtH * 0.45f), MdtW * 0.18f, MdtH * 0.1f);
+            BtnAtStation = new RectangleF(MdtX + (MdtW * 0.3f), MdtY + (MdtH * 0.6f), MdtW * 0.18f, MdtH * 0.1f);
+            BtnBusy = new RectangleF(MdtX + (MdtW * 0.52f), MdtY + (MdtH * 0.6f), MdtW * 0.18f, MdtH * 0.1f);
+            BtnStatusBack = new RectangleF(MdtX + (MdtW * 0.4f), MdtY + (MdtH * 0.8f), MdtW * 0.2f, MdtH * 0.08f);
+        }
 
         public static void Toggle(bool state)
         {
@@ -41,18 +61,19 @@ namespace EmsPlus.Managers
             if (state)
             {
                 CurrentPage = MdtPage.Main;
+                UpdateLayout();
 
-                string texPath = Core.Assets.GetPath("MdtBackground.png");
+                string texPath = Assets.GetPath("MdtBackground.png");
                 if (File.Exists(texPath) && _bgTexture == null)
                 {
                     _bgTexture = Game.CreateTextureFromFile(texPath);
                 }
 
-                Game.FrameRender += OnRender;
+                Game.RawFrameRender += OnRawRender;
             }
             else
             {
-                Game.FrameRender -= OnRender;
+                Game.RawFrameRender -= OnRawRender;
                 NativeFunction.Natives.SET_MOUSE_CURSOR_VISIBLE(false);
             }
         }
@@ -66,8 +87,10 @@ namespace EmsPlus.Managers
             NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 240, true);
             NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 24, true);
             NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 237, true);
-
             NativeFunction.Natives.SET_MOUSE_CURSOR_VISIBLE(true);
+
+            _mouseX = NativeFunction.Natives.GET_CONTROL_NORMAL<float>(0, 239) * Game.Resolution.Width;
+            _mouseY = NativeFunction.Natives.GET_CONTROL_NORMAL<float>(0, 240) * Game.Resolution.Height;
 
             if (NativeFunction.Natives.IS_DISABLED_CONTROL_JUST_PRESSED<bool>(0, 24) ||
                 NativeFunction.Natives.IS_DISABLED_CONTROL_JUST_PRESSED<bool>(0, 237))
@@ -76,39 +99,32 @@ namespace EmsPlus.Managers
             }
         }
 
-        private static PointF GetMousePosition()
-        {
-            float cX = NativeFunction.Natives.GET_CONTROL_NORMAL<float>(0, 239) * Game.Resolution.Width;
-            float cY = NativeFunction.Natives.GET_CONTROL_NORMAL<float>(0, 240) * Game.Resolution.Height;
-            return new PointF(cX, cY);
-        }
-
         private static void HandleClick()
         {
-            PointF mouse = GetMousePosition();
+            PointF mouse = new PointF(_mouseX, _mouseY);
 
             if (CurrentPage == MdtPage.Main)
             {
-                if (BtnHome.Contains(mouse)) { Toggle(false); UI.Helpers.AudioHelper.PlayBack(); }
-                else if (BtnStatus.Contains(mouse)) { CurrentPage = MdtPage.StatusOverlay; UI.Helpers.AudioHelper.PlaySelect(); }
+                if (BtnNavHome.Contains(mouse)) { Toggle(false); AudioHelper.PlayBack(); }
+                else if (BtnNavStatus.Contains(mouse)) { CurrentPage = MdtPage.StatusOverlay; AudioHelper.PlaySelect(); }
             }
             else if (CurrentPage == MdtPage.StatusOverlay)
             {
-                if (BtnStatusBack.Contains(mouse)) { CurrentPage = MdtPage.Main; UI.Helpers.AudioHelper.PlayBack(); }
-                else if (BtnAvailable.Contains(mouse)) { EmsService.SetStatus(EmsStatus.Available); Toggle(false); UI.Helpers.AudioHelper.PlaySuccess(); }
-                else if (BtnEnRoute.Contains(mouse)) { EmsService.SetStatus(EmsStatus.EnRoute); Toggle(false); UI.Helpers.AudioHelper.PlaySuccess(); }
-                else if (BtnOnScene.Contains(mouse)) { EmsService.SetStatus(EmsStatus.OnScene); Toggle(false); UI.Helpers.AudioHelper.PlaySuccess(); }
-                else if (BtnTransporting.Contains(mouse)) { EmsService.SetStatus(EmsStatus.Transporting); Toggle(false); UI.Helpers.AudioHelper.PlaySuccess(); }
-                else if (BtnAtStation.Contains(mouse)) { EmsService.SetStatus(EmsStatus.AvailableAtStation); Toggle(false); UI.Helpers.AudioHelper.PlaySuccess(); }
-                else if (BtnBusy.Contains(mouse)) { EmsService.SetStatus(EmsStatus.Busy); Toggle(false); UI.Helpers.AudioHelper.PlaySuccess(); }
+                if (BtnStatusBack.Contains(mouse)) { CurrentPage = MdtPage.Main; AudioHelper.PlayBack(); }
+                else if (BtnAvailable.Contains(mouse)) { EmsService.SetStatus(EmsStatus.Available); Toggle(false); AudioHelper.PlaySuccess(); }
+                else if (BtnEnRoute.Contains(mouse)) { EmsService.SetStatus(EmsStatus.EnRoute); Toggle(false); AudioHelper.PlaySuccess(); }
+                else if (BtnOnScene.Contains(mouse)) { EmsService.SetStatus(EmsStatus.OnScene); Toggle(false); AudioHelper.PlaySuccess(); }
+                else if (BtnTransporting.Contains(mouse)) { EmsService.SetStatus(EmsStatus.Transporting); Toggle(false); AudioHelper.PlaySuccess(); }
+                else if (BtnAtStation.Contains(mouse)) { EmsService.SetStatus(EmsStatus.AvailableAtStation); Toggle(false); AudioHelper.PlaySuccess(); }
+                else if (BtnBusy.Contains(mouse)) { EmsService.SetStatus(EmsStatus.Busy); Toggle(false); AudioHelper.PlaySuccess(); }
             }
         }
 
-        private static void OnRender(object sender, GraphicsEventArgs e)
+        private static void OnRawRender(object sender, GraphicsEventArgs e)
         {
             if (!IsVisible) return;
             var g = e.Graphics;
-            PointF mouse = GetMousePosition();
+            PointF mouse = new PointF(_mouseX, _mouseY);
 
             if (_bgTexture != null)
             {
@@ -122,9 +138,10 @@ namespace EmsPlus.Managers
 
             if (CurrentPage == MdtPage.Main)
             {
-                if (BtnHome.Contains(mouse)) g.DrawRectangle(BtnHome, Color.FromArgb(60, 255, 255, 255));
-                if (BtnStatus.Contains(mouse)) g.DrawRectangle(BtnStatus, Color.FromArgb(60, 255, 255, 255));
+                if (BtnNavHome.Contains(mouse)) g.DrawRectangle(BtnNavHome, Color.FromArgb(60, 255, 255, 255));
+                if (BtnNavStatus.Contains(mouse)) g.DrawRectangle(BtnNavStatus, Color.FromArgb(60, 255, 255, 255));
             }
+
             if (CurrentPage == MdtPage.Main) DrawCalloutDataText(g);
             else if (CurrentPage == MdtPage.StatusOverlay) DrawStatusPanel(g, mouse);
 
@@ -171,7 +188,6 @@ namespace EmsPlus.Managers
         private static void DrawStatusPanel(Rage.Graphics g, PointF mouse)
         {
             g.DrawRectangle(new RectangleF(MdtX, MdtY, MdtW, MdtH), Color.FromArgb(200, 10, 10, 10));
-
             g.DrawRectangle(new RectangleF(MdtX + (MdtW * 0.15f), MdtY + (MdtH * 0.15f), MdtW * 0.7f, MdtH * 0.7f), Color.FromArgb(255, 20, 25, 30));
 
             DrawTextCentered(g, "SET EMS STATUS", MdtX + (MdtW * 0.5f), MdtY + (MdtH * 0.18f), 20f * FontScale, Color.DeepSkyBlue);
