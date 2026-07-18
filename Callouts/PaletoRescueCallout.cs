@@ -16,6 +16,8 @@ namespace EmsPlus.Callouts
         public PaletoRescueCallout()
         {
             AllowedStationIDs.Add("PALETO");
+            AddExclusionZone(ExclusionZoneType.Highways);
+            AddExclusionZone(ExclusionZoneType.Hospitals);
         }
 
         public override bool OnBeforeCalloutDisplayed()

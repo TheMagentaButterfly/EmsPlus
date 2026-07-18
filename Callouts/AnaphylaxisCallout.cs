@@ -12,6 +12,12 @@ namespace EmsPlus.Callouts
         private Blip blip;
         private bool hasArrivedAtScene = false;
 
+        public AnaphylaxisCallout()
+        {
+            AddExclusionZone(ExclusionZoneType.Highways);
+            AddExclusionZone(ExclusionZoneType.Hospitals);
+        }
+
         public override bool OnBeforeCalloutDisplayed()
         {
             CalloutName = "Allergic Reaction";

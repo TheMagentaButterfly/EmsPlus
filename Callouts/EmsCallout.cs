@@ -7,6 +7,13 @@ using System.Drawing;
 
 namespace EmsPlus.Callouts
 {
+    public enum ExclusionZoneType
+    {
+        Highways,   // Excludes highways/freeways based on street name
+        Hospitals,  // Excludes areas near hospitals from Hospitals.xml
+        Stations    // Excludes areas near stations from Stations.xml
+    }
+
     public abstract class EmsCallout
     {
         public Vector3 CalloutPosition { get; set; }
@@ -16,6 +23,11 @@ namespace EmsPlus.Callouts
         public bool Accepted { get; private set; } = false;
         public bool PlayerArrived { get; private set; } = false;
         public bool Finished { get; private set; } = false;
+
+        /// <summary>
+        /// List of active exclusion zones for this callout.
+        /// </summary>
+        public List<ExclusionZoneType> ExclusionZones { get; set; } = new List<ExclusionZoneType>();
 
         /// <summary>
         /// List of Station IDs where this callout can spawn. 
@@ -203,6 +215,86 @@ namespace EmsPlus.Callouts
                 return ped;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Registers a zone type to be excluded during coordinate generation.
+        /// </summary>
+        protected void AddExclusionZone(ExclusionZoneType zoneType)
+        {
+            if (!ExclusionZones.Contains(zoneType))
+            {
+                ExclusionZones.Add(zoneType);
+            }
+        }
+
+        /// <summary>
+        /// Finds a safe coordinate while filtering out any registered ExclusionZones.
+        /// </summary>
+        protected Vector3 GetSafeSpawnPosition(Vector3 center, float minRadius, float maxRadius, float hospitalRadius = 250f, float stationRadius = 150f)
+        {
+            for (int i = 0; i < 25; i++)
+            {
+                Vector3 candidate = World.GetNextPositionOnStreet(center.Around(minRadius, maxRadius));
+                if (candidate == Vector3.Zero) continue;
+
+                bool isExcluded = false;
+
+                foreach (var zoneType in ExclusionZones)
+                {
+                    switch (zoneType)
+                    {
+                        case ExclusionZoneType.Hospitals:
+                            if (EntryPoint.HospitalsConfig?.Locations != null)
+                            {
+                                foreach (var h in EntryPoint.HospitalsConfig.Locations)
+                                {
+                                    if (candidate.DistanceTo(h.Position) < hospitalRadius)
+                                    {
+                                        isExcluded = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+
+                        case ExclusionZoneType.Stations:
+                            if (EntryPoint.StationsConfig?.Locations != null)
+                            {
+                                foreach (var s in EntryPoint.StationsConfig.Locations)
+                                {
+                                    if (candidate.DistanceTo(s.Position) < stationRadius)
+                                    {
+                                        isExcluded = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+
+                        case ExclusionZoneType.Highways:
+                            NativeFunction.Natives.GET_STREET_NAME_AT_COORD(candidate.X, candidate.Y, candidate.Z, out uint sHash, out uint cHash);
+                            string streetName = NativeFunction.Natives.GET_STREET_NAME_FROM_HASH_KEY<string>(sHash);
+                            if (!string.IsNullOrEmpty(streetName))
+                            {
+                                string sLower = streetName.ToLower();
+                                if (sLower.Contains("fwy") || sLower.Contains("freeway") || sLower.Contains("highway") || sLower.Contains("hwy") || sLower.Contains("bypass") || sLower.Contains("interstate"))
+                                {
+                                    isExcluded = true;
+                                }
+                            }
+                            break;
+                    }
+
+                    if (isExcluded) break;
+                }
+
+                if (isExcluded) continue;
+
+                return candidate;
+            }
+
+            return World.GetNextPositionOnStreet(center.Around(minRadius, maxRadius));
         }
     }
 }

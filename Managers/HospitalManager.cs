@@ -112,7 +112,6 @@ namespace EmsPlus.Managers
             AmbulanceManager.ResetVehicleState(v);
 
             CalloutManager.EndCurrent();
-            EmsService.SetStatus(EmsStatus.Available);
 
             Game.FadeScreenIn(1000);
             Game.DisplayNotification(Localization.Get("NOTIF_PATIENT_HANDED_OVER", "~g~Transport Complete:~w~ Patient handed over to hospital staff."));

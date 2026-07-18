@@ -17,7 +17,6 @@ namespace EmsPlus.Callouts
         private bool hasArrivedAtScene = false;
         private Random rnd = new Random();
 
-        // ── All valid spawnable bones using InjuryBones ───────────────────────
         private static readonly PedBoneId[] SpawnableBones =
         {
             InjuryBones.LeftThigh,    InjuryBones.RightThigh,
@@ -34,12 +33,8 @@ namespace EmsPlus.Callouts
             InjuryBones.ThoracicSpine,
         };
 
-        // ── Trauma themes ─────────────────────────────────────────────────────
         private enum TraumaTheme { Blunt, Penetrating, Blast }
 
-        // =====================================================================
-        // CALLOUT LIFECYCLE
-        // =====================================================================
 
         public override bool OnBeforeCalloutDisplayed()
         {
@@ -116,9 +111,6 @@ namespace EmsPlus.Callouts
             if (patient.Exists()) patient.Dismiss();
         }
 
-        // =====================================================================
-        // TRAUMA GENERATION
-        // =====================================================================
         private void GenerateRandomTrauma(Patient p)
         {
             TraumaTheme theme = (TraumaTheme)rnd.Next(0, 3);
@@ -161,10 +153,10 @@ namespace EmsPlus.Callouts
         {
             int roll = Roll();
 
-            //if (bone == InjuryBones.LumbarSpine || bone == InjuryBones.ThoracicSpine)
-                //return roll < 50
-                    //? InjuryFactory.Fracture.Spinal(bone)
-                    //: InjuryFactory.SoftTissue.CrushInjury(bone);
+            if (bone == InjuryBones.LumbarSpine || bone == InjuryBones.ThoracicSpine)
+                return roll < 50
+                    ? InjuryFactory.Fracture.Compound(bone)
+                    : InjuryFactory.SoftTissue.CrushInjury(bone);
 
             if (bone == InjuryBones.Pelvis)
                 return roll < 60
@@ -202,7 +194,6 @@ namespace EmsPlus.Callouts
             return InjuryFactory.SoftTissue.DeepLaceration(bone);
         }
 
-        // ── Penetrating trauma (GSW / stab) ──────────────────────────────────
         private PhysicalInjury RollPenetratingInjury(Patient p, PedBoneId bone)
         {
             int roll = Roll();
@@ -255,7 +246,6 @@ namespace EmsPlus.Callouts
                 : InjuryFactory.SoftTissue.DeepLaceration(bone);
         }
 
-        // ── Blast / industrial ────────────────────────────────────────────────
         private PhysicalInjury RollBlastInjury(Patient p, PedBoneId bone)
         {
             int roll = Roll();
@@ -285,10 +275,6 @@ namespace EmsPlus.Callouts
             return InjuryFactory.SoftTissue.Laceration(bone);
         }
 
-        // =====================================================================
-        // VITALS CALCULATION
-        // =====================================================================
-
         private static void CalculateVitalsFromInjuries(Patient p)
         {
             List<PhysicalInjury> injuries = p.Conditions.OfType<PhysicalInjury>().ToList();
@@ -304,34 +290,26 @@ namespace EmsPlus.Callouts
                 i.Bone == InjuryBones.Head &&
                 (i.Name.Contains("Haematoma") || i.Name.Contains("Haemorrhage")));
 
-            // ── Heart rate ────────────────────────────────────────────────────
             if (totalBleed > 4.0f) p.HeartRate = VitalState.CriticalHigh;
             else if (totalBleed > 2.5f) p.HeartRate = VitalState.Elevated;
             else if (totalBleed > 1.0f) p.HeartRate = VitalState.Elevated;
             else p.HeartRate = VitalState.Normal;
 
-            // ── Blood pressure ────────────────────────────────────────────────
             if (totalBleed > 4.5f) p.BloodPressure = VitalState.CriticalLow;
             else if (totalBleed > 3.0f) p.BloodPressure = VitalState.Low;
             else if (totalBleed > 1.5f) p.BloodPressure = VitalState.Low;
             else p.BloodPressure = VitalState.Normal;
 
-            // ── SpO2 ──────────────────────────────────────────────────────────
             if (hasChestTrauma)
                 p.SpO2 = totalBleed > 2.0f ? VitalState.CriticalLow : VitalState.Low;
             else
                 p.SpO2 = VitalState.Normal;
 
-            // ── Consciousness ─────────────────────────────────────────────────
             if (totalBleed > 4.0f) p.Consciousness = ConsciousnessLevel.Unresponsive;
             else if (totalBleed > 2.5f) p.Consciousness = ConsciousnessLevel.Pain;
             else if (hasTBI) p.Consciousness = ConsciousnessLevel.Pain;
             else p.Consciousness = ConsciousnessLevel.Verbal;
         }
-
-        // =====================================================================
-        // HELPERS
-        // =====================================================================
 
         private PedBoneId PickUnusedBone(HashSet<PedBoneId> used)
         {

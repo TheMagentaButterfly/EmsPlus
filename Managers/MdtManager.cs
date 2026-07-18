@@ -5,6 +5,7 @@ using Rage.Native;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace EmsPlus.Managers
 {
@@ -20,9 +21,17 @@ namespace EmsPlus.Managers
         private static float _mouseY = 0f;
 
         private static float MdtX, MdtY, MdtW, MdtH, FontScale;
-        private static RectangleF BtnNavHome, BtnNavStatus;
-        private static RectangleF BtnCallout, BtnPatient, BtnHospital, BtnStatus, BtnShift, BtnClose;
-        private static RectangleF BtnAvailable, BtnEnRoute, BtnOnScene, BtnTransporting, BtnAtStation, BtnBusy, BtnStatusBack;
+        private static RectangleF BtnNavHome, BtnNavStatus, BtnStatusBack;
+
+        private struct MdtStatusButton
+        {
+            public EmsStatus Status;
+            public string Label;
+            public Color Color;
+            public RectangleF Bounds;
+        }
+
+        private static readonly List<MdtStatusButton> _statusButtons = new List<MdtStatusButton>();
 
         public static void ShowCalloutPage()
         {
@@ -50,15 +59,55 @@ namespace EmsPlus.Managers
 
             BtnNavHome = new RectangleF(MdtX + (MdtW * 0.084f), MdtY + (MdtH * 0.849f), MdtW * 0.12f, MdtH * 0.06f);
             BtnNavStatus = new RectangleF(MdtX + (MdtW * 0.796f), MdtY + (MdtH * 0.849f), MdtW * 0.12f, MdtH * 0.06f);
+            BtnStatusBack = new RectangleF(MdtX + (MdtW * 0.4f), MdtY + (MdtH * 0.74f), MdtW * 0.2f, MdtH * 0.06f);
 
-            BtnAvailable = new RectangleF(MdtX + (MdtW * 0.3f), MdtY + (MdtH * 0.3f), MdtW * 0.18f, MdtH * 0.1f);
-            BtnEnRoute = new RectangleF(MdtX + (MdtW * 0.52f), MdtY + (MdtH * 0.3f), MdtW * 0.18f, MdtH * 0.1f);
-            BtnOnScene = new RectangleF(MdtX + (MdtW * 0.3f), MdtY + (MdtH * 0.45f), MdtW * 0.18f, MdtH * 0.1f);
-            BtnTransporting = new RectangleF(MdtX + (MdtW * 0.52f), MdtY + (MdtH * 0.45f), MdtW * 0.18f, MdtH * 0.1f);
-            BtnAtStation = new RectangleF(MdtX + (MdtW * 0.3f), MdtY + (MdtH * 0.6f), MdtW * 0.18f, MdtH * 0.1f);
-            BtnBusy = new RectangleF(MdtX + (MdtW * 0.52f), MdtY + (MdtH * 0.6f), MdtW * 0.18f, MdtH * 0.1f);
-            BtnStatusBack = new RectangleF(MdtX + (MdtW * 0.4f), MdtY + (MdtH * 0.8f), MdtW * 0.2f, MdtH * 0.08f);
+            _statusButtons.Clear();
+
+            // All 11 registered statuses mapped cleanly with specific UI styling properties
+            var statuses = new[]
+            {
+                new { Status = EmsStatus.Available, Label = "AVAILABLE", Color = Color.Green },
+                new { Status = EmsStatus.AvailableAtStation, Label = "AT STATION", Color = Color.Green },
+                new { Status = EmsStatus.EnRoute, Label = "EN ROUTE", Color = Color.Orange },
+                new { Status = EmsStatus.OnScene, Label = "ON SCENE", Color = Color.Orange },
+                new { Status = EmsStatus.Transporting, Label = "TRANSPORTING", Color = Color.Orange },
+                new { Status = EmsStatus.AtDestination, Label = "AT DEST", Color = Color.Yellow },
+                new { Status = EmsStatus.Busy, Label = "BUSY", Color = Color.Red },
+                new { Status = EmsStatus.OffDuty, Label = "OFF DUTY", Color = Color.Gray },
+                new { Status = EmsStatus.RequestToSpeak, Label = "REQ SPEAK", Color = Color.Orange },
+                new { Status = EmsStatus.UrgentRequestToSpeak, Label = "URG SPEAK", Color = Color.Purple },
+                new { Status = EmsStatus.Emergency, Label = "EMERGENCY", Color = Color.Purple }
+            };
+
+            float colWidth = MdtW * 0.20f;
+            float rowHeight = MdtH * 0.09f;
+
+            float startX = MdtX + (MdtW * 0.18f);
+            float startY = MdtY + (MdtH * 0.25f);
+
+            for (int i = 0; i < statuses.Length; i++)
+            {
+                int row = i / 3;
+                int col = i % 3;
+
+                // Center the last row which contains only 2 elements
+                float xOffset = (row == 3) ? ((colWidth + (MdtW * 0.025f)) / 2f) : 0f;
+
+                _statusButtons.Add(new MdtStatusButton
+                {
+                    Status = statuses[i].Status,
+                    Label = statuses[i].Label,
+                    Color = statuses[i].Color,
+                    Bounds = new RectangleF(
+                        startX + (col * (colWidth + (MdtW * 0.025f))) + xOffset,
+                        startY + (row * (rowHeight + (MdtH * 0.02f))),
+                        colWidth,
+                        rowHeight
+                    )
+                });
+            }
         }
+
         public static void ForceUpdateLayout() => UpdateLayout();
 
         public static bool IsMouseUnlocked = false;
@@ -100,11 +149,29 @@ namespace EmsPlus.Managers
 
             if (IsMouseUnlocked)
             {
-                NativeFunction.Natives.DISABLE_ALL_CONTROL_ACTIONS(0);
-                NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 239, true);
-                NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 240, true);
-                NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 24, true);
-                NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 237, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 1, true);   // LookLeftRight
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 2, true);   // LookUpDown
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 3, true);   // Look fly LR
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 4, true);   // Look fly UD
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 5, true);   // Look UI LR
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 6, true);   // Look UI UD
+
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 24, true);  // Attack (Left Click)
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 25, true);  // Aim (Right Click)
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 140, true); // Melee Attack Light
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 141, true); // Melee Attack Heavy
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 142, true); // Melee Attack Alternate
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 257, true); // Attack 2
+
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 68, true);  // Vehicle Aim
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 69, true);  // Vehicle Attack
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 70, true);  // Vehicle Attack 2
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 91, true);  // Vehicle Passenger Aim
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 92, true);  // Vehicle Passenger Attack
+
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 199, true); // Pause Menu (P)
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 200, true); // Pause Menu (Esc)
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 85, true);  // Radio Wheel
 
                 _mouseX = NativeFunction.Natives.GET_CONTROL_NORMAL<float>(0, 239) * Game.Resolution.Width;
                 _mouseY = NativeFunction.Natives.GET_CONTROL_NORMAL<float>(0, 240) * Game.Resolution.Height;
@@ -131,12 +198,19 @@ namespace EmsPlus.Managers
             else if (CurrentPage == MdtPage.StatusOverlay)
             {
                 if (BtnStatusBack.Contains(mouse)) { CurrentPage = MdtPage.Main; AudioHelper.PlayBack(); }
-                else if (BtnAvailable.Contains(mouse)) { EmsService.SetStatus(EmsStatus.Available); Toggle(false); AudioHelper.PlaySuccess(); }
-                else if (BtnEnRoute.Contains(mouse)) { EmsService.SetStatus(EmsStatus.EnRoute); Toggle(false); AudioHelper.PlaySuccess(); }
-                else if (BtnOnScene.Contains(mouse)) { EmsService.SetStatus(EmsStatus.OnScene); Toggle(false); AudioHelper.PlaySuccess(); }
-                else if (BtnTransporting.Contains(mouse)) { EmsService.SetStatus(EmsStatus.Transporting); Toggle(false); AudioHelper.PlaySuccess(); }
-                else if (BtnAtStation.Contains(mouse)) { EmsService.SetStatus(EmsStatus.AvailableAtStation); Toggle(false); AudioHelper.PlaySuccess(); }
-                else if (BtnBusy.Contains(mouse)) { EmsService.SetStatus(EmsStatus.Busy); Toggle(false); AudioHelper.PlaySuccess(); }
+                else
+                {
+                    foreach (var btn in _statusButtons)
+                    {
+                        if (btn.Bounds.Contains(mouse))
+                        {
+                            EmsService.SetStatus(btn.Status);
+                            Toggle(false);
+                            AudioHelper.PlaySuccess();
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -165,9 +239,12 @@ namespace EmsPlus.Managers
             if (CurrentPage == MdtPage.Main) DrawCalloutDataText(g);
             else if (CurrentPage == MdtPage.StatusOverlay) DrawStatusPanel(g, mouse);
 
-            float sz = 6f;
-            g.DrawRectangle(new RectangleF(mouse.X - (sz / 2f), mouse.Y - (sz / 2f), sz, sz), Color.White);
-            g.DrawRectangle(new RectangleF(mouse.X - sz, mouse.Y - sz, sz * 2, sz * 2), Color.FromArgb(150, 0, 180, 255));
+            if (IsMouseUnlocked)
+            {
+                float sz = 6f;
+                g.DrawRectangle(new RectangleF(mouse.X - (sz / 2f), mouse.Y - (sz / 2f), sz, sz), Color.White);
+                g.DrawRectangle(new RectangleF(mouse.X - sz, mouse.Y - sz, sz * 2, sz * 2), Color.FromArgb(150, 0, 180, 255));
+            }
         }
 
         private static void DrawCalloutDataText(Rage.Graphics g)
@@ -220,12 +297,10 @@ namespace EmsPlus.Managers
 
             DrawTextCentered(g, "SET EMS STATUS", MdtX + (MdtW * 0.5f), MdtY + (MdtH * 0.18f), 20f * FontScale, Color.DeepSkyBlue);
 
-            DrawStatusBtn(g, BtnAvailable, "AVAILABLE", Color.Green, mouse);
-            DrawStatusBtn(g, BtnEnRoute, "EN ROUTE", Color.Orange, mouse);
-            DrawStatusBtn(g, BtnOnScene, "ON SCENE", Color.Orange, mouse);
-            DrawStatusBtn(g, BtnTransporting, "TRANSPORTING", Color.Orange, mouse);
-            DrawStatusBtn(g, BtnAtStation, "AT STATION", Color.Green, mouse);
-            DrawStatusBtn(g, BtnBusy, "BUSY", Color.Red, mouse);
+            foreach (var btn in _statusButtons)
+            {
+                DrawStatusBtn(g, btn.Bounds, btn.Label, btn.Color, mouse);
+            }
 
             g.DrawRectangle(BtnStatusBack, Color.FromArgb(255, 50, 60, 70));
             DrawTextCentered(g, "BACK", BtnStatusBack.X + (BtnStatusBack.Width / 2f), BtnStatusBack.Y + (BtnStatusBack.Height / 2f) - (8f * FontScale), 16f * FontScale, Color.White);
@@ -237,7 +312,8 @@ namespace EmsPlus.Managers
             g.DrawRectangle(rect, hover ? Color.FromArgb(255, 50, 60, 70) : Color.FromArgb(255, 35, 45, 55));
             g.DrawRectangle(new RectangleF(rect.X, rect.Y + rect.Height - 4f, rect.Width, 4f), accent);
 
-            DrawTextCentered(g, text, rect.X + (rect.Width / 2f), rect.Y + (rect.Height / 2f) - (8f * FontScale), 14f * FontScale, Color.White);
+            // Scale down font slightly to fit longer button labels without wrapping
+            DrawTextCentered(g, text, rect.X + (rect.Width / 2f), rect.Y + (rect.Height / 2f) - (6f * FontScale), 10f * FontScale, Color.White);
         }
 
         private static void DrawTextCentered(Rage.Graphics g, string text, float x, float y, float size, Color color)

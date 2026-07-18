@@ -65,7 +65,6 @@ namespace EmsPlus
                 NativeFunction.Natives.SET_PED_CAN_EVASIVE_DIVE<bool>(Character, false);
                 NativeFunction.Natives.SET_PED_CAN_PLAY_AMBIENT_ANIMS<bool>(Character, false);
                 NativeFunction.Natives.SET_PED_CAN_PLAY_AMBIENT_BASE_ANIMS<bool>(Character, false);
-
                 NativeFunction.Natives.SET_PED_CONFIG_FLAG(Character, 281, true);
             }
 
@@ -81,18 +80,18 @@ namespace EmsPlus
                 if (Character != null && Character.Exists())
                 {
                     Character.Health = 100;
-                    Character.IsPositionFrozen = false;
+                    Character.IsPositionFrozen = true;
 
+                    Character.BlockPermanentEvents = true;
                     Character.IsInvincible = true;
                     Character.CanRagdoll = false;
-                    Character.BlockPermanentEvents = true;
 
-                    NativeFunction.Natives.SET_PED_CAN_RAGDOLL<bool>(Character, true);
-                    NativeFunction.Natives.SET_PED_CAN_RAGDOLL_FROM_PLAYER_IMPACT<bool>(Character, true);
-                    NativeFunction.Natives.SET_PED_CAN_EVASIVE_DIVE<bool>(Character, true);
-                    NativeFunction.Natives.SET_PED_CAN_PLAY_AMBIENT_ANIMS<bool>(Character, true);
-                    NativeFunction.Natives.SET_PED_CAN_PLAY_AMBIENT_BASE_ANIMS<bool>(Character, true);
-                    NativeFunction.Natives.SET_PED_CONFIG_FLAG(Character, 281, false);
+                    NativeFunction.Natives.SET_PED_CAN_RAGDOLL<bool>(Character, false);
+                    NativeFunction.Natives.SET_PED_CAN_RAGDOLL_FROM_PLAYER_IMPACT<bool>(Character, false);
+                    NativeFunction.Natives.SET_PED_CAN_EVASIVE_DIVE<bool>(Character, false);
+                    NativeFunction.Natives.SET_PED_CAN_PLAY_AMBIENT_ANIMS<bool>(Character, false);
+                    NativeFunction.Natives.SET_PED_CAN_PLAY_AMBIENT_BASE_ANIMS<bool>(Character, false);
+                    NativeFunction.Natives.SET_PED_CONFIG_FLAG(Character, 281, true);
                 }
 
                 PlayStateAnimation();

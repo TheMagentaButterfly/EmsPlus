@@ -20,12 +20,17 @@ namespace EmsPlus.Managers
             {
                 Vector3 p = Game.LocalPlayer.Character.Position;
 
-                _speedZoneId = NativeFunction.Natives.ADD_ROAD_NODE_SPEED_ZONE<int>(p.X, p.Y, p.Z, 40.0f, 0.0f, false);
+                _speedZoneId = NativeFunction.Natives.ADD_ROAD_NODE_SPEED_ZONE<int>(p.X, p.Y, p.Z, 45.0f, 3.0f, false);
 
-                _popZoneId = NativeFunction.Natives.ADD_POPULATION_BLOCKING_AREA<int>(p.X - 40f, p.Y - 40f, p.X + 40f, p.Y + 40f, false, false, false, false);
+                _popZoneId = NativeFunction.Natives.ADD_POPULATION_BLOCKING_AREA<int>(p.X - 45f, p.Y - 45f, p.X + 45f, p.Y + 45f, false, false, false, false);
+
+                if (AmbulanceManager.CurrentVehicle != null && AmbulanceManager.CurrentVehicle.Exists())
+                {
+                    AmbulanceManager.CurrentVehicle.IsSirenSilent = true;
+                }
 
                 IsSceneSecured = true;
-                Game.DisplayNotification(Localization.Get("NOTIF_SCENE_SECURED", "~r~Scene Secured:~w~ Traffic stopped and pedestrians blocked."));
+                Game.DisplayNotification(Localization.Get("NOTIF_SCENE_SECURED", "~r~Scene Secured:~w~ Traffic slowed and pedestrians blocked."));
             }
         }
 

@@ -11,7 +11,7 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
                 string shortLabel = group.Name.Length > 28 ? group.Name.Substring(0, 25) + "..." : group.Name;
 
                 BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
-                    shortLabel, "Ask questions from this category", Color.LightSkyBlue, true, () => {
+                    shortLabel, Localization.Get("ACT_QUESTION_PATIENT_CATEGORY", "Ask questions from this category"), Color.LightSkyBlue, true, () => {
                         BodyInspectionManager.CurrentMenuCategory = "QUESTIONS_" + group.Name;
                         BodyInspectionManager.RefreshActions();
                     }
@@ -34,7 +34,7 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
                 string shortText = q.Text.Length > 28 ? q.Text.Substring(0, 25) + "..." : q.Text;
 
                 BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(
-                    shortText, "Ask the patient", Color.White, true, () => {
+                    shortText, Localization.Get("DESC_ASK_PATIENT", "Ask the patient"), Color.White, true, () => {
                         Managers.Actions.QuestioningActions.AskQuestion(q);
                         BodyInspectionManager.StopInspection(false);
                     }

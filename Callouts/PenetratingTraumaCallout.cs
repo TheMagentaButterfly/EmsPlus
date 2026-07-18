@@ -12,6 +12,11 @@ namespace EmsPlus.Callouts
         private Blip blip;
         private bool hasArrivedAtScene = false;
 
+        public PenetratingTraumaCallout()
+        {
+            AddExclusionZone(ExclusionZoneType.Hospitals);
+        }
+
         public override bool OnBeforeCalloutDisplayed()
         {
             CalloutName = "Shooting";

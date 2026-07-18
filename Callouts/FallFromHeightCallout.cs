@@ -12,6 +12,12 @@ namespace EmsPlus.Callouts
         private Blip blip;
         private bool hasArrivedAtScene = false;
 
+        public FallFromHeightCallout()
+        {
+            AddExclusionZone(ExclusionZoneType.Highways);
+            AddExclusionZone(ExclusionZoneType.Hospitals);
+        }
+
         public override bool OnBeforeCalloutDisplayed()
         {
             CalloutName = "Fall From Height";
@@ -25,8 +31,16 @@ namespace EmsPlus.Callouts
         public override bool OnCalloutAccepted()
         {
             base.OnCalloutAccepted();
-            patient = new Ped("s_m_y_construct_01", GetSidewalkPosition(CalloutPosition), 0f);
-            patient.IsPersistent = true; patient.BlockPermanentEvents = true;
+
+            Model pedModel = new Model("s_m_y_construct_01");
+            pedModel.LoadAndWait();
+            patient = new Ped(pedModel, GetSidewalkPosition(CalloutPosition), 0f);
+            pedModel.Dismiss();
+
+            if (patient == null || !patient.Exists()) return false;
+
+            patient.IsPersistent = true;
+            patient.BlockPermanentEvents = true;
 
             GameState.CurrentPatient = new Patient(patient);
             var p = GameState.CurrentPatient;
@@ -62,6 +76,8 @@ namespace EmsPlus.Callouts
         public override void Process()
         {
             base.Process();
+
+            if (patient == null || !patient.Exists()) return;
 
             if (!hasArrivedAtScene && Game.LocalPlayer.Character.DistanceTo(patient) < 25f)
             {

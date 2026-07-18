@@ -16,8 +16,6 @@ namespace EmsPlus.Core
 
             if (IsOnDuty)
             {
-                SetStatus(EmsStatus.Available);
-
                 LoadoutManager.EquipLoadout();
                 InventoryManager.RestockSupplies(false);
 
@@ -92,7 +90,14 @@ namespace EmsPlus.Core
 
         public static void SetStatus(EmsStatus newStatus)
         {
+            if (CurrentStatus == newStatus) return;
+
             CurrentStatus = newStatus;
+
+            if (newStatus == EmsStatus.EnRoute)
+            {
+                CalloutManager.AcceptPendingCallout();
+            }
 
             string defaultText = newStatus.ToString();
             switch (newStatus)

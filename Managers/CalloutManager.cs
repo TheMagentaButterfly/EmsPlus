@@ -77,22 +77,7 @@ namespace EmsPlus.Managers
 
                             if (Game.IsKeyDown(Keys.Y))
                             {
-                                if (CurrentCallout.OnCalloutAccepted())
-                                {
-                                    IsCalloutDisplayed = false;
-                                    EmsService.SetStatus(EmsStatus.EnRoute);
-                                    TutorialManager.TriggerCalloutAcceptedTutorial();
-
-                                    ActiveCallout = CurrentCallout;
-                                    PendingCallout = null;
-                                    CalloutAcceptTime = DateTime.Now.ToString("HH:mm:ss");
-
-                                    NativeFunction.Natives.GET_STREET_NAME_AT_COORD(CurrentCallout.CalloutPosition.X, CurrentCallout.CalloutPosition.Y, CurrentCallout.CalloutPosition.Z, out uint sHash, out uint cHash);
-                                    string street = NativeFunction.Natives.GET_STREET_NAME_FROM_HASH_KEY<string>(sHash);
-                                    string zone = NativeFunction.Natives.GET_NAME_OF_ZONE<string>(CurrentCallout.CalloutPosition.X, CurrentCallout.CalloutPosition.Y, CurrentCallout.CalloutPosition.Z);
-                                    CalloutLocationString = string.IsNullOrEmpty(street) ? Game.GetLocalizedString(zone) : $"{street}, {Game.GetLocalizedString(zone)}";
-                                }
-                                else EndCurrent();
+                                AcceptPendingCallout();
                             }
                             else if (Game.IsKeyDown(Keys.N)) { EndCurrent(); }
                         }
@@ -113,6 +98,42 @@ namespace EmsPlus.Managers
                     Game.Console.Print($"[EmsPlus] CRITICAL ERROR: {ex}");
                     EndCurrent();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Accepts the currently pending callout if one is active and displayed.
+        /// </summary>
+        public static bool AcceptPendingCallout()
+        {
+            EmsCallout callout = CurrentCallout;
+            if (callout == null || !IsCalloutDisplayed) return false;
+
+            if (callout.OnCalloutAccepted())
+            {
+                IsCalloutDisplayed = false;
+
+                ActiveCallout = callout;
+                PendingCallout = null;
+                CalloutAcceptTime = DateTime.Now.ToString("HH:mm:ss");
+
+                NativeFunction.Natives.GET_STREET_NAME_AT_COORD(callout.CalloutPosition.X, callout.CalloutPosition.Y, callout.CalloutPosition.Z, out uint sHash, out uint cHash);
+                string street = NativeFunction.Natives.GET_STREET_NAME_FROM_HASH_KEY<string>(sHash);
+                string zone = NativeFunction.Natives.GET_NAME_OF_ZONE<string>(callout.CalloutPosition.X, callout.CalloutPosition.Y, callout.CalloutPosition.Z);
+
+                string localizedZone = string.IsNullOrEmpty(zone) ? string.Empty : Game.GetLocalizedString(zone);
+                CalloutLocationString = string.IsNullOrEmpty(street)
+                    ? localizedZone
+                    : (string.IsNullOrEmpty(localizedZone) ? street : $"{street}, {localizedZone}");
+
+                TutorialManager.TriggerCalloutAcceptedTutorial();
+                EmsService.SetStatus(EmsStatus.EnRoute);
+                return true;
+            }
+            else
+            {
+                EndCurrent();
+                return false;
             }
         }
 
