@@ -37,6 +37,7 @@ namespace EmsPlus.Configuration
             if (!File.Exists(IniFilePath)) CreateDefaultFile();
             LoadINI(IniFilePath);
             ParseAllowedVehicles();
+            Save();
         }
 
         private void ParseAllowedVehicles()

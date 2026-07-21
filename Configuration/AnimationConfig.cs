@@ -51,14 +51,10 @@ namespace EmsPlus.Configuration
         {
             if (!File.Exists(IniFilePath)) CreateDefault();
             LoadINI(IniFilePath);
+            Save();
         }
 
         public void Save()
-        {
-            SaveINI(IniFilePath);
-        }
-
-        private void CreateDefault()
         {
             try
             {
@@ -147,6 +143,11 @@ namespace EmsPlus.Configuration
             {
                 Game.Console.Print($"[EmsPlus] Error: {ex.Message}");
             }
+        }
+
+        private void CreateDefault()
+        {
+            Save();
         }
     }
 }

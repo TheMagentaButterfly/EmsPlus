@@ -146,6 +146,8 @@ namespace EmsPlus.Configuration
             MdtScale = ReadFloat(ini, "MDT", "Scale", 1.0f);
             MdtOffsetX = ReadFloat(ini, "MDT", "OffsetX", 0.0f);
             MdtOffsetY = ReadFloat(ini, "MDT", "OffsetY", 0.0f);
+
+            Save();
         }
 
         public void Save()

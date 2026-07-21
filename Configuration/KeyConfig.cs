@@ -41,9 +41,10 @@ namespace EmsPlus.Configuration
             }
 
             LoadINI(IniFilePath);
+            Save();
         }
 
-        private void CreateDefaultFile()
+        private void Save()
         {
             try
             {
@@ -57,42 +58,42 @@ namespace EmsPlus.Configuration
 
                     w.WriteLine("[Interaction]");
                     w.WriteLine("; Used for general interactions, such as picking up patients or interacting with stations.");
-                    w.WriteLine($"InteractionKey=T");
+                    w.WriteLine($"InteractionKey={GetPrimaryKeyOnly(InteractionKey.Value, "T")}");
                     w.WriteLine("");
 
                     w.WriteLine("[Settings Menu]");
                     w.WriteLine("; Used to open the live ingame settings menu.");
-                    w.WriteLine($"OpenSettingsMenu=F10");
-                    w.WriteLine($"OpenSettingsMenuModifier=None");
+                    w.WriteLine($"OpenSettingsMenu={GetPrimaryKeyOnly(OpenMenuKey.Value, "F10")}");
+                    w.WriteLine($"OpenSettingsMenuModifier={GetModifierOnly(OpenMenuKeyModifier.Value, "None")}");
                     w.WriteLine("");
 
                     w.WriteLine("[Ambulance Menu]");
                     w.WriteLine("; Used to open the menu at the rear of your ambulance.");
-                    w.WriteLine($"OpenAmbulanceMenu=T");
-                    w.WriteLine($"OpenAmbulanceMenuModifier=LMenu");
+                    w.WriteLine($"OpenAmbulanceMenu={GetPrimaryKeyOnly(OpenAmbulanceMenuKey.Value, "T")}");
+                    w.WriteLine($"OpenAmbulanceMenuModifier={GetModifierOnly(OpenAmbulanceMenuKeyModifier.Value, "LMenu")}");
                     w.WriteLine("");
 
                     w.WriteLine("[Backup Menu]");
                     w.WriteLine("; Used to open the backup request menu.");
-                    w.WriteLine($"OpenBackupMenu=B");
-                    w.WriteLine($"OpenBackupMenuModifier=None");
+                    w.WriteLine($"OpenBackupMenu={GetPrimaryKeyOnly(OpenBackupMenuKey.Value, "B")}");
+                    w.WriteLine($"OpenBackupMenuModifier={GetModifierOnly(OpenBackupMenuKeyModifier.Value, "None")}");
                     w.WriteLine("; Used to open the backup management menu for AI units.");
-                    w.WriteLine($"OpenBackupManagerMenu=B");
-                    w.WriteLine($"OpenBackupManagerMenuModifier=LMenu");
+                    w.WriteLine($"OpenBackupManagerMenu={GetPrimaryKeyOnly(OpenBackupManagerMenuKey.Value, "B")}");
+                    w.WriteLine($"OpenBackupManagerMenuModifier={GetModifierOnly(OpenBackupManagerMenuKeyModifier.Value, "LMenu")}");
                     w.WriteLine("");
 
                     w.WriteLine("[MDT]");
                     w.WriteLine("; Hold this key to open the MDT screen. Tap it while open to close.");
-                    w.WriteLine($"OpenMdtKey=F5");
+                    w.WriteLine($"OpenMdtKey={GetPrimaryKeyOnly(OpenMdtKey.Value, "F5")}");
                     w.WriteLine("");
 
                     w.WriteLine("; =========================================================");
                     w.WriteLine("; Stretcher Controls");
                     w.WriteLine("; =========================================================");
                     w.WriteLine("[Stretcher]");
-                    w.WriteLine($"StretcherGrabKey=G");
-                    w.WriteLine($"StretcherHeightKey=H");
-                    w.WriteLine($"StretcherSitKey=J");
+                    w.WriteLine($"StretcherGrabKey={GetPrimaryKeyOnly(StretcherGrabKey.Value, "G")}");
+                    w.WriteLine($"StretcherHeightKey={GetPrimaryKeyOnly(StretcherHeightKey.Value, "H")}");
+                    w.WriteLine($"StretcherSitKey={GetPrimaryKeyOnly(StretcherSitKey.Value,  "J")}");
                     w.WriteLine("");
 
                     w.WriteLine("; =========================================================");
@@ -100,16 +101,49 @@ namespace EmsPlus.Configuration
                     w.WriteLine("; =========================================================");
                     w.WriteLine("[Cabin Toggle]");
                     w.WriteLine("; This key combo allows you to quickly enter or exit the patient cabin of your ambulance.");
-                    w.WriteLine($"ToggleCabinKey=X");
-                    w.WriteLine($"ToggleCabinKeyModifier=LMenu");
+                    w.WriteLine($"ToggleCabinKey={GetPrimaryKeyOnly(ToggleCabinKey.Value, "X")}");
+                    w.WriteLine($"ToggleCabinKeyModifier={GetModifierOnly(ToggleCabinKeyModifier.Value, "LMenu")}");
 
                     w.WriteLine("[Stretcher Toggle]");
                     w.WriteLine("; This key combo allows you to quickly load or unload the stretcher. (Will open doors automatically)");
-                    w.WriteLine($"ToggleStretcherKey=C");
-                    w.WriteLine($"ToggleStretcherKeyModifier=LMenu");
+                    w.WriteLine($"ToggleStretcherKey={GetPrimaryKeyOnly(ToggleStretcherKey.Value, "C")}");
+                    w.WriteLine($"ToggleStretcherKeyModifier={GetModifierOnly(ToggleStretcherKeyModifier.Value, "LMenu")}");
                 }
             }
             catch { }
+        }
+
+        private void CreateDefaultFile()
+        {
+            Save();
+        }
+
+        /// <summary>
+        /// Helper to parse out the primary key from a modifier+key combination string (e.g. extracts 'T' from 'LMenu+T').
+        /// </summary>
+        private string GetPrimaryKeyOnly(object keyCombo, string defaultKey)
+        {
+            if (keyCombo == null) return defaultKey;
+            string str = keyCombo.ToString();
+            if (string.IsNullOrEmpty(str)) return defaultKey;
+
+            if (str.Contains("+"))
+            {
+                string[] parts = str.Split('+');
+                return parts[parts.Length - 1].Trim();
+            }
+            return str;
+        }
+
+        /// <summary>
+        /// Helper to get the modifier key representation safely.
+        /// </summary>
+        private string GetModifierOnly(object keyCombo, string defaultModifier)
+        {
+            if (keyCombo == null) return defaultModifier;
+            string str = keyCombo.ToString();
+            if (string.IsNullOrEmpty(str)) return defaultModifier;
+            return str;
         }
     }
 }

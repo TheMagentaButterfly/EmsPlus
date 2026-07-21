@@ -17,14 +17,10 @@ namespace EmsPlus.Configuration
             }
 
             LoadINI(IniFilePath);
+            Save();
         }
 
         public void Save()
-        {
-            SaveINI(IniFilePath);
-        }
-
-        private void CreateDefaultFile()
         {
             try
             {
@@ -37,10 +33,15 @@ namespace EmsPlus.Configuration
                     writer.WriteLine("; You can use simple names (Flashlight) or full names (WEAPON_FLASHLIGHT).");
                     writer.WriteLine("");
                     writer.WriteLine("[Loadout]");
-                    writer.WriteLine($"Weapons={DefaultLoadout.Value}");
+                    writer.WriteLine($"Weapons={(DefaultLoadout.Value ?? "WEAPON_FLASHLIGHT,WEAPON_FLARE,WEAPON_FIREEXTINGUISHER")}");
                 }
             }
             catch { }
+        }
+
+        private void CreateDefaultFile()
+        {
+            Save();
         }
     }
 }

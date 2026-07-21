@@ -38,10 +38,12 @@ namespace EmsPlus.Configuration
 
             LucasPropModel = ini.ReadString("MedicalProps", "LucasPropModelName", "xm_prop_x17_bag_med_01a");
 
+            Save();
+
             Game.Console.Print($"[EmsPlus] Config Loaded. Stretcher Model: {StretcherModel}");
         }
 
-        private void CreateDefaultFile()
+        public void Save()
         {
             try
             {
@@ -78,6 +80,11 @@ namespace EmsPlus.Configuration
             {
                 Game.Console.Print($"[EmsPlus] Error: {ex.Message}");
             }
+        }
+
+        private void CreateDefaultFile()
+        {
+            Save();
         }
     }
 }
