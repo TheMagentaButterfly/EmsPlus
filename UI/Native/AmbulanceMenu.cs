@@ -10,7 +10,7 @@ namespace EmsPlus.UI.Native
         private static UIMenuItem itemDoors, itemLoad, itemUnload, itemStore, itemCabinToggle;
         private static UIMenuListItem itemEquipment;
 
-        private static List<string> _cachedKitIDs = new List<string> { "TRAUMABAG", "OXYGENBAG", "DEFIBRILLATOR" };
+        private static List<string> _cachedKitIDs = new List<string> { "TRAUMABAG", "OXYGENBAG", "DEFIBRILLATOR", "ALL" };
         private static List<string> _cachedKitDescs = new List<string>();
 
         public static void Build()
@@ -28,14 +28,17 @@ namespace EmsPlus.UI.Native
             {
                 $"~r~{Localization.Get("TRAUMABAG_NAME", "Trauma Bag")}",
                 $"~b~{Localization.Get("OXYGENBAG_NAME", "Oxygen Bag")}",
-                $"~g~{Localization.Get("DEFIBRILLATOR_NAME", "Defibrillator")}"
+                $"~g~{Localization.Get("DEFIBRILLATOR_NAME", "Defibrillator")}",
+                $"~y~{Localization.Get("GRAB_ALL_KITS", "Grab All Kits")}"
+
             };
 
             _cachedKitDescs = new List<string>
             {
                 Localization.Get("TRAUMABAG_DESC", "A bag containing trauma supplies."),
                 Localization.Get("OXYGENBAG_DESC", "A bag containing oxygen supplies."),
-                Localization.Get("DEFIBRILLATOR_DESC", "A device used to deliver an electric shock to the heart.")
+                Localization.Get("DEFIBRILLATOR_DESC", "A device used to deliver an electric shock to the heart."),
+                Localization.Get("GRAB_ALL_DESC", "Equip all primary medical bags at once.")
             };
 
             string initialDesc = _cachedKitDescs[0];
@@ -77,7 +80,14 @@ namespace EmsPlus.UI.Native
                     if (itemEquipment.Index < _cachedKitIDs.Count)
                     {
                         var selectedKit = _cachedKitIDs[itemEquipment.Index];
-                        InventoryManager.EquipKit(selectedKit);
+                        if (selectedKit == "ALL")
+                        {
+                            InventoryManager.EquipAllKits();
+                        }
+                        else
+                        {
+                            InventoryManager.EquipKit(selectedKit);
+                        }
                         RefreshState();
                     }
                 }

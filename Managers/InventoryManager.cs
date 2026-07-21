@@ -135,6 +135,45 @@ namespace EmsPlus.Managers
             ReAttachProps();
         }
 
+        /// <summary>
+        /// Equips all primary medical bags simultaneously with a single animation.
+        /// </summary>
+        public static void EquipAllKits()
+        {
+            Ped player = Game.LocalPlayer.Character;
+            string animDict = EntryPoint.AnimationConfig.InteractDict.Value;
+            string animName = EntryPoint.AnimationConfig.InteractName.Value;
+
+            NativeFunction.Natives.REQUEST_ANIM_DICT(animDict);
+            while (!NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>(animDict)) GameFiber.Yield();
+
+            player.Tasks.PlayAnimation(animDict, animName, 2.0f, AnimationFlags.None);
+            GameFiber.Wait(1000);
+
+            string[] kitIDs = { "TRAUMABAG", "OXYGENBAG", "DEFIBRILLATOR" };
+            foreach (var kitID in kitIDs)
+            {
+                if (HasKit(kitID)) continue;
+
+                string modelName = "";
+                if (kitID == "TRAUMABAG") modelName = EntryPoint.PropConfig.TraumaBagModel;
+                else if (kitID == "OXYGENBAG") modelName = EntryPoint.PropConfig.OxygenBagModel;
+                else if (kitID == "DEFIBRILLATOR") modelName = EntryPoint.PropConfig.DefibrillatorModel;
+
+                if (string.IsNullOrEmpty(modelName)) continue;
+
+                Model m = new Model(modelName);
+                m.LoadAndWait();
+                if (!m.IsValid) continue;
+
+                Object newProp = new Object(m, player.Position);
+                m.Dismiss();
+
+                EquippedKits.Add(new EquippedKit { KitID = kitID, Prop = newProp });
+            }
+            ReAttachProps();
+        }
+
         public static void StowKit(string kitID)
         {
             var kit = EquippedKits.FirstOrDefault(k => k.KitID == kitID);
