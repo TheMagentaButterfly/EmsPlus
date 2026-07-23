@@ -50,23 +50,18 @@ namespace EmsPlus.Configuration
                 float skinMix = (float)rnd.NextDouble();
 
                 NativeFunction.Natives.SET_PED_HEAD_BLEND_DATA(ped, shapeFirst, shapeSecond, 0, skinFirst, skinSecond, 0, shapeMix, skinMix, 0f, false);
-
                 NativeFunction.CallByHash<int>(0x50B56988B170AFDF, ped, rnd.Next(0, 10));
             }
 
             NativeFunction.CallByHash<int>(0xE861D0B05C7662B8, ped, false, 0);
-
             NativeFunction.Natives.CLEAR_ALL_PED_PROPS(ped);
 
             var sortedKeys = Components.Keys.OrderByDescending(k => k).ToList();
             foreach (int key in sortedKeys)
             {
                 var val = Components[key];
-                
                 int drawable = val.Drawable > 0 ? val.Drawable - 1 : 0;
-                
                 int texture = val.Texture > 0 ? val.Texture - 1 : 0;
-
                 NativeFunction.Natives.SET_PED_COMPONENT_VARIATION(ped, key, drawable, texture, 0);
             }
 
@@ -83,7 +78,6 @@ namespace EmsPlus.Configuration
                 {
                     int drawable = val.Drawable - 1;
                     int texture = val.Texture > 0 ? val.Texture - 1 : 0;
-
                     NativeFunction.Natives.SET_PED_PROP_INDEX(ped, key, drawable, texture, true);
                 }
             }
@@ -94,6 +88,7 @@ namespace EmsPlus.Configuration
     {
         public string Name { get; set; }
         public int Chance { get; set; }
+        public string ServiceType { get; set; } = "Ambulance"; // Default service category
         public List<BackupVehicle> Vehicles { get; set; } = new List<BackupVehicle>();
         public List<BackupPed> Peds { get; set; } = new List<BackupPed>();
 
@@ -108,18 +103,11 @@ namespace EmsPlus.Configuration
 
         private static readonly Dictionary<string, int> ComponentMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
         {
-            { "face", 0 },
-            { "mask", 1 }, { "beard", 1 },
-            { "hair", 2 },
-            { "shirt", 3 }, { "torso", 3 },         // comp_shirt maps to Component 3 (Torso/Arms)
-            { "pants", 4 }, { "legs", 4 },          // comp_pants maps to Component 4 (Pants/Legs)
-            { "hands", 5 }, { "bags", 5 },          // comp_hands maps to Component 5 (Parachutes/Bags/Duty Belts)
-            { "shoes", 6 },                         // comp_shoes maps to Component 6 (Shoes/Feet)
-            { "eyes", 7 }, { "neck", 7 },           // comp_eyes maps to Component 7 (Accessories/Holsters/Neck)
-            { "accessories", 8 }, { "undershirt", 8 }, // comp_accessories maps to Component 8 (Undershirts)
-            { "tasks", 9 }, { "armor", 9 },         // comp_tasks maps to Component 9 (Armor/Vests)
-            { "decals", 10 },                       // comp_decals maps to Component 10 (Decals)
-            { "shirtoverlay", 11 }, { "tops", 11 }   // comp_shirtoverlay maps to Component 11 (Tops/Jackets)
+            { "face", 0 }, { "mask", 1 }, { "beard", 1 }, { "hair", 2 },
+            { "shirt", 3 }, { "torso", 3 }, { "pants", 4 }, { "legs", 4 },
+            { "hands", 5 }, { "bags", 5 }, { "shoes", 6 }, { "eyes", 7 },
+            { "neck", 7 }, { "accessories", 8 }, { "undershirt", 8 },
+            { "tasks", 9 }, { "armor", 9 }, { "decals", 10 }, { "shirtoverlay", 11 }, { "tops", 11 }
         };
 
         private static readonly Dictionary<string, int> PropMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
@@ -140,7 +128,8 @@ namespace EmsPlus.Configuration
                     var dept = new BackupDepartment
                     {
                         Name = deptEl.Attribute("name")?.Value ?? "Unknown Department",
-                        Chance = ParseInt(deptEl.Attribute("chance")?.Value, 100)
+                        Chance = ParseInt(deptEl.Attribute("chance")?.Value, 100),
+                        ServiceType = deptEl.Attribute("service")?.Value ?? "Ambulance" // Load custom service type
                     };
 
                     var vehsEl = deptEl.Element("Vehicles");
@@ -177,7 +166,6 @@ namespace EmsPlus.Configuration
                                     if (ComponentMap.TryGetValue(type, out int id))
                                     {
                                         int drawable = ParseInt(attr.Value, 0);
-                                        
                                         string texName = "tex_" + type;
                                         XAttribute texAttr = pEl.Attributes().FirstOrDefault(a => a.Name.LocalName.Equals(texName, StringComparison.OrdinalIgnoreCase));
                                         int texture = texAttr != null ? ParseInt(texAttr.Value, 0) : 0;
@@ -191,7 +179,6 @@ namespace EmsPlus.Configuration
                                     if (PropMap.TryGetValue(type, out int id))
                                     {
                                         int drawable = ParseInt(attr.Value, -1);
-                                        
                                         string texName = "tex_" + type;
                                         XAttribute texAttr = pEl.Attributes().FirstOrDefault(a => a.Name.LocalName.Equals(texName, StringComparison.OrdinalIgnoreCase));
                                         int texture = texAttr != null ? ParseInt(texAttr.Value, 0) : 0;
@@ -217,7 +204,11 @@ namespace EmsPlus.Configuration
             }
         }
 
-        public BackupDepartment GetRandomDepartment() => GetRandomItem(Departments);
+        public BackupDepartment GetRandomDepartmentForService(string serviceType)
+        {
+            var depts = Departments.Where(d => d.ServiceType.Equals(serviceType, StringComparison.OrdinalIgnoreCase)).ToList();
+            return depts.Count > 0 ? GetRandomItem(depts) : null;
+        }
 
         public static T GetRandomItem<T>(IEnumerable<T> items) where T : IWeightedItem
         {
@@ -248,8 +239,8 @@ namespace EmsPlus.Configuration
                 string xmlContent = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <EmsPlusBackup>
   <Departments>
-    <!-- Vanilla Los Santos Fire Department -->
-    <Department name=""Los Santos Fire Department"" chance=""50"">
+    <!-- Land Ambulance Service -->
+    <Department name=""Los Santos Fire Department"" chance=""50"" service=""Ambulance"">
       <Vehicles>
         <Vehicle chance=""100"">ambulance</Vehicle>
       </Vehicles>
@@ -258,16 +249,34 @@ namespace EmsPlus.Configuration
       </Peds>
     </Department>
 
-    <!-- Example EUP / Custom Ped Department -->
-    <Department name=""EUP Medics"" chance=""50"">
+    <!-- Police Security Service -->
+    <Department name=""Los Santos City Police"" chance=""100"" service=""Police"">
       <Vehicles>
-        <Vehicle chance=""100"">ambulance</Vehicle>
+        <Vehicle chance=""50"">police</Vehicle>
+        <Vehicle chance=""50"">police2</Vehicle>
       </Vehicles>
       <Peds>
-        <!-- MP Male EUP Paramedic Example -->
-        <Ped comp_beard=""1"" tex_beard=""1"" comp_shirtoverlay=""32"" tex_shirtoverlay=""1"" comp_shirt=""5"" tex_shirt=""1"" comp_decals=""9"" tex_decals=""2"" comp_accessories=""58"" tex_accessories=""1"" comp_pants=""21"" tex_pants=""1"" comp_shoes=""22"" tex_shoes=""1"" comp_hands=""10"" tex_hands=""1"" prop_glasses=""0"" tex_glasses=""0"" prop_hats=""12"" tex_hats=""2"" chance=""50"">MP_M_FREEMODE_01</Ped>
-        <!-- MP Female EUP Paramedic Example -->
-        <Ped comp_beard=""1"" tex_beard=""1"" comp_shirtoverlay=""32"" tex_shirtoverlay=""3"" comp_shirt=""5"" tex_shirt=""1"" comp_decals=""9"" tex_decals=""9"" comp_accessories=""66"" tex_accessories=""2"" comp_pants=""21"" tex_pants=""13"" comp_shoes=""22"" tex_shoes=""1"" comp_hands=""11"" tex_hands=""1"" prop_hats=""22"" tex_hats=""1"" chance=""50"">MP_F_FREEMODE_01</Ped>
+        <Ped chance=""100"">s_m_y_cop_01</Ped>
+      </Peds>
+    </Department>
+
+    <!-- Fire Response Service -->
+    <Department name=""Los Santos Fire Rescue"" chance=""100"" service=""Fire"">
+      <Vehicles>
+        <Vehicle chance=""100"">firetruk</Vehicle>
+      </Vehicles>
+      <Peds>
+        <Ped chance=""100"">s_m_y_fireman_01</Ped>
+      </Peds>
+    </Department>
+
+    <!-- Air Medevac Service -->
+    <Department name=""Medevac Air Unit"" chance=""100"" service=""Helicopter"">
+      <Vehicles>
+        <Vehicle chance=""100"">polmav</Vehicle>
+      </Vehicles>
+      <Peds>
+        <Ped chance=""100"">s_m_m_paramedic_01</Ped>
       </Peds>
     </Department>
   </Departments>

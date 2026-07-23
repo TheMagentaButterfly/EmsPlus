@@ -29,6 +29,7 @@ namespace EmsPlus.Managers
         public Rage.Object TransportStretcher { get; set; }
         public Vector3 SceneParkingLocation { get; set; }
         public bool IsSlowingDown { get; set; } = false;
+        public string ServiceType { get; set; } = "Ambulance";
     }
 
     public static class BackupManager
@@ -105,7 +106,7 @@ namespace EmsPlus.Managers
             return locations.OrderBy(l => position.DistanceTo(l.Position)).First().Position;
         }
 
-        public static void RequestAmbulance(int responseCode = 3)
+        public static void RequestBackup(string serviceType, int responseCode = 3)
         {
             if (!EmsService.IsOnDuty) return;
 
@@ -113,14 +114,10 @@ namespace EmsPlus.Managers
 
             GameFiber.StartNew(delegate
             {
-                Vector3 spawnPos = GetFacilitySpawnLocation(Game.LocalPlayer.Character.Position);
+                var dept = EntryPoint.BackupConfig.GetRandomDepartmentForService(serviceType)
+                           ?? EntryPoint.BackupConfig.Departments.FirstOrDefault();
 
-                var dept = EntryPoint.BackupConfig.GetRandomDepartment();
-                if (dept == null)
-                {
-                    Game.Console.Print("[EmsPlus] CRITICAL: No Backup Departments loaded in Backup.xml!");
-                    return;
-                }
+                if (dept == null) return;
 
                 var vehDef = dept.GetRandomVehicle();
                 var pedDef1 = dept.GetRandomPed();
@@ -129,79 +126,164 @@ namespace EmsPlus.Managers
                 if (vehDef == null || pedDef1 == null || pedDef2 == null) return;
 
                 Model vehModel = new Model(vehDef.Model);
-                if (!vehModel.IsValid)
-                {
-                    Game.Console.Print($"[EmsPlus] Error: Invalid backup vehicle model '{vehDef.Model}'.");
-                    return;
-                }
                 vehModel.LoadAndWait();
-                Vehicle ambulance = new Vehicle(vehModel, spawnPos);
-                vehModel.Dismiss();
-
-                if (!ambulance.Exists()) return;
-                ambulance.IsPersistent = true;
 
                 Model pedModel1 = new Model(pedDef1.Model);
-                if (!pedModel1.IsValid) return;
                 pedModel1.LoadAndWait();
-                Ped driver = new Ped(pedModel1, spawnPos, 0f);
-                pedModel1.Dismiss();
 
                 Model pedModel2 = new Model(pedDef2.Model);
-                if (!pedModel2.IsValid) return;
                 pedModel2.LoadAndWait();
-                Ped passenger = new Ped(pedModel2, spawnPos, 0f);
-                pedModel2.Dismiss();
 
-                driver.IsPersistent = true; passenger.IsPersistent = true;
-                driver.BlockPermanentEvents = true; passenger.BlockPermanentEvents = true;
-
-                driver.WarpIntoVehicle(ambulance, -1);
-                passenger.WarpIntoVehicle(ambulance, 0);
-
-                NativeFunction.Natives.SET_PED_CONFIG_FLAG(driver, 34, true);
-                NativeFunction.Natives.SET_PED_CONFIG_FLAG(passenger, 34, true);
-
-                pedDef1.ApplyTo(driver);
-                pedDef2.ApplyTo(passenger);
-
-                Blip unitBlip = new Blip(ambulance);
-                unitBlip.Color = Color.Orange;
-                unitBlip.Name = $"EMS Backup {_unitCounter}";
-
-                Vector3 parkingNode = World.GetNextPositionOnStreet(Game.LocalPlayer.Character.Position.Around(10f, 20f));
-                if (parkingNode == Vector3.Zero || parkingNode.DistanceTo2D(Game.LocalPlayer.Character.Position) > 40f)
+                if (serviceType.Equals("Helicopter", System.StringComparison.OrdinalIgnoreCase))
                 {
-                    parkingNode = Game.LocalPlayer.Character.Position;
-                }
+                    Vector3 spawnPos = Game.LocalPlayer.Character.Position.Around(650f);
+                    spawnPos.Z += 400f;
 
-                var unit = new AIUnit
-                {
-                    UnitID = _unitCounter++,
-                    Ambulance = ambulance,
-                    Medic1 = driver,
-                    Medic2 = passenger,
-                    State = AIUnitState.Responding,
-                    UnitBlip = unitBlip,
-                    SceneParkingLocation = parkingNode
-                };
-                ActiveUnits.Add(unit);
+                    Vehicle heli = new Vehicle(vehModel, spawnPos);
+                    heli.IsPersistent = true;
 
-                if (responseCode == 1)
-                {
-                    ambulance.IsSirenOn = false; ambulance.IsSirenSilent = true;
-                    driver.Tasks.DriveToPosition(ambulance, parkingNode, 15f, VehicleDrivingFlags.Normal, 10f);
-                }
-                else if (responseCode == 2)
-                {
-                    ambulance.IsSirenOn = true; ambulance.IsSirenSilent = true;
-                    driver.Tasks.DriveToPosition(ambulance, parkingNode, 22f, VehicleDrivingFlags.Emergency, 10f);
+                    Ped pilot = new Ped(pedModel1, spawnPos, 0f);
+                    Ped flightMedic = new Ped(pedModel2, spawnPos, 0f);
+
+                    pilot.IsPersistent = true; flightMedic.IsPersistent = true;
+                    pilot.BlockPermanentEvents = true; flightMedic.BlockPermanentEvents = true;
+
+                    pilot.WarpIntoVehicle(heli, -1);
+                    flightMedic.WarpIntoVehicle(heli, 0);
+
+                    pedDef1.ApplyTo(pilot);
+                    pedDef2.ApplyTo(flightMedic);
+
+                    Blip unitBlip = new Blip(heli);
+                    unitBlip.Color = Color.Red;
+                    unitBlip.Name = $"Medevac {_unitCounter}";
+
+                    Vector3 landingPos = World.GetNextPositionOnStreet(Game.LocalPlayer.Character.Position.Around(35f, 65f));
+                    if (landingPos == Vector3.Zero) landingPos = Game.LocalPlayer.Character.Position.Around(45f);
+
+                    var unit = new AIUnit
+                    {
+                        UnitID = _unitCounter++,
+                        Ambulance = heli,
+                        Medic1 = pilot,
+                        Medic2 = flightMedic,
+                        State = AIUnitState.Responding,
+                        UnitBlip = unitBlip,
+                        ServiceType = "Helicopter",
+                        SceneParkingLocation = landingPos
+                    };
+                    ActiveUnits.Add(unit);
+
+                    NativeFunction.CallByHash<uint>(0xDAD029E187A2BEB4, pilot, heli, 0, 0, landingPos.X, landingPos.Y, landingPos.Z, 20, 25.0f, 5.0f, 0.0f, -1, -1, -1f, 32);
+
+                    GameFiber.StartNew(delegate
+                    {
+                        while (heli.Exists() && heli.Position.DistanceTo(landingPos) > 40f)
+                            GameFiber.Sleep(500);
+
+                        int landingTimeout = 0;
+                        while (heli.Exists() && heli.HeightAboveGround > 1.8f && landingTimeout < 60)
+                        {
+                            GameFiber.Sleep(500);
+                            landingTimeout++;
+                        }
+
+                        if (heli.Exists() && heli.HeightAboveGround > 0.5f && heli.HeightAboveGround < 8.0f)
+                        {
+                            heli.Position = new Vector3(landingPos.X, landingPos.Y, landingPos.Z + 0.3f);
+                            heli.IsPositionFrozen = true;
+                            GameFiber.Yield();
+                            heli.IsPositionFrozen = false;
+                        }
+
+                        unit.State = AIUnitState.Idle;
+
+                        if (flightMedic.Exists())
+                        {
+                            flightMedic.Tasks.Clear();
+                            flightMedic.Tasks.LeaveVehicle(heli, LeaveVehicleFlags.None);
+                            GameFiber.Sleep(2000);
+                            if (flightMedic.Exists()) flightMedic.Tasks.GoToOffsetFromEntity(Game.LocalPlayer.Character, 3f, 0f, 1.0f);
+                        }
+                    });
                 }
                 else
                 {
-                    ambulance.IsSirenOn = true; ambulance.IsSirenSilent = false;
-                    driver.Tasks.DriveToPosition(ambulance, parkingNode, 28f, VehicleDrivingFlags.Emergency, 10f);
+                    Vector3 spawnPos = GetFacilitySpawnLocation(Game.LocalPlayer.Character.Position);
+                    Vehicle vehicle = new Vehicle(vehModel, spawnPos);
+                    vehicle.IsPersistent = true;
+
+                    Ped driver = new Ped(pedModel1, spawnPos, 0f);
+                    Ped passenger = new Ped(pedModel2, spawnPos, 0f);
+
+                    driver.IsPersistent = true; passenger.IsPersistent = true;
+                    driver.BlockPermanentEvents = true; passenger.BlockPermanentEvents = true;
+
+                    driver.WarpIntoVehicle(vehicle, -1);
+                    passenger.WarpIntoVehicle(vehicle, 0);
+
+                    NativeFunction.Natives.SET_PED_CONFIG_FLAG(driver, 34, true);
+                    NativeFunction.Natives.SET_PED_CONFIG_FLAG(passenger, 34, true);
+
+                    pedDef1.ApplyTo(driver);
+                    pedDef2.ApplyTo(passenger);
+
+                    if (serviceType.Equals("Police", System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        driver.RelationshipGroup = "COP"; passenger.RelationshipGroup = "COP";
+                    }
+                    else if (serviceType.Equals("Fire", System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        driver.RelationshipGroup = "FIREMAN"; passenger.RelationshipGroup = "FIREMAN";
+                    }
+                    else
+                    {
+                        driver.RelationshipGroup = "MEDIC"; passenger.RelationshipGroup = "MEDIC";
+                    }
+
+                    Blip unitBlip = new Blip(vehicle);
+                    unitBlip.Color = serviceType.Equals("Police", System.StringComparison.OrdinalIgnoreCase) ? Color.Blue : Color.Orange;
+                    unitBlip.Name = $"{serviceType} Unit {_unitCounter}";
+
+                    Vector3 parkingNode = World.GetNextPositionOnStreet(Game.LocalPlayer.Character.Position.Around(12f, 25f));
+                    if (parkingNode == Vector3.Zero || parkingNode.DistanceTo2D(Game.LocalPlayer.Character.Position) > 45f)
+                    {
+                        parkingNode = Game.LocalPlayer.Character.Position;
+                    }
+
+                    var unit = new AIUnit
+                    {
+                        UnitID = _unitCounter++,
+                        Ambulance = vehicle,
+                        Medic1 = driver,
+                        Medic2 = passenger,
+                        State = AIUnitState.Responding,
+                        UnitBlip = unitBlip,
+                        SceneParkingLocation = parkingNode,
+                        ServiceType = serviceType
+                    };
+                    ActiveUnits.Add(unit);
+
+                    if (responseCode == 1)
+                    {
+                        vehicle.IsSirenOn = false; vehicle.IsSirenSilent = true;
+                        driver.Tasks.DriveToPosition(vehicle, parkingNode, 15f, VehicleDrivingFlags.Normal, 10f);
+                    }
+                    else if (responseCode == 2)
+                    {
+                        vehicle.IsSirenOn = true; vehicle.IsSirenSilent = true;
+                        driver.Tasks.DriveToPosition(vehicle, parkingNode, 22f, VehicleDrivingFlags.Emergency, 10f);
+                    }
+                    else
+                    {
+                        vehicle.IsSirenOn = true; vehicle.IsSirenSilent = false;
+                        driver.Tasks.DriveToPosition(vehicle, parkingNode, 28f, VehicleDrivingFlags.Emergency, 10f);
+                    }
                 }
+
+                vehModel.Dismiss();
+                pedModel1.Dismiss();
+                pedModel2.Dismiss();
             });
         }
 
@@ -209,9 +291,6 @@ namespace EmsPlus.Managers
         {
             if (ActiveUnits.Count == 0) return;
 
-            // ==========================================
-            // 1. FAST DISPATCH (Hold Backspace)
-            // ==========================================
             bool hasRespondingUnits = ActiveUnits.Any(u => u.State == AIUnitState.Responding);
             if (hasRespondingUnits && Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Back))
             {
@@ -244,9 +323,6 @@ namespace EmsPlus.Managers
                 }
             }
 
-            // ==========================================
-            // 2. FAST DISMISS (Hold Enter)
-            // ==========================================
             if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Enter))
             {
                 if (!_isHoldingFastDismiss)
@@ -281,7 +357,7 @@ namespace EmsPlus.Managers
             Vector3 targetPos = Game.LocalPlayer.Character.Position;
             foreach (var unit in ActiveUnits.ToList())
             {
-                if (unit.State == AIUnitState.Responding && unit.Ambulance.Exists() && unit.Medic1.Exists())
+                if (unit.State == AIUnitState.Responding && unit.ServiceType != "Helicopter" && unit.Ambulance.Exists() && unit.Medic1.Exists())
                 {
                     float distToPark = unit.Ambulance.DistanceTo(unit.SceneParkingLocation);
 
@@ -319,8 +395,17 @@ namespace EmsPlus.Managers
             {
                 if (unit.Ambulance.Exists())
                 {
-                    Vector3 safePos = unit.SceneParkingLocation;
-                    unit.Ambulance.Position = safePos;
+                    if (unit.ServiceType == "Helicopter")
+                    {
+                        Vector3 targetPos = unit.SceneParkingLocation;
+                        unit.Ambulance.Position = new Vector3(targetPos.X, targetPos.Y, targetPos.Z + 45f);
+                        unit.Ambulance.Heading = Game.LocalPlayer.Character.Heading;
+                    }
+                    else
+                    {
+                        Vector3 safePos = unit.SceneParkingLocation;
+                        unit.Ambulance.Position = safePos;
+                    }
                 }
 
                 if (unit.Medic1.Exists()) unit.Medic1.WarpIntoVehicle(unit.Ambulance, -1);
@@ -527,11 +612,11 @@ namespace EmsPlus.Managers
                 var m1 = unit.Medic1;
                 var m2 = unit.Medic2;
 
-                if (m1.Exists()) m1.Tasks.EnterVehicle(amb, -1);
+                if (m1.Exists() && unit.ServiceType != "Helicopter") m1.Tasks.EnterVehicle(amb, -1);
                 if (m2.Exists()) m2.Tasks.EnterVehicle(amb, 0);
 
                 int headcountTimeout = 0;
-                while (amb.Exists() && (!m1.IsInVehicle(amb, false) || !m2.IsInVehicle(amb, false)) && headcountTimeout < 150)
+                while (amb.Exists() && (unit.ServiceType == "Helicopter" ? !m2.IsInVehicle(amb, false) : (!m1.IsInVehicle(amb, false) || !m2.IsInVehicle(amb, false))) && headcountTimeout < 150)
                 {
                     GameFiber.Sleep(200);
                     headcountTimeout++;
@@ -545,7 +630,14 @@ namespace EmsPlus.Managers
                     amb.IsSirenSilent = true;
                     amb.IsSirenOn = false;
 
-                    m1.Tasks.CruiseWithVehicle(amb, 15f, VehicleDrivingFlags.Normal);
+                    if (unit.ServiceType == "Helicopter")
+                    {
+                        NativeFunction.CallByHash<uint>(0xDAD029E187A2BEB4, m1, amb, 0, 0, amb.Position.X, amb.Position.Y, amb.Position.Z + 150f, 4, 30f, 5f, 0f, 30, 30, -1f, 0);
+                    }
+                    else
+                    {
+                        m1.Tasks.CruiseWithVehicle(amb, 15f, VehicleDrivingFlags.Normal);
+                    }
                 }
 
                 uint startDismissTime = Game.GameTime;
@@ -556,15 +648,13 @@ namespace EmsPlus.Managers
                     GameFiber.Sleep(1000);
                 }
 
-                if (unit.UnitBlip != null && unit.UnitBlip.Exists())
-                    unit.UnitBlip.Delete();
+                if (unit.UnitBlip != null && unit.UnitBlip.Exists()) unit.UnitBlip.Delete();
 
                 if (m1.Exists()) m1.Delete();
                 if (m2.Exists()) m2.Delete();
                 if (amb.Exists()) amb.Delete();
 
-                if (unit.TransportStretcher != null && unit.TransportStretcher.Exists())
-                    unit.TransportStretcher.Delete();
+                if (unit.TransportStretcher != null && unit.TransportStretcher.Exists()) unit.TransportStretcher.Delete();
             });
         }
 
