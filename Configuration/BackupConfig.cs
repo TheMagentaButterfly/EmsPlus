@@ -36,18 +36,56 @@ namespace EmsPlus.Configuration
         {
             if (ped == null || !ped.Exists()) return;
 
-            foreach (var kvp in Components)
+            string modelName = ped.Model.Name.ToLower();
+            if (modelName.Contains("freemode"))
             {
-                NativeFunction.Natives.SET_PED_COMPONENT_VARIATION(ped, kvp.Key, kvp.Value.Drawable, kvp.Value.Texture, 0);
+                NativeFunction.Natives.SET_PED_DEFAULT_COMPONENT_VARIATION(ped);
+
+                System.Random rnd = new System.Random();
+                int shapeFirst = rnd.Next(0, 46);
+                int shapeSecond = rnd.Next(0, 46);
+                int skinFirst = rnd.Next(0, 46);
+                int skinSecond = rnd.Next(0, 46);
+                float shapeMix = (float)rnd.NextDouble();
+                float skinMix = (float)rnd.NextDouble();
+
+                NativeFunction.Natives.SET_PED_HEAD_BLEND_DATA(ped, shapeFirst, shapeSecond, 0, skinFirst, skinSecond, 0, shapeMix, skinMix, 0f, false);
+
+                NativeFunction.CallByHash<int>(0x50B56988B170AFDF, ped, rnd.Next(0, 10));
+            }
+
+            NativeFunction.CallByHash<int>(0xE861D0B05C7662B8, ped, false, 0);
+
+            NativeFunction.Natives.CLEAR_ALL_PED_PROPS(ped);
+
+            var sortedKeys = Components.Keys.OrderByDescending(k => k).ToList();
+            foreach (int key in sortedKeys)
+            {
+                var val = Components[key];
+                
+                int drawable = val.Drawable > 0 ? val.Drawable - 1 : 0;
+                
+                int texture = val.Texture > 0 ? val.Texture - 1 : 0;
+
+                NativeFunction.Natives.SET_PED_COMPONENT_VARIATION(ped, key, drawable, texture, 0);
             }
 
             foreach (var kvp in Props)
             {
-                // If drawable is -1, it clears the prop
-                if (kvp.Value.Drawable == -1)
-                    NativeFunction.Natives.CLEAR_PED_PROP(ped, kvp.Key);
+                int key = kvp.Key;
+                var val = kvp.Value;
+
+                if (val.Drawable <= 0)
+                {
+                    NativeFunction.Natives.CLEAR_PED_PROP(ped, key);
+                }
                 else
-                    NativeFunction.Natives.SET_PED_PROP_INDEX(ped, kvp.Key, kvp.Value.Drawable, kvp.Value.Texture, true);
+                {
+                    int drawable = val.Drawable - 1;
+                    int texture = val.Texture > 0 ? val.Texture - 1 : 0;
+
+                    NativeFunction.Natives.SET_PED_PROP_INDEX(ped, key, drawable, texture, true);
+                }
             }
         }
     }
@@ -70,11 +108,18 @@ namespace EmsPlus.Configuration
 
         private static readonly Dictionary<string, int> ComponentMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
         {
-            { "face", 0 }, { "mask", 1 }, { "beard", 1 }, { "hair", 2 },
-            { "torso", 3 }, { "hands", 3 }, { "legs", 4 }, { "pants", 4 },
-            { "bags", 5 }, { "tasks", 5 }, { "shoes", 6 },
-            { "accessories", 7 }, { "undershirt", 8 }, { "shirt", 8 },
-            { "armor", 9 }, { "decals", 10 }, { "tops", 11 }, { "shirtoverlay", 11 }
+            { "face", 0 },
+            { "mask", 1 }, { "beard", 1 },
+            { "hair", 2 },
+            { "shirt", 3 }, { "torso", 3 },         // comp_shirt maps to Component 3 (Torso/Arms)
+            { "pants", 4 }, { "legs", 4 },          // comp_pants maps to Component 4 (Pants/Legs)
+            { "hands", 5 }, { "bags", 5 },          // comp_hands maps to Component 5 (Parachutes/Bags/Duty Belts)
+            { "shoes", 6 },                         // comp_shoes maps to Component 6 (Shoes/Feet)
+            { "eyes", 7 }, { "neck", 7 },           // comp_eyes maps to Component 7 (Accessories/Holsters/Neck)
+            { "accessories", 8 }, { "undershirt", 8 }, // comp_accessories maps to Component 8 (Undershirts)
+            { "tasks", 9 }, { "armor", 9 },         // comp_tasks maps to Component 9 (Armor/Vests)
+            { "decals", 10 },                       // comp_decals maps to Component 10 (Decals)
+            { "shirtoverlay", 11 }, { "tops", 11 }   // comp_shirtoverlay maps to Component 11 (Tops/Jackets)
         };
 
         private static readonly Dictionary<string, int> PropMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
@@ -98,7 +143,6 @@ namespace EmsPlus.Configuration
                         Chance = ParseInt(deptEl.Attribute("chance")?.Value, 100)
                     };
 
-                    // Parse Vehicles
                     var vehsEl = deptEl.Element("Vehicles");
                     if (vehsEl != null)
                     {
@@ -112,7 +156,6 @@ namespace EmsPlus.Configuration
                         }
                     }
 
-                    // Parse Peds
                     var pedsEl = deptEl.Element("Peds");
                     if (pedsEl != null)
                     {
@@ -134,7 +177,11 @@ namespace EmsPlus.Configuration
                                     if (ComponentMap.TryGetValue(type, out int id))
                                     {
                                         int drawable = ParseInt(attr.Value, 0);
-                                        int texture = ParseInt(pEl.Attribute("tex_" + type)?.Value, 0);
+                                        
+                                        string texName = "tex_" + type;
+                                        XAttribute texAttr = pEl.Attributes().FirstOrDefault(a => a.Name.LocalName.Equals(texName, StringComparison.OrdinalIgnoreCase));
+                                        int texture = texAttr != null ? ParseInt(texAttr.Value, 0) : 0;
+
                                         ped.Components[id] = new PedVariation { Drawable = drawable, Texture = texture };
                                     }
                                 }
@@ -144,7 +191,11 @@ namespace EmsPlus.Configuration
                                     if (PropMap.TryGetValue(type, out int id))
                                     {
                                         int drawable = ParseInt(attr.Value, -1);
-                                        int texture = ParseInt(pEl.Attribute("tex_" + type)?.Value, 0);
+                                        
+                                        string texName = "tex_" + type;
+                                        XAttribute texAttr = pEl.Attributes().FirstOrDefault(a => a.Name.LocalName.Equals(texName, StringComparison.OrdinalIgnoreCase));
+                                        int texture = texAttr != null ? ParseInt(texAttr.Value, 0) : 0;
+
                                         ped.Props[id] = new PedVariation { Drawable = drawable, Texture = texture };
                                     }
                                 }

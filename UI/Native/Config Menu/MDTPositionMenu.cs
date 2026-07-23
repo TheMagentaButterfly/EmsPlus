@@ -7,7 +7,7 @@ namespace EmsPlus.UI.Native.ConfigMenu
         private static void BuildMdtPosMenu()
         {
             MenuHelpers.AddListControl(MdtPosMenu, $"{C_HEADER}{Localization.Get("LABEL_SCALE", "Scale")} {C_INFO}(Size)", EntryPoint.OffsetConfig.MdtScale, v => {
-                EntryPoint.OffsetConfig.MdtScale = v < 0.1f ? 0.1f : v;
+                EntryPoint.OffsetConfig.MdtScale = v < 0.01f ? 0.01f : v;
                 MdtManager.ForceUpdateLayout();
             }, null);
 

@@ -156,11 +156,14 @@ namespace EmsPlus.Managers
                 driver.IsPersistent = true; passenger.IsPersistent = true;
                 driver.BlockPermanentEvents = true; passenger.BlockPermanentEvents = true;
 
-                pedDef1.ApplyTo(driver);
-                pedDef2.ApplyTo(passenger);
-
                 driver.WarpIntoVehicle(ambulance, -1);
                 passenger.WarpIntoVehicle(ambulance, 0);
+
+                NativeFunction.Natives.SET_PED_CONFIG_FLAG(driver, 34, true);
+                NativeFunction.Natives.SET_PED_CONFIG_FLAG(passenger, 34, true);
+
+                pedDef1.ApplyTo(driver);
+                pedDef2.ApplyTo(passenger);
 
                 Blip unitBlip = new Blip(ambulance);
                 unitBlip.Color = Color.Orange;
@@ -541,16 +544,27 @@ namespace EmsPlus.Managers
                 {
                     amb.IsSirenSilent = true;
                     amb.IsSirenOn = false;
+
                     m1.Tasks.CruiseWithVehicle(amb, 15f, VehicleDrivingFlags.Normal);
                 }
 
-                GameFiber.Sleep(10000);
-                if (unit.UnitBlip != null && unit.UnitBlip.Exists()) unit.UnitBlip.Delete();
-                if (amb.Exists()) amb.Dismiss();
-                if (m1.Exists()) m1.Dismiss();
-                if (m2.Exists()) m2.Dismiss();
+                uint startDismissTime = Game.GameTime;
+                while (amb.Exists() && Game.LocalPlayer.Character.Exists() &&
+                       Game.LocalPlayer.Character.DistanceTo(amb) < 120f &&
+                       (Game.GameTime - startDismissTime) < 120000)
+                {
+                    GameFiber.Sleep(1000);
+                }
 
-                if (unit.TransportStretcher != null && unit.TransportStretcher.Exists()) unit.TransportStretcher.Delete();
+                if (unit.UnitBlip != null && unit.UnitBlip.Exists())
+                    unit.UnitBlip.Delete();
+
+                if (m1.Exists()) m1.Delete();
+                if (m2.Exists()) m2.Delete();
+                if (amb.Exists()) amb.Delete();
+
+                if (unit.TransportStretcher != null && unit.TransportStretcher.Exists())
+                    unit.TransportStretcher.Delete();
             });
         }
 

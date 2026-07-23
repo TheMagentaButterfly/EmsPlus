@@ -54,7 +54,7 @@ namespace EmsPlus
             EmsService.SetStatus(status);
         }
 
-        [ConsoleCommand(Name = "ReloadEmsConfigs", Description = "Quickly reloads all EmsPlus .ini and .xml configuration files.")]
+        [ConsoleCommand(Name = "ReloadEmsPlusConfigs", Description = "Quickly reloads all EmsPlus .ini and .xml configuration files.")]
         public static void Command_ReloadConfigs()
         {
             EntryPoint.ReloadAllConfigs();
