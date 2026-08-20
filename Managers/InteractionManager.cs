@@ -1,9 +1,10 @@
 ﻿using EmsPlus.Core;
 using EmsPlus.Medical;
 using EmsPlus.UI.Custom.InspectMenu;
+using EmsPlus.UI.Helpers;
 using EmsPlus.UI.Native;
-using EmsPlus.UI.Native.PatientMenu;
 using EmsPlus.UI.Native.BackupMenu;
+using EmsPlus.UI.Native.PatientMenu;
 using Rage;
 using Rage.Native;
 using System;
@@ -24,6 +25,7 @@ namespace EmsPlus.Managers
         private static uint _mdtHoldStartTime = 0;
         private static bool _mdtKeyWasDown = false;
         private static bool _mdtHoldTriggered = false;
+        private static bool _wasPaused = false;
 
         private static bool IsInteractionKeyDown()
         {
@@ -55,6 +57,22 @@ namespace EmsPlus.Managers
             {
                 GameFiber.Yield();
 
+                bool isPaused = NativeFunction.Natives.IS_PAUSE_MENU_ACTIVE<bool>();
+                if (isPaused != _wasPaused)
+                {
+                    _wasPaused = isPaused;
+
+                    if (MdtManager.IsVisible)
+                    {
+                        EntryPoint.SetOverlaySuspended(isPaused);
+                    }
+                }
+
+                if (isPaused)
+                {
+                    continue;
+                }
+
                 bool isMdtDown = EntryPoint.KeyConfig.OpenMdtKey?.Value?.IsPressed ?? Game.IsKeyDown(Keys.F5);
                 if (isMdtDown)
                 {
@@ -64,11 +82,20 @@ namespace EmsPlus.Managers
                         _mdtHoldStartTime = Game.GameTime;
                         _mdtHoldTriggered = false;
                     }
-                    else if (!_mdtHoldTriggered && (Game.GameTime - _mdtHoldStartTime > 300)) // 300ms hold
+                    else if (!_mdtHoldTriggered && (Game.GameTime - _mdtHoldStartTime > 300))
                     {
                         _mdtHoldTriggered = true;
-                        if (!MdtManager.IsVisible) MdtManager.Toggle(true);
-                        MdtManager.SetMouseUnlocked(true);
+
+                        if (!MdtManager.IsVisible)
+                        {
+                            MdtManager.IsMouseUnlocked = true;
+                            MdtManager.Toggle(true);
+                        }
+                        else
+                        {
+                            MdtManager.SetMouseUnlocked(!MdtManager.IsMouseUnlocked);
+                        }
+                        AudioHelper.PlaySelect();
                     }
                 }
                 else
@@ -76,9 +103,20 @@ namespace EmsPlus.Managers
                     if (_mdtKeyWasDown)
                     {
                         _mdtKeyWasDown = false;
+
                         if (!_mdtHoldTriggered)
                         {
-                            MdtManager.Toggle(!MdtManager.IsVisible);
+                            if (MdtManager.IsVisible)
+                            {
+                                MdtManager.Toggle(false);
+                                AudioHelper.PlayBack();
+                            }
+                            else
+                            {
+                                MdtManager.IsMouseUnlocked = false;
+                                MdtManager.Toggle(true);
+                                AudioHelper.PlaySelect();
+                            }
                         }
                     }
                 }
@@ -86,11 +124,6 @@ namespace EmsPlus.Managers
                 if (MdtManager.IsVisible)
                 {
                     MdtManager.Process();
-
-                    if (_mdtHoldTriggered && MdtManager.IsVisible)
-                    {
-                        MdtManager.SetMouseUnlocked(true);
-                    }
                 }
 
                 DialogueManager.Process();

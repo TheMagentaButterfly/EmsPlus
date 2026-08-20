@@ -32,6 +32,8 @@ namespace EmsPlus.UI.Custom.InspectMenu
         private static float _savedPitch = 20f;
         private static float _savedRadius = 1.8f;
 
+        private static uint _lastDiagnosticRefreshTime = 0;
+
         private static Camera _cam;
         private static bool _active;
         public static bool IsActive => _active;
@@ -318,7 +320,12 @@ namespace EmsPlus.UI.Custom.InspectMenu
                     }
                 }
 
-                if (_diagnostics != null) _diagnostics.Refresh();
+                if (_diagnostics != null && Game.GameTime > _lastDiagnosticRefreshTime + 500)
+                {
+                    _lastDiagnosticRefreshTime = Game.GameTime;
+                    _diagnostics.Refresh();
+                }
+
                 if (!_isRotatingCamera) _input.Update();
 
                 _bodyParts.Update(_patient, _input.MousePosition);
@@ -460,14 +467,18 @@ namespace EmsPlus.UI.Custom.InspectMenu
 
         private static void DisableControls()
         {
-            for (int i = 0; i <= 2; i++)
-            {
-                foreach (GameControl c in (GameControl[])Enum.GetValues(typeof(GameControl)))
-                {
-                    if (c != GameControl.LookLeftRight && c != GameControl.LookUpDown)
-                        Game.DisableControlAction(i, c, true);
-                }
-            }
+            // Disable all inputs natively across all three control channels (0, 1, and 2)
+            NativeFunction.Natives.DISABLE_ALL_CONTROL_ACTIONS(0);
+            NativeFunction.Natives.DISABLE_ALL_CONTROL_ACTIONS(1);
+            NativeFunction.Natives.DISABLE_ALL_CONTROL_ACTIONS(2);
+
+            // Re-enable mouse camera orbit controls natively (extremely fast, 0 allocations)
+            NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 1, true); // LookLeftRight
+            NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 2, true); // LookUpDown
+            NativeFunction.Natives.ENABLE_CONTROL_ACTION(1, 1, true);
+            NativeFunction.Natives.ENABLE_CONTROL_ACTION(1, 2, true);
+            NativeFunction.Natives.ENABLE_CONTROL_ACTION(2, 1, true);
+            NativeFunction.Natives.ENABLE_CONTROL_ACTION(2, 2, true);
         }
 
         public static void HandleTreatmentLogic(EmsTreatment tool, PedBoneId bone)
@@ -487,6 +498,8 @@ namespace EmsPlus.UI.Custom.InspectMenu
                 {
                     GameState.CurrentPatient.ApplyTreatment(tool, bone);
                     InventoryManager.ActiveTool = EmsTreatment.None;
+
+                    _diagnostics?.Refresh();
                 }
 
                 if (GameState.CurrentPatient != null && GameState.CurrentPatient.Character.Exists())

@@ -42,14 +42,18 @@ namespace EmsPlus.UI.Tasks
 
         private static void DisableControls()
         {
-            for (int i = 0; i <= 2; i++)
-            {
-                foreach (GameControl c in (GameControl[])Enum.GetValues(typeof(GameControl)))
-                {
-                    if (c != GameControl.LookLeftRight && c != GameControl.LookUpDown)
-                        Game.DisableControlAction(i, c, true);
-                }
-            }
+            // Disable all inputs natively across all three control channels
+            NativeFunction.Natives.DISABLE_ALL_CONTROL_ACTIONS(0);
+            NativeFunction.Natives.DISABLE_ALL_CONTROL_ACTIONS(1);
+            NativeFunction.Natives.DISABLE_ALL_CONTROL_ACTIONS(2);
+
+            // Re-enable mouse camera controls
+            NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 1, true); // LookLeftRight
+            NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, 2, true); // LookUpDown
+            NativeFunction.Natives.ENABLE_CONTROL_ACTION(1, 1, true);
+            NativeFunction.Natives.ENABLE_CONTROL_ACTION(1, 2, true);
+            NativeFunction.Natives.ENABLE_CONTROL_ACTION(2, 1, true);
+            NativeFunction.Natives.ENABLE_CONTROL_ACTION(2, 2, true);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using EmsPlus.Configuration;
 using EmsPlus.Core;
 using EmsPlus.Managers;
+using EmsPlus.UI;
 using EmsPlus.UI.Native;
 using EmsPlus.UI.Custom.InspectMenu;
 using IPT.Common.API;
@@ -8,8 +9,12 @@ using IPT.Common.Handlers;
 using Rage;
 using Rage.Attributes;
 using Rage.Native;
+using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 
 [assembly: Plugin("EmsPlus", Description = "A EMS Plugin", Author = "Maggie Waggie")]
@@ -36,10 +41,20 @@ namespace EmsPlus
 
         public static bool IsRunning { get; private set; } = false;
 
+        private static Thread _uiThread;
+        private static OverlayForm _overlayForm;
+        public static bool IsUiOpen { get; private set; } = false;
+        private static ConcurrentQueue<string> _incomingMessages = new ConcurrentQueue<string>();
+        private static bool _wasGamePaused = false;
+
         public static void Main()
         {
             InitializeDirectories();
             LoadConfigurations();
+
+            _uiThread = new Thread(StartUIThread) { IsBackground = true };
+            _uiThread.SetApartmentState(ApartmentState.STA);
+            _uiThread.Start();
 
             while (Game.IsLoading)
             {
@@ -61,7 +76,116 @@ namespace EmsPlus
             Game.DisplayNotification("~b~E~p~m~r~s~g~Plus~w~ Loaded. Use ~y~ForceDuty~w~ to go on duty.");
 
             try { while (true) GameFiber.Yield(); }
-            catch (System.Threading.ThreadAbortException) { OnUnload(); }
+            catch (System.Threading.ThreadAbortException) { OnUnload(false); }
+        }
+
+        private static void StartUIThread()
+        {
+            try
+            {
+                _overlayForm = new OverlayForm(OnMessageFromWeb);
+                IntPtr forceHandle = _overlayForm.Handle;
+                Application.Run();
+            }
+            catch (Exception ex)
+            {
+                Game.Console.Print($"[EmsPlus] WebView2 UI Thread Error: {ex.Message}");
+            }
+        }
+
+        private static void OnMessageFromWeb(string message)
+        {
+            _incomingMessages.Enqueue(message);
+        }
+
+        public static void ToggleUI(bool? state = null)
+        {
+            if (_overlayForm == null || _overlayForm.IsDisposed) return;
+
+            if (state.HasValue)
+                IsUiOpen = state.Value;
+            else
+                IsUiOpen = !IsUiOpen;
+
+            _overlayForm.SetVisibility(IsUiOpen, Process.GetCurrentProcess().MainWindowHandle);
+        }
+
+        public static void SetMouseUnlocked(bool unlocked)
+        {
+            if (_overlayForm != null && !_overlayForm.IsDisposed)
+            {
+                _overlayForm.SetMouseUnlocked(unlocked, Process.GetCurrentProcess().MainWindowHandle);
+            }
+        }
+
+        public static void SetOverlaySuspended(bool suspended)
+        {
+            if (_overlayForm != null && !_overlayForm.IsDisposed)
+            {
+                _overlayForm.SetSuspended(suspended, Process.GetCurrentProcess().MainWindowHandle);
+            }
+        }
+
+        public static void NavigateUI(string fileName)
+        {
+            if (_overlayForm != null && !_overlayForm.IsDisposed)
+            {
+                _overlayForm.NavigateTo(fileName);
+            }
+        }
+
+        public static void ExecuteScriptOnUI(string script)
+        {
+            if (_overlayForm != null && !_overlayForm.IsDisposed)
+            {
+                _overlayForm.ExecuteScript(script);
+            }
+        }
+
+        public static void ProcessIncomingMessages()
+        {
+            while (_incomingMessages.TryDequeue(out string rawAction))
+            {
+                try
+                {
+                    string action = rawAction.Trim('\"', '\'', ' ');
+
+                    if (action == "close")
+                    {
+                        MdtManager.Toggle(false);
+                    }
+                    else if (action == "get_mdt_data" || action == "refresh")
+                    {
+                        MdtManager.PushCurrentStateToWeb();
+                    }
+                    else if (action == "toggle_mouse_lock")
+                    {
+                        MdtManager.SetMouseUnlocked(!MdtManager.IsMouseUnlocked);
+                    }
+                    else if (action.StartsWith("drag_window:"))
+                    {
+                        string coords = action.Substring(12);
+                        string[] parts = coords.Split(',');
+                        if (parts.Length == 2 && int.TryParse(parts[0], out int dx) && int.TryParse(parts[1], out int dy))
+                        {
+                            _overlayForm?.DragMove(dx, dy);
+                        }
+                    }
+                    else if (action.StartsWith("set_status:"))
+                    {
+                        string statusString = action.Substring(11);
+                        if (Enum.TryParse(statusString, out EmsStatus parsedStatus))
+                        {
+                            EmsService.SetStatus(parsedStatus);
+                            MdtManager.PushCurrentStateToWeb();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Game.Console.Print($"[EmsPlus] Web UI Message Error: {ex.Message}");
+                }
+            }
         }
 
         private static void InitializeDirectories()
@@ -80,7 +204,8 @@ namespace EmsPlus
                 Path.Combine(basePlugin, "Settings"),
                 Path.Combine(basePlugin, "Settings", "Data"),
                 Path.Combine(basePlugin, "Settings", "Localization"),
-                Path.Combine(basePlugin, "Settings", "Vehicles")
+                Path.Combine(basePlugin, "Settings", "Vehicles"),
+                Path.Combine(basePlugin, "UI")
             };
 
             foreach (var path in paths)
@@ -138,10 +263,25 @@ namespace EmsPlus
             Game.DisplayNotification(Localization.Get("NOTIF_CONFIGSRELOADED", "~b~EmsPlus~w~: All configurations reloaded!"));
         }
 
-        private static void OnUnload()
+        private static void OnUnload(bool isTerminating)
         {
             Cleanup(true);
             StationManager.Cleanup();
+
+            try
+            {
+                if (_overlayForm != null && !_overlayForm.IsDisposed)
+                {
+                    _overlayForm.Shutdown();
+                }
+
+                if (_uiThread != null && _uiThread.IsAlive)
+                {
+                    _uiThread.Join(500);
+                }
+            }
+            catch { }
+
             Game.Console.Print("[EmsPlus] Unloaded.");
         }
 
@@ -238,7 +378,7 @@ namespace EmsPlus
                     fiber.Abort();
                 }
             }
-            catch {}
+            catch { }
         }
 
         private static void SimulationLoop()
@@ -255,6 +395,16 @@ namespace EmsPlus
 
         private static void OnGameFrameRender(object sender, GraphicsEventArgs e)
         {
+            bool isPaused = Game.IsPaused || NativeFunction.Natives.IS_PAUSE_MENU_ACTIVE<bool>();
+            if (isPaused != _wasGamePaused)
+            {
+                _wasGamePaused = isPaused;
+                if (IsUiOpen)
+                {
+                    SetOverlaySuspended(isPaused);
+                }
+            }
+
             if (GameState.IsPlayerBusy || MenuCore.IsAnyMenuOpen || GameState.SuppressPrompts) return;
         }
     }

@@ -101,9 +101,47 @@ namespace EmsPlus.Managers
             }
         }
 
-        /// <summary>
-        /// Accepts the currently pending callout if one is active and displayed.
-        /// </summary>
+        private static void CreateCallout(Type type)
+        {
+            if (CurrentCallout != null) return;
+
+            try
+            {
+                var callout = (EmsCallout)Activator.CreateInstance(type);
+                if (callout.OnBeforeCalloutDisplayed())
+                {
+                    CurrentCallout = callout;
+                    IsCalloutDisplayed = true;
+                    CalloutExpireTime = Game.GameTime + TimeoutDurationMs;
+
+                    PendingCallout = callout;
+                    CalloutAcceptTime = "PENDING...";
+
+                    NativeFunction.Natives.GET_STREET_NAME_AT_COORD(callout.CalloutPosition.X, callout.CalloutPosition.Y, callout.CalloutPosition.Z, out uint sHash, out uint cHash);
+                    string street = NativeFunction.Natives.GET_STREET_NAME_FROM_HASH_KEY<string>(sHash);
+                    string zone = NativeFunction.Natives.GET_NAME_OF_ZONE<string>(callout.CalloutPosition.X, callout.CalloutPosition.Y, callout.CalloutPosition.Z);
+                    string localizedZone = string.IsNullOrEmpty(zone) ? string.Empty : Game.GetLocalizedString(zone);
+                    CalloutLocationString = string.IsNullOrEmpty(street) ? localizedZone : $"{street}, {localizedZone}";
+
+                    MdtManager.ShowCalloutPage();
+                    MdtManager.PushCurrentStateToWeb();
+
+                    if (EntryPoint.EmsPlusConfig.EnableCalloutAudio.Value)
+                    {
+                        GameFiber.StartNew(delegate {
+                            NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "Radio_Chatter_01", "MPC_RADIO_CHIPS_SOUNDSET", true);
+                            GameFiber.Sleep(800);
+                            DispatchManager.PlayCalloutAudio(callout);
+                        });
+                    }
+
+                    string fullText = $"~w~Call: ~b~{callout.CalloutName}~n~~w~Location: ~y~{CalloutLocationString}~n~~c~{callout.CalloutMessage}~n~~w~{Localization.Get("NOTIF_CALLOUT_ACCEPT_PROMPT", "~g~Y~w~ to accept ~o~/ ~r~N~w~ to decline.")}";
+                    Game.DisplayNotification("char_call911", "char_call911", "DISPATCH", "EMERGENCY CALL", fullText);
+                }
+            }
+            catch (Exception e) { Game.Console.Print($"[EmsPlus] Error creating callout: {e.Message}"); }
+        }
+
         public static bool AcceptPendingCallout()
         {
             EmsCallout callout = CurrentCallout;
@@ -120,7 +158,6 @@ namespace EmsPlus.Managers
                 NativeFunction.Natives.GET_STREET_NAME_AT_COORD(callout.CalloutPosition.X, callout.CalloutPosition.Y, callout.CalloutPosition.Z, out uint sHash, out uint cHash);
                 string street = NativeFunction.Natives.GET_STREET_NAME_FROM_HASH_KEY<string>(sHash);
                 string zone = NativeFunction.Natives.GET_NAME_OF_ZONE<string>(callout.CalloutPosition.X, callout.CalloutPosition.Y, callout.CalloutPosition.Z);
-
                 string localizedZone = string.IsNullOrEmpty(zone) ? string.Empty : Game.GetLocalizedString(zone);
                 CalloutLocationString = string.IsNullOrEmpty(street)
                     ? localizedZone
@@ -128,6 +165,8 @@ namespace EmsPlus.Managers
 
                 TutorialManager.TriggerCalloutAcceptedTutorial();
                 EmsService.SetStatus(EmsStatus.EnRoute);
+
+                MdtManager.PushCurrentStateToWeb();
                 return true;
             }
             else
@@ -137,6 +176,34 @@ namespace EmsPlus.Managers
             }
         }
 
+        public static void EndCurrent()
+        {
+            if (GameState.CurrentPatient != null && GameState.CurrentPatient.Character.Exists())
+            {
+                if (GameState.CurrentPatient.IsOnStretcher)
+                {
+                    GameState.CurrentPatient.Character.Detach();
+                    GameState.CurrentPatient.Character.Delete();
+                }
+            }
+
+            InventoryManager.Cleanup();
+            HospitalManager.CleanupBlip();
+            InteriorManager.DisableTargetEntrance();
+
+            DialogueManager.Cleanup();
+            BodyInspectionManager.Cleanup();
+
+            SceneManager.ClearScene();
+            PendingCallout = null;
+            DismissCurrent();
+
+            ActiveCallout = null;
+            CalloutAcceptTime = "N/A";
+            CalloutLocationString = "N/A";
+
+            MdtManager.PushCurrentStateToWeb();
+        }
         public static void StartRandomCallout()
         {
             if (RegisteredCallouts.Count == 0) return;
@@ -172,44 +239,6 @@ namespace EmsPlus.Managers
             if (type != null) CreateCallout(type);
         }
 
-        private static void CreateCallout(Type type)
-        {
-            if (CurrentCallout != null) return;
-
-            try
-            {
-                var callout = (EmsCallout)Activator.CreateInstance(type);
-                if (callout.OnBeforeCalloutDisplayed())
-                {
-                    CurrentCallout = callout;
-                    IsCalloutDisplayed = true;
-                    CalloutExpireTime = Game.GameTime + TimeoutDurationMs;
-
-                    PendingCallout = callout;
-                    CalloutAcceptTime = "PENDING...";
-                    MdtManager.ShowCalloutPage();
-
-                    if (EntryPoint.EmsPlusConfig.EnableCalloutAudio.Value)
-                    {
-                        GameFiber.StartNew(delegate {
-                            NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "Radio_Chatter_01", "MPC_RADIO_CHIPS_SOUNDSET", true);
-                            GameFiber.Sleep(800);
-                            DispatchManager.PlayCalloutAudio(callout);
-                        });
-                    }
-
-                    NativeFunction.Natives.GET_STREET_NAME_AT_COORD(callout.CalloutPosition.X, callout.CalloutPosition.Y, callout.CalloutPosition.Z, out uint sHash, out uint cHash);
-                    string street = NativeFunction.Natives.GET_STREET_NAME_FROM_HASH_KEY<string>(sHash);
-                    string zone = NativeFunction.Natives.GET_NAME_OF_ZONE<string>(callout.CalloutPosition.X, callout.CalloutPosition.Y, callout.CalloutPosition.Z);
-                    string loc = string.IsNullOrEmpty(street) ? Game.GetLocalizedString(zone) : $"{street}, {Game.GetLocalizedString(zone)}";
-
-                    string fullText = $"~w~Call: ~b~{callout.CalloutName}~n~~w~Location: ~y~{loc}~n~~c~{callout.CalloutMessage}~n~~w~{Localization.Get("NOTIF_CALLOUT_ACCEPT_PROMPT", "~g~Y~w~ to accept ~o~/ ~r~N~w~ to decline.")}";
-                    Game.DisplayNotification("char_call911", "char_call911", "DISPATCH", "EMERGENCY CALL", fullText);
-                }
-            }
-            catch (Exception e) { Game.Console.Print($"[EmsPlus] Error creating callout: {e.Message}"); }
-        }
-
         public static void DismissCurrent()
         {
             if (CurrentCallout != null) { CurrentCallout.End(); CurrentCallout = null; }
@@ -217,33 +246,6 @@ namespace EmsPlus.Managers
             PendingCallout = null;
             EmsService.SetStatus(EmsStatus.Available);
             SetNextCalloutTime(30000, 90000);
-        }
-
-        public static void EndCurrent()
-        {
-            if (GameState.CurrentPatient != null && GameState.CurrentPatient.Character.Exists())
-            {
-                if (GameState.CurrentPatient.IsOnStretcher)
-                {
-                    GameState.CurrentPatient.Character.Detach();
-                    GameState.CurrentPatient.Character.Delete();
-                }
-            }
-
-            InventoryManager.Cleanup();
-            HospitalManager.CleanupBlip();
-            InteriorManager.DisableTargetEntrance();
-
-            DialogueManager.Cleanup();
-            BodyInspectionManager.Cleanup();
-
-            SceneManager.ClearScene();
-            PendingCallout = null;
-            DismissCurrent();
-
-            ActiveCallout = null;
-            CalloutAcceptTime = "N/A";
-            CalloutLocationString = "N/A";
         }
 
         private static void SetNextCalloutTime(int min, int max)
