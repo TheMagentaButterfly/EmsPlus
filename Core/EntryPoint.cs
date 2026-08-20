@@ -162,6 +162,15 @@ namespace EmsPlus
                     {
                         MdtManager.SetMouseUnlocked(!MdtManager.IsMouseUnlocked);
                     }
+                    else if (action == "save_mdt_position")
+                    {
+                        if (_overlayForm != null && !_overlayForm.IsDisposed && OffsetConfig != null)
+                        {
+                            OffsetConfig.MdtOffsetX = _overlayForm.CustomOffsetX;
+                            OffsetConfig.MdtOffsetY = _overlayForm.CustomOffsetY;
+                            OffsetConfig.Save();
+                        }
+                    }
                     else if (action.StartsWith("drag_window:"))
                     {
                         string coords = action.Substring(12);

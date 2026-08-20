@@ -78,6 +78,12 @@ namespace EmsPlus.UI
             this.Visible = false;
             this.Size = new Size(MenuWidth, MenuHeight);
 
+            if (EntryPoint.OffsetConfig != null)
+            {
+                CustomOffsetX = (int)EntryPoint.OffsetConfig.MdtOffsetX;
+                CustomOffsetY = (int)EntryPoint.OffsetConfig.MdtOffsetY;
+            }
+
             this.AllowTransparency = true;
             this.BackColor = Color.Magenta;
             this.TransparencyKey = Color.Magenta;
