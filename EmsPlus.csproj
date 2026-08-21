@@ -196,6 +196,8 @@
     <Compile Include="Medical\Patient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\Tasks\SkillCheckTask.cs" />
+    <Compile Include="UI\WebMenu.cs" />
+    <Compile Include="UI\WebUIManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Extract-Localization-Strings.ps1" />

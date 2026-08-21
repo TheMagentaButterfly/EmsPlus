@@ -1,5 +1,6 @@
 ﻿using EmsPlus.Core;
 using EmsPlus.Medical;
+using EmsPlus.UI;
 using EmsPlus.UI.Custom.InspectMenu;
 using EmsPlus.UI.Helpers;
 using EmsPlus.UI.Native;
@@ -121,10 +122,7 @@ namespace EmsPlus.Managers
                     }
                 }
 
-                if (MdtManager.IsVisible)
-                {
-                    MdtManager.Process();
-                }
+                WebUIManager.Process();
 
                 DialogueManager.Process();
                 TutorialManager.Process();

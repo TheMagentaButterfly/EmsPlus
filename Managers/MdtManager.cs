@@ -1,96 +1,87 @@
-﻿using EmsPlus.Callouts;
+﻿using System;
+using System.Linq;
+using EmsPlus.Callouts;
 using EmsPlus.Core;
+using EmsPlus.UI;
 using Rage;
 using Rage.Native;
-using System;
-using System.Linq;
 
 namespace EmsPlus.Managers
 {
-    public static class MdtManager
+    public class MdtManager : WebMenu
     {
-        public static bool IsVisible => EntryPoint.IsUiOpen;
-        public static bool IsMouseUnlocked { get; set; } = false;
+        private static MdtManager _instance;
+        public static MdtManager Instance => _instance ?? (_instance = new MdtManager());
 
-        public static void Toggle(bool state)
+        public override string HtmlFileName => "mdt.html";
+
+        public override float Scale => EntryPoint.OffsetConfig != null ? Math.Max(0.3f, EntryPoint.OffsetConfig.MdtScale) : 0.8f;
+        public override int DefaultWidth => (int)(900 * Scale);
+        public override int DefaultHeight => (int)(580 * Scale);
+
+        public override int OffsetX
         {
-            if (state)
+            get => EntryPoint.OffsetConfig != null ? (int)EntryPoint.OffsetConfig.MdtOffsetX : 0;
+            set
             {
-                EntryPoint.NavigateUI("mdt.html");
-            }
-
-            EntryPoint.ToggleUI(state);
-
-            if (state)
-            {
-                SetMouseUnlocked(IsMouseUnlocked);
-                PushCurrentStateToWeb();
-            }
-            else
-            {
-                SetMouseUnlocked(false);
+                if (EntryPoint.OffsetConfig != null)
+                {
+                    EntryPoint.OffsetConfig.MdtOffsetX = value;
+                }
             }
         }
 
-        public static void SetMouseUnlocked(bool state)
+        public override int OffsetY
         {
-            IsMouseUnlocked = state;
-            EntryPoint.SetMouseUnlocked(state);
-            EntryPoint.ExecuteScriptOnUI($"setMouseLockState({(state ? "true" : "false")})");
+            get => EntryPoint.OffsetConfig != null ? (int)EntryPoint.OffsetConfig.MdtOffsetY : 0;
+            set
+            {
+                if (EntryPoint.OffsetConfig != null)
+                {
+                    EntryPoint.OffsetConfig.MdtOffsetY = value;
+                }
+            }
+        }
+
+        public static bool IsVisible => Instance.IsActiveMenu;
+        public static bool IsMouseUnlocked
+        {
+            get => Instance.MouseUnlocked;
+            set => Instance.MouseUnlocked = value;
+        }
+
+        public static void Toggle(bool? state = null)
+        {
+            if (state.HasValue)
+            {
+                if (state.Value)
+                    WebUIManager.OpenMenu(Instance);
+                else
+                    WebUIManager.CloseMenu();
+            }
+            else
+            {
+                WebUIManager.ToggleMenu(Instance);
+            }
+        }
+
+        public static void SetMouseUnlocked(bool unlocked)
+        {
+            WebUIManager.SetMouseUnlocked(unlocked);
         }
 
         public static void ShowCalloutPage()
         {
-            IsMouseUnlocked = false;
-            Toggle(true);
-            PushCurrentStateToWeb();
+            Instance.MouseUnlocked = false;
+            WebUIManager.OpenMenu(Instance);
         }
 
         public static void ForceUpdateLayout()
         {
             if (IsVisible)
             {
+                WebUIManager.OpenMenu(Instance);
                 PushCurrentStateToWeb();
-            }
-        }
-
-        public static void Process()
-        {
-            if (!IsVisible) return;
-
-            EntryPoint.ProcessIncomingMessages();
-
-            if (IsMouseUnlocked)
-            {
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 1, true);   // LookLeftRight
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 2, true);   // LookUpDown
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 3, true);   // Look fly LR
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 4, true);   // Look fly UD
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 5, true);   // Look UI LR
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 6, true);   // Look UI UD
-
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 66, true);  // Vehicle Look Behind
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 67, true);  // Vehicle Look Left/Right
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 106, true); // Vehicle Mouse Control Override
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 107, true); // Vehicle Fly Mouse Control Override
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 108, true); // Vehicle Sub Mouse Control Override
-
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 24, true);  // Attack
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 25, true);  // Aim
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 140, true); // Melee Light
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 141, true); // Melee Heavy
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 142, true); // Melee Alt
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 257, true); // Attack 2
-
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 68, true);  // Vehicle Aim
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 69, true);  // Vehicle Attack
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 70, true);  // Vehicle Attack 2
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 91, true);  // Vehicle Passenger Aim
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 92, true);  // Vehicle Passenger Attack
-
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 199, true); // Pause
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 200, true); // Esc
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 85, true);  // Radio Wheel
             }
         }
 
@@ -99,6 +90,73 @@ namespace EmsPlus.Managers
             if (IsVisible)
             {
                 Toggle(false);
+            }
+        }
+
+        public override void OnOpen()
+        {
+            PushCurrentStateToWeb();
+        }
+
+        public override void OnSavePosition()
+        {
+            EntryPoint.OffsetConfig?.Save();
+        }
+
+        public override void OnMessage(string action)
+        {
+            if (action == "get_mdt_data" || action == "refresh")
+            {
+                PushCurrentStateToWeb();
+            }
+            else if (action == "save_mdt_position")
+            {
+                OnSavePosition();
+            }
+            else if (action.StartsWith("set_status:"))
+            {
+                string statusString = action.Substring(11);
+                if (Enum.TryParse(statusString, out EmsStatus parsedStatus))
+                {
+                    EmsService.SetStatus(parsedStatus);
+                    PushCurrentStateToWeb();
+                }
+            }
+        }
+
+        public override void OnProcess()
+        {
+            if (IsMouseUnlocked)
+            {
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 1, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 2, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 3, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 4, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 5, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 6, true);
+
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 66, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 67, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 106, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 107, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 108, true);
+
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 24, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 25, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 140, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 141, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 142, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 257, true);
+
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 68, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 69, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 70, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 91, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 92, true);
+
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 199, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 200, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 85, true);
             }
         }
 
@@ -139,7 +197,7 @@ namespace EmsPlus.Managers
                 $"\"statusEnum\":\"{EscapeJsString(currentStatusEnum)}\"" +
             "}";
 
-            EntryPoint.ExecuteScriptOnUI($"updateMdtData({payload})");
+            Instance.ExecuteScript($"updateMdtData({payload})");
         }
 
         private static string EscapeJsString(string input)

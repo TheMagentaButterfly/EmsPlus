@@ -15,11 +15,10 @@ namespace EmsPlus.UI
         private string currentLoadedFile = "";
         private bool isWebViewInitialized = false;
 
-        public int CustomOffsetX { get; private set; } = 0;
-        public int CustomOffsetY { get; private set; } = 0;
-
-        public const int MenuWidth = 900;
-        public const int MenuHeight = 580;
+        public int CurrentWidth { get; set; } = 900;
+        public int CurrentHeight { get; set; } = 580;
+        public int CustomOffsetX { get; set; } = 0;
+        public int CustomOffsetY { get; set; } = 0;
 
         private const int GWL_EXSTYLE = -20;
         private const int WS_EX_TRANSPARENT = 0x00000020;
@@ -76,13 +75,7 @@ namespace EmsPlus.UI
             this.ShowInTaskbar = false;
             this.StartPosition = FormStartPosition.Manual;
             this.Visible = false;
-            this.Size = new Size(MenuWidth, MenuHeight);
-
-            if (EntryPoint.OffsetConfig != null)
-            {
-                CustomOffsetX = (int)EntryPoint.OffsetConfig.MdtOffsetX;
-                CustomOffsetY = (int)EntryPoint.OffsetConfig.MdtOffsetY;
-            }
+            this.Size = new Size(CurrentWidth, CurrentHeight);
 
             this.AllowTransparency = true;
             this.BackColor = Color.Magenta;
@@ -94,7 +87,7 @@ namespace EmsPlus.UI
             this.webView = new WebView2();
             this.webView.Dock = DockStyle.Fill;
             this.Controls.Add(this.webView);
-            this.Size = new Size(MenuWidth, MenuHeight);
+            this.Size = new Size(CurrentWidth, CurrentHeight);
         }
 
         private async void InitializeWebView()
@@ -115,7 +108,10 @@ namespace EmsPlus.UI
 
                 isWebViewInitialized = true;
 
-                NavigateTo(string.IsNullOrEmpty(currentLoadedFile) ? "mdt.html" : currentLoadedFile);
+                if (!string.IsNullOrEmpty(currentLoadedFile))
+                {
+                    NavigateTo(currentLoadedFile);
+                }
 
                 webView.WebMessageReceived += (s, e) => onMessageReceived?.Invoke(e.TryGetWebMessageAsString());
             }
@@ -234,6 +230,28 @@ namespace EmsPlus.UI
             }
         }
 
+        public double ZoomFactor
+        {
+            get => webView != null ? webView.ZoomFactor : 1.0;
+            set
+            {
+                if (this.IsDisposed || !this.IsHandleCreated || webView == null) return;
+
+                if (this.InvokeRequired)
+                {
+                    this.BeginInvoke(new Action(() => ZoomFactor = value));
+                    return;
+                }
+
+                try
+                {
+                    double clamped = Math.Max(0.2, Math.Min(3.0, value));
+                    webView.ZoomFactor = clamped;
+                }
+                catch { }
+            }
+        }
+
         public void SetSuspended(bool suspended, IntPtr gameWindowHandle)
         {
             if (this.IsDisposed || !this.IsHandleCreated) return;
@@ -267,24 +285,24 @@ namespace EmsPlus.UI
                 int gameWidth = rect.Right - rect.Left;
                 int gameHeight = rect.Bottom - rect.Top;
 
-                int posX = pt.X + (gameWidth - MenuWidth) / 2 + CustomOffsetX;
-                int posY = pt.Y + (gameHeight - MenuHeight) / 2 + CustomOffsetY;
+                int posX = pt.X + (gameWidth - CurrentWidth) / 2 + CustomOffsetX;
+                int posY = pt.Y + (gameHeight - CurrentHeight) / 2 + CustomOffsetY;
 
                 if (this.InvokeRequired)
                 {
                     this.BeginInvoke(new Action(() =>
                     {
-                        if (this.Left != posX || this.Top != posY || this.Width != MenuWidth || this.Height != MenuHeight)
+                        if (this.Left != posX || this.Top != posY || this.Width != CurrentWidth || this.Height != CurrentHeight)
                         {
-                            this.SetBounds(posX, posY, MenuWidth, MenuHeight);
+                            this.SetBounds(posX, posY, CurrentWidth, CurrentHeight);
                         }
                     }));
                 }
                 else
                 {
-                    if (this.Left != posX || this.Top != posY || this.Width != MenuWidth || this.Height != MenuHeight)
+                    if (this.Left != posX || this.Top != posY || this.Width != CurrentWidth || this.Height != CurrentHeight)
                     {
-                        this.SetBounds(posX, posY, MenuWidth, MenuHeight);
+                        this.SetBounds(posX, posY, CurrentWidth, CurrentHeight);
                     }
                 }
             }

@@ -14,7 +14,6 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Threading;
 using System.Windows.Forms;
 
 [assembly: Plugin("EmsPlus", Description = "A EMS Plugin", Author = "Maggie Waggie")]
@@ -41,7 +40,6 @@ namespace EmsPlus
 
         public static bool IsRunning { get; private set; } = false;
 
-        private static Thread _uiThread;
         private static OverlayForm _overlayForm;
         public static bool IsUiOpen { get; private set; } = false;
         private static ConcurrentQueue<string> _incomingMessages = new ConcurrentQueue<string>();
@@ -52,9 +50,7 @@ namespace EmsPlus
             InitializeDirectories();
             LoadConfigurations();
 
-            _uiThread = new Thread(StartUIThread) { IsBackground = true };
-            _uiThread.SetApartmentState(ApartmentState.STA);
-            _uiThread.Start();
+            WebUIManager.Initialize();
 
             while (Game.IsLoading)
             {
@@ -276,21 +272,7 @@ namespace EmsPlus
         {
             Cleanup(true);
             StationManager.Cleanup();
-
-            try
-            {
-                if (_overlayForm != null && !_overlayForm.IsDisposed)
-                {
-                    _overlayForm.Shutdown();
-                }
-
-                if (_uiThread != null && _uiThread.IsAlive)
-                {
-                    _uiThread.Join(500);
-                }
-            }
-            catch { }
-
+            WebUIManager.Shutdown();
             Game.Console.Print("[EmsPlus] Unloaded.");
         }
 

@@ -12,12 +12,12 @@ namespace EmsPlus.UI.Native.ConfigMenu
             }, null);
 
             MenuHelpers.AddListControl(MdtPosMenu, $"{C_HEADER}X {C_INFO}{Localization.Get("LABEL_LEFT_RIGHT", "(Left/Right)")}", EntryPoint.OffsetConfig.MdtOffsetX, v => {
-                EntryPoint.OffsetConfig.MdtOffsetX = v;
+                EntryPoint.OffsetConfig.MdtOffsetX = v < 1f ? 1f : v;
                 MdtManager.ForceUpdateLayout();
             }, null);
 
             MenuHelpers.AddListControl(MdtPosMenu, $"{C_HEADER}Y {C_INFO}{Localization.Get("LABEL_UP_DOWN", "(Up/Down)")}", EntryPoint.OffsetConfig.MdtOffsetY, v => {
-                EntryPoint.OffsetConfig.MdtOffsetY = v;
+                EntryPoint.OffsetConfig.MdtOffsetY = v < 1f ? 1f : v;
                 MdtManager.ForceUpdateLayout();
             }, null);
 
