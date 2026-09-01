@@ -98,14 +98,12 @@ namespace EmsPlus.UI.Native.DutyMenu
                     EmsService.CurrentRank = selectedRank;
                     EmsService.ToggleDuty();
                     EntryPoint.StartPluginLogic();
-                    Game.DisplayNotification(Localization.Get("MENU_DUTY_ON_NOTIFICATION", $"~g~On Duty~w~ as ~y~{selectedRank.Name}~w~ at ~b~{selectedStation.Name}~w~."));
                 }
                 else
                 {
                     EmsService.ToggleDuty();
                     EntryPoint.StopPluginLogic();
                     StationManager.ActiveStation = null;
-                    Game.DisplayNotification(Localization.Get("MENU_DUTY_OFF_NOTIFICATION", "~r~Off Duty~w~: Shift ended."));
                 }
 
                 StationManager.UpdateBlipVisibility();

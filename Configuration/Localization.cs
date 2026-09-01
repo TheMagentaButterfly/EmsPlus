@@ -437,10 +437,8 @@ namespace EmsPlus
                 w.WriteLine("MENU_DOOR_SETUP_TITLE=Door Setup");
                 w.WriteLine("MENU_DUTY_OFF_DESC=Clock out and return to civilian duties.");
                 w.WriteLine("MENU_DUTY_OFF_LABEL=~r~Go Off Duty");
-                w.WriteLine("MENU_DUTY_OFF_NOTIFICATION=~r~Off Duty~w~: Shift ended.");
                 w.WriteLine("MENU_DUTY_ON_DESC=Clock in with the selected station and uniform.");
                 w.WriteLine("MENU_DUTY_ON_LABEL=~g~Go On Duty");
-                w.WriteLine("MENU_DUTY_ON_NOTIFICATION=~g~On Duty~w~ as ~y~{selectedRank.Name}~w~ at ~b~{selectedStation.Name}~w~.");
                 w.WriteLine("MENU_FORCE_CALLOUT_SUBTITLE=Manually start a callout");
                 w.WriteLine("MENU_FORCE_CALLOUT_TITLE=Force Callout");
                 w.WriteLine("MENU_GROUND_KITS_TITLE=Ground Kits");
