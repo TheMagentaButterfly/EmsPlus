@@ -14,6 +14,7 @@ namespace EmsPlus.Configuration
         public SettingBool ShowAmbulancePrompts = new SettingBool("General", "ShowAmbulancePrompts", "If true, interaction circles will show around ambulances.", false);
         public SettingBool UseCustomInteractionPoints = new SettingBool("General", "UseCustomInteractionPoints", "If true, uses the configurable points. If false, uses default rear door logic.", false);
         public SettingBool UseNativeUIPatientMenu = new SettingBool("General", "UseNativeUIPatientMenu", "If true, uses standard NativeUI instead of the custom 3D inspection menu.", false);
+        public SettingBool ApplyDutyOutfit = new SettingBool("General", "ApplyDutyOutfit", "If true, equips the rank outfit when going on duty. If false, keeps current clothes.", true);
         public List<string> ValidAmbulanceModels { get; private set; } = new List<string>();
 
         // Callout Settings
@@ -116,6 +117,9 @@ namespace EmsPlus.Configuration
                     writer.WriteLine("");
                     writer.WriteLine("; If true, the custom UI will be used for the petient interaction. (true/false)");
                     writer.WriteLine($"UseNativeUIPatientMenu={UseNativeUIPatientMenu.Value}");
+                    writer.WriteLine("");
+                    writer.WriteLine("; If true, equips the rank outfit when going on duty. If false, leaves current clothing untouched. (true/false)");
+                    writer.WriteLine($"ApplyDutyOutfit={(ApplyDutyOutfit != null ? ApplyDutyOutfit.Value.ToString().ToLower() : "true")}");
                     writer.WriteLine("");
 
                     writer.WriteLine("[CalloutMultiplier]");

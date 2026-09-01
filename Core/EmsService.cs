@@ -1,6 +1,7 @@
-﻿using Rage;
-using Rage.Native;
+﻿using EmsPlus.Configuration;
 using EmsPlus.Managers;
+using Rage;
+using Rage.Native;
 
 namespace EmsPlus.Core
 {
@@ -8,6 +9,7 @@ namespace EmsPlus.Core
     {
         public static bool IsOnDuty { get; private set; } = false;
         public static EmsStatus CurrentStatus { get; private set; } = EmsStatus.OffDuty;
+        public static RankDefinition CurrentRank { get; set; }
 
         public static void ToggleDuty()
         {
@@ -18,6 +20,12 @@ namespace EmsPlus.Core
             {
                 LoadoutManager.EquipLoadout();
                 InventoryManager.RestockSupplies(false);
+
+                bool shouldApplyOutfit = EntryPoint.EmsPlusConfig?.ApplyDutyOutfit?.Value ?? true;
+                if (CurrentRank != null && shouldApplyOutfit)
+                {
+                    CurrentRank.ApplyTo(player);
+                }
 
                 player.RelationshipGroup = "MEDIC";
 

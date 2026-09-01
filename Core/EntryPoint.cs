@@ -34,11 +34,13 @@ namespace EmsPlus
         public static InteriorConfig InteriorConfig;
         public static QuestionConfig QuestionConfig;
         public static BackupConfig BackupConfig;
+        public static RanksConfig RanksConfig;
 
         private static InputHandler _inputHandler;
         private static GameFiber _mainLogicFiber, _uiLogicFiber, _simulationFiber, _calloutFiber, _stationFiber;
 
         public static bool IsRunning { get; private set; } = false;
+        private static bool _hasUnloaded = false;
 
         private static OverlayForm _overlayForm;
         public static bool IsUiOpen { get; private set; } = false;
@@ -50,7 +52,12 @@ namespace EmsPlus
             InitializeDirectories();
             LoadConfigurations();
 
+            // Initialize NativeUI and WebUI early so menus can be opened while off duty
+            MenuCore.Initialize();
             WebUIManager.Initialize();
+
+            _uiLogicFiber = new GameFiber(MenuCore.Process);
+            _uiLogicFiber.Start();
 
             while (Game.IsLoading)
             {
@@ -73,6 +80,94 @@ namespace EmsPlus
 
             try { while (true) GameFiber.Yield(); }
             catch (System.Threading.ThreadAbortException) { OnUnload(false); }
+        }
+
+        public static void StartPluginLogic()
+        {
+            if (IsRunning) return;
+            IsRunning = true;
+
+            UpdateManager.CheckForUpdates();
+            CalloutManager.Initialize();
+            CalloutManager.RegisterCallout(typeof(Callouts.PaletoRescueCallout));
+            CalloutManager.RegisterCallout(typeof(Callouts.ProceduralTraumaCallout));
+            CalloutManager.RegisterCallout(typeof(Callouts.HomeEmergencyCallout));
+            CalloutManager.RegisterCallout(typeof(Callouts.FallFromHeightCallout));
+            CalloutManager.RegisterCallout(typeof(Callouts.PenetratingTraumaCallout));
+            CalloutManager.RegisterCallout(typeof(Callouts.AnaphylaxisCallout));
+            AddonManager.LoadAddons();
+
+            BackupManager.Initialize();
+
+            _inputHandler = new InputHandler(KeyConfig);
+            _inputHandler.Start();
+            Events.OnUserInputChanged += MenuCore.OnUserInputChanged;
+
+            Game.FrameRender += OnGameFrameRender;
+
+            _mainLogicFiber = new GameFiber(InteractionManager.MainLoop); _mainLogicFiber.Start();
+            _simulationFiber = new GameFiber(SimulationLoop); _simulationFiber.Start();
+            _calloutFiber = new GameFiber(CalloutManager.Process); _calloutFiber.Start();
+        }
+
+        public static void StopPluginLogic()
+        {
+            if (!IsRunning) return;
+            IsRunning = false;
+            Cleanup(false);
+        }
+
+        private static void Cleanup(bool abortFibers)
+        {
+            try { Game.FrameRender -= OnGameFrameRender; } catch { }
+
+            // Station and Hospital static blips are only deleted when the plugin completely unloads
+            if (abortFibers)
+            {
+                try { StationManager.Cleanup(); } catch { }
+                try { HospitalManager.CleanupStaticBlips(); } catch { }
+            }
+
+            try { CalloutManager.ForceCleanUp(); } catch { }
+            try { StretcherManager.Cleanup(); } catch { }
+            try { StretcherGhostManager.DeleteGhosts(); } catch { }
+            try { InventoryManager.Cleanup(); } catch { }
+            try { DialogueManager.Cleanup(); } catch { }
+            try { BackupManager.Shutdown(); } catch { }
+
+            try { MenuCore.CloseAll(); } catch { }
+            try { BodyInspectionManager.Cleanup(); } catch { }
+            try { MdtManager.Cleanup(); } catch { }
+
+            if (_inputHandler != null)
+            {
+                try { _inputHandler.Stop(); } catch { }
+                try { Events.OnUserInputChanged -= MenuCore.OnUserInputChanged; } catch { }
+                _inputHandler = null;
+            }
+
+            try
+            {
+                if (Game.LocalPlayer != null && Game.LocalPlayer.Character != null && Game.LocalPlayer.Character.Exists())
+                {
+                    Game.LocalPlayer.Character.Tasks.ClearImmediately();
+                }
+            }
+            catch { }
+
+            try { GameState.Clear(); } catch { }
+            try { AmbulanceManager.Cleanup(); } catch { }
+            try { InteriorManager.ForceClearInterior(); } catch { }
+
+            AbortFiberSafe(_mainLogicFiber);
+            AbortFiberSafe(_simulationFiber);
+            AbortFiberSafe(_calloutFiber);
+
+            if (abortFibers)
+            {
+                AbortFiberSafe(_uiLogicFiber);
+                AbortFiberSafe(_stationFiber);
+            }
         }
 
         private static void StartUIThread()
@@ -240,6 +335,7 @@ namespace EmsPlus
             InteriorConfig = new InteriorConfig(); InteriorConfig.Load();
             QuestionConfig = new QuestionConfig(); QuestionConfig.Load();
             BackupConfig = new BackupConfig(); BackupConfig.Load();
+            RanksConfig = new RanksConfig(); RanksConfig.Load();
             Localization.Load();
         }
 
@@ -268,96 +364,15 @@ namespace EmsPlus
             Game.DisplayNotification(Localization.Get("NOTIF_CONFIGSRELOADED", "~b~EmsPlus~w~: All configurations reloaded!"));
         }
 
-        private static void OnUnload(bool isTerminating)
+        public static void OnUnload(bool isTerminating)
         {
+            if (_hasUnloaded) return;
+            _hasUnloaded = true;
+
             Cleanup(true);
-            StationManager.Cleanup();
             WebUIManager.Shutdown();
+
             Game.Console.Print("[EmsPlus] Unloaded.");
-        }
-
-        public static void StartPluginLogic()
-        {
-            if (IsRunning) return;
-            IsRunning = true;
-
-            UpdateManager.CheckForUpdates();
-            CalloutManager.Initialize();
-            CalloutManager.RegisterCallout(typeof(Callouts.PaletoRescueCallout));
-            CalloutManager.RegisterCallout(typeof(Callouts.ProceduralTraumaCallout));
-            CalloutManager.RegisterCallout(typeof(Callouts.HomeEmergencyCallout));
-            CalloutManager.RegisterCallout(typeof(Callouts.FallFromHeightCallout));
-            CalloutManager.RegisterCallout(typeof(Callouts.PenetratingTraumaCallout));
-            CalloutManager.RegisterCallout(typeof(Callouts.AnaphylaxisCallout));
-            AddonManager.LoadAddons();
-
-            MenuCore.Initialize();
-            BackupManager.Initialize();
-
-            _inputHandler = new InputHandler(KeyConfig);
-            _inputHandler.Start();
-            Events.OnUserInputChanged += MenuCore.OnUserInputChanged;
-
-            Game.FrameRender += OnGameFrameRender;
-
-            _mainLogicFiber = new GameFiber(InteractionManager.MainLoop); _mainLogicFiber.Start();
-            _uiLogicFiber = new GameFiber(MenuCore.Process); _uiLogicFiber.Start();
-            _simulationFiber = new GameFiber(SimulationLoop); _simulationFiber.Start();
-            _calloutFiber = new GameFiber(CalloutManager.Process); _calloutFiber.Start();
-        }
-
-        public static void StopPluginLogic()
-        {
-            if (!IsRunning) return;
-            IsRunning = false;
-            Cleanup(true);
-        }
-
-        private static void Cleanup(bool abortFibers)
-        {
-            try { Game.FrameRender -= OnGameFrameRender; } catch { }
-
-            try { StationManager.Cleanup(); } catch { }
-            try { HospitalManager.CleanupStaticBlips(); } catch { }
-            try { CalloutManager.ForceCleanUp(); } catch { }
-            try { StretcherManager.Cleanup(); } catch { }
-            try { StretcherGhostManager.DeleteGhosts(); } catch { }
-            try { InventoryManager.Cleanup(); } catch { }
-            try { DialogueManager.Cleanup(); } catch { }
-            try { BackupManager.Shutdown(); } catch { }
-
-            try { MenuCore.CloseAll(); } catch { }
-            try { BodyInspectionManager.Cleanup(); } catch { }
-            try { MdtManager.Cleanup(); } catch { }
-
-            if (_inputHandler != null)
-            {
-                try { _inputHandler.Stop(); } catch { }
-                try { Events.OnUserInputChanged -= MenuCore.OnUserInputChanged; } catch { }
-                _inputHandler = null;
-            }
-
-            try
-            {
-                if (Game.LocalPlayer != null && Game.LocalPlayer.Character != null && Game.LocalPlayer.Character.Exists())
-                {
-                    Game.LocalPlayer.Character.Tasks.ClearImmediately();
-                }
-            }
-            catch { }
-
-            try { GameState.Clear(); } catch { }
-            try { AmbulanceManager.Cleanup(); } catch { }
-            try { InteriorManager.ForceClearInterior(); } catch { }
-
-            if (abortFibers)
-            {
-                AbortFiberSafe(_mainLogicFiber);
-                AbortFiberSafe(_uiLogicFiber);
-                AbortFiberSafe(_simulationFiber);
-                AbortFiberSafe(_calloutFiber);
-                AbortFiberSafe(_stationFiber);
-            }
         }
 
         private static void AbortFiberSafe(GameFiber fiber)

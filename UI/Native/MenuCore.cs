@@ -32,6 +32,7 @@ namespace EmsPlus.UI.Native
             ConfigMenuBuilder.Build();
             BackupMenuBuilder.Build();
             BackupManagerMenuBuilder.Build();
+            DutyMenu.StationDutyMenu.Build();
 
             AmbulanceManager.OnStateUpdate += Native.AmbulanceMenu.RefreshState;
             StretcherManager.OnUpdate += Native.AmbulanceMenu.RefreshState;

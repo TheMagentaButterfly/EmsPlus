@@ -95,6 +95,7 @@
     <Compile Include="Configuration\Localization.cs" />
     <Compile Include="Configuration\MedicationConfig.cs" />
     <Compile Include="Configuration\QuestionConfig.cs" />
+    <Compile Include="Configuration\RanksConfig.cs" />
     <Compile Include="Configuration\StationsConfig.cs" />
     <Compile Include="Configuration\HospitalsConfig.cs" />
     <Compile Include="Configuration\KeyConfig.cs" />
@@ -174,6 +175,7 @@
     <Compile Include="UI\Native\Config Menu\SettingsMenu.cs" />
     <Compile Include="UI\Native\Config Menu\StretcherCarryMenu.cs" />
     <Compile Include="UI\Native\Config Menu\VehicleConfigMenu.cs" />
+    <Compile Include="UI\Native\Duty Menu\StationDutyMenu.cs" />
     <Compile Include="UI\Native\Patient Menu\PatientAirwayMenu.cs" />
     <Compile Include="UI\Native\Patient Menu\PatientDataMenu.cs" />
     <Compile Include="UI\Native\Patient Menu\PatientDiagnosticsMenu.cs" />

@@ -130,7 +130,6 @@ namespace EmsPlus.Managers
                 if (MenuCore.IsAnyMenuOpen || BodyInspectionManager.IsActive || DialogueManager.IsActive)
                     continue;
 
-                StationManager.Process();
                 InteriorManager.Process();
                 BackupManager.Process();
 

@@ -1,17 +1,18 @@
-﻿using Rage;
+﻿using EmsPlus.Configuration;
+using EmsPlus.Core;
+using EmsPlus.UI.Native;
+using Rage;
 using Rage.Native;
-using EmsPlus.Configuration;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using EmsPlus.Core;
 
 namespace EmsPlus.Managers
 {
     public static class StationManager
     {
         private static Dictionary<StationLocation, Blip> _blipMap = new Dictionary<StationLocation, Blip>();
-        public static StationLocation ActiveStation { get; private set; }
+        public static StationLocation ActiveStation { get; set; }
         private static bool _canToggle = true;
 
         public static void StationLoop()
@@ -60,14 +61,13 @@ namespace EmsPlus.Managers
                 {
                     NativeFunction.Natives.DRAW_MARKER(1, station.Position.X, station.Position.Y, station.Position.Z - 1.0f, 0, 0, 0, 0, 0, 0, 1.5f, 1.5f, 1.0f, 255, 0, 0, 150, false, false, 2, false, 0, 0, false);
 
-                    if (dist < 2.0f)
+                    if (dist < 2.0f && !MenuCore.IsAnyMenuOpen)
                     {
-                        string dutyText = EmsService.IsOnDuty ? Localization.Get("TEXT_OFF_DUTY", "~r~Off Duty") : Localization.Get("TEXT_ON_DUTY", "~g~On Duty");
-                        Game.DisplayHelp(Localization.GetFormat("HELP_TOGGLE_DUTY", "Press ~INPUT_CONTEXT~ to go {0}.", dutyText));
+                        Game.DisplayHelp("Press ~INPUT_CONTEXT~ to open the ~b~Station Menu~w~.");
 
-                        if (Game.IsControlJustPressed(0, GameControl.Context) && _canToggle)
+                        if (Game.IsControlJustPressed(0, GameControl.Context))
                         {
-                            HandleDutyToggle(station);
+                            UI.Native.DutyMenu.StationDutyMenu.Open(station);
                         }
                     }
                 }
