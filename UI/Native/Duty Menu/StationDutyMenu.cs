@@ -23,7 +23,7 @@ namespace EmsPlus.UI.Native.DutyMenu
         {
             if (DutyMenu != null) return;
 
-            DutyMenu = new UIMenu("~b~Station Services", "~b~Select Station & Rank");
+            DutyMenu = new UIMenu(Localization.Get("MENU_STATION_TITLE", "~b~Station Services"), Localization.Get("MENU_STATION_SUBTITLE", "~b~Select Station & Rank"));
             MenuCore.AddMenu(DutyMenu);
 
             DutyMenu.OnItemSelect += OnMenuItemSelected;
@@ -63,18 +63,18 @@ namespace EmsPlus.UI.Native.DutyMenu
             int defaultStationIdx = currentStation != null ? _availableStations.IndexOf(currentStation) : 0;
             if (defaultStationIdx == -1) defaultStationIdx = 0;
 
-            _stationList = new UIMenuListItem("~b~Station", stationNames, defaultStationIdx, "Select the station you are operating out of.");
+            _stationList = new UIMenuListItem(Localization.Get("MENU_STATION_LABEL", "~b~Station"), stationNames, defaultStationIdx, Localization.Get("MENU_STATION_DESC", "Select the station you are operating out of."));
             DutyMenu.AddItem(_stationList);
 
             List<dynamic> rankNames = _availableRanks.Select(r => (dynamic)$"{r.Name} ({r.ShortName})").ToList();
             int currentRankIdx = EmsService.CurrentRank != null ? _availableRanks.IndexOf(EmsService.CurrentRank) : 0;
             if (currentRankIdx == -1) currentRankIdx = 0;
 
-            _rankList = new UIMenuListItem("~y~Title / Rank", rankNames, currentRankIdx, "Select your active title/rank and uniform.");
+            _rankList = new UIMenuListItem(Localization.Get("MENU_RANK_LABEL", "~y~Title / Rank"), rankNames, currentRankIdx, Localization.Get("MENU_RANK_DESC", "Select your active title/rank and uniform."));
             DutyMenu.AddItem(_rankList);
 
-            string dutyLabel = EmsService.IsOnDuty ? "~r~Go Off Duty" : "~g~Go On Duty";
-            string dutyDesc = EmsService.IsOnDuty ? "Clock out and return to civilian duties." : "Clock in with the selected station and uniform.";
+            string dutyLabel = EmsService.IsOnDuty ? Localization.Get("MENU_DUTY_OFF_LABEL", "~r~Go Off Duty") : Localization.Get("MENU_DUTY_ON_LABEL", "~g~Go On Duty");
+            string dutyDesc = EmsService.IsOnDuty ? Localization.Get("MENU_DUTY_OFF_DESC", "Clock out and return to civilian duties.") : Localization.Get("MENU_DUTY_ON_DESC", "Clock in with the selected station and uniform.");
             _toggleDutyBtn = new UIMenuItem(dutyLabel, dutyDesc);
             DutyMenu.AddItem(_toggleDutyBtn);
 
@@ -98,14 +98,14 @@ namespace EmsPlus.UI.Native.DutyMenu
                     EmsService.CurrentRank = selectedRank;
                     EmsService.ToggleDuty();
                     EntryPoint.StartPluginLogic();
-                    Game.DisplayNotification($"~g~On Duty~w~ as ~y~{selectedRank.Name}~w~ at ~b~{selectedStation.Name}~w~.");
+                    Game.DisplayNotification(Localization.Get("MENU_DUTY_ON_NOTIFICATION", $"~g~On Duty~w~ as ~y~{selectedRank.Name}~w~ at ~b~{selectedStation.Name}~w~."));
                 }
                 else
                 {
                     EmsService.ToggleDuty();
                     EntryPoint.StopPluginLogic();
                     StationManager.ActiveStation = null;
-                    Game.DisplayNotification("~r~Off Duty~w~: Shift ended.");
+                    Game.DisplayNotification(Localization.Get("MENU_DUTY_OFF_NOTIFICATION", "~r~Off Duty~w~: Shift ended."));
                 }
 
                 StationManager.UpdateBlipVisibility();

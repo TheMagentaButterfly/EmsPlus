@@ -166,13 +166,14 @@ namespace EmsPlus
                 w.WriteLine("ACT_ORDER_TRANSPORT=~o~Order: Transport Patient");
                 w.WriteLine("ACT_PICK_UP_KIT_FORMAT=Pick Up {0}");
                 w.WriteLine("ACT_QUESTION_PATIENT=QUESTION PATIENT");
+                w.WriteLine("ACT_QUESTION_PATIENT_CATEGORY=Ask questions from this category");
                 w.WriteLine("ACT_REMOVE_BP=Remove BP Cuff");
                 w.WriteLine("ACT_REMOVE_BP_DESC=Remove BP Cuff");
                 w.WriteLine("ACT_REMOVE_MONITOR=Remove ECG/SpO2 Monitor");
                 w.WriteLine("ACT_REMOVE_MONITOR_DESC=Remove ECG/SpO2 Monitor");
                 w.WriteLine("ACT_REMOVING_CUFF=Removing BP Cuff...");
                 w.WriteLine("ACT_REMOVING_LEADS=Removing leads...");
-                w.WriteLine("ACT_REQ_AMBULANCE_COLORED=~o~Request Ambulance");
+                w.WriteLine("ACT_REQ_AMBULANCE_COLORED=~o~Request EMS Unit");
                 w.WriteLine("ACT_SECURE_PATIENT=Secure Patient");
                 w.WriteLine("ACT_START_LINE=Start IV Line");
                 w.WriteLine("ACT_STOP_FLUIDS=Stop Fluids");
@@ -258,6 +259,7 @@ namespace EmsPlus
                 w.WriteLine("DEFIBRILLATOR_NAME=Defibrillator");
                 w.WriteLine("DESC_ADD_INTERACTION_POINT=Add a new interaction point.");
                 w.WriteLine("DESC_AIRWAY=Manage airway");
+                w.WriteLine("DESC_ASK_PATIENT=Ask the patient");
                 w.WriteLine("DESC_ASSIST_VENTILATIONS=Assist Ventilations");
                 w.WriteLine("DESC_ATTACH_BONE=Select which body part to attach the bag to.");
                 w.WriteLine("DESC_ATTACH_BP_CUFF=Auto-Cycle BP");
@@ -343,6 +345,8 @@ namespace EmsPlus
                 w.WriteLine("ERR_NO_CABIN=~r~This vehicle does not have an accessible cabin.");
                 w.WriteLine("ERR_NO_STRETCHER_FOR_CABIN=~r~Cannot enter cabin.~w~ The stretcher must be loaded first.");
                 w.WriteLine("ERR_STRETCHER_IN_AMBULANCE=~r~Cannot load patient:~w~ stretcher is already in ambulance.");
+                w.WriteLine("GRAB_ALL_DESC=Equip all primary medical bags at once.");
+                w.WriteLine("GRAB_ALL_KITS=Grab All Kits");
                 w.WriteLine("HELP_AMBULANCE_MENU=Press ~y~{0}~w~ to open the equipment menu.");
                 w.WriteLine("HELP_ENTER_INTERIOR=Press ~INPUT_CONTEXT~ to enter {0}.");
                 w.WriteLine("HELP_EXIT_INTERIOR=Press ~INPUT_CONTEXT~ to exit.");
@@ -353,7 +357,6 @@ namespace EmsPlus
                 w.WriteLine("HELP_STRETCHER_CONTROL_HEIGHT=~y~{0}~w~: {1}");
                 w.WriteLine("HELP_STRETCHER_CONTROL_SIT=~y~{0}~w~: {1}");
                 w.WriteLine("HELP_TALK_BYSTANDER=Press ~y~Y~w~ to talk to the witness.");
-                w.WriteLine("HELP_TOGGLE_DUTY=Press ~INPUT_CONTEXT~ to go {0}.");
                 w.WriteLine("HINT_OPEN_BAG=Open your medical bag to get tools for this.");
                 w.WriteLine("ITEM_ADD_INTERACTION_POINT=Add Interaction Point");
                 w.WriteLine("ITEM_ADD_TO_ALLOWED=Add to Allowed Vehicles");
@@ -432,6 +435,12 @@ namespace EmsPlus
                 w.WriteLine("MENU_DIAGNOSTICS_TITLE=Diagnostics");
                 w.WriteLine("MENU_DOOR_SETUP_SUBTITLE=Configure door settings");
                 w.WriteLine("MENU_DOOR_SETUP_TITLE=Door Setup");
+                w.WriteLine("MENU_DUTY_OFF_DESC=Clock out and return to civilian duties.");
+                w.WriteLine("MENU_DUTY_OFF_LABEL=~r~Go Off Duty");
+                w.WriteLine("MENU_DUTY_OFF_NOTIFICATION=~r~Off Duty~w~: Shift ended.");
+                w.WriteLine("MENU_DUTY_ON_DESC=Clock in with the selected station and uniform.");
+                w.WriteLine("MENU_DUTY_ON_LABEL=~g~Go On Duty");
+                w.WriteLine("MENU_DUTY_ON_NOTIFICATION=~g~On Duty~w~ as ~y~{selectedRank.Name}~w~ at ~b~{selectedStation.Name}~w~.");
                 w.WriteLine("MENU_FORCE_CALLOUT_SUBTITLE=Manually start a callout");
                 w.WriteLine("MENU_FORCE_CALLOUT_TITLE=Force Callout");
                 w.WriteLine("MENU_GROUND_KITS_TITLE=Ground Kits");
@@ -455,6 +464,12 @@ namespace EmsPlus
                 w.WriteLine("MENU_PROP_OFFSETS_SUBTITLE=Configure prop offsets");
                 w.WriteLine("MENU_PROP_OFFSETS_TITLE=Prop Offsets");
                 w.WriteLine("MENU_QUESTIONS_TITLE=QUESTIONS");
+                w.WriteLine("MENU_RANK_DESC=Select your active title/rank and uniform.");
+                w.WriteLine("MENU_RANK_LABEL=~y~Title / Rank");
+                w.WriteLine("MENU_STATION_DESC=Select the station you are operating out of.");
+                w.WriteLine("MENU_STATION_LABEL=~b~Station");
+                w.WriteLine("MENU_STATION_SUBTITLE=~b~Select Station & Rank");
+                w.WriteLine("MENU_STATION_TITLE=~b~Station Services");
                 w.WriteLine("MENU_STRETCHER_CARRY_SUBTITLE=Configure stretcher carry positions");
                 w.WriteLine("MENU_STRETCHER_CARRY_TITLE=Stretcher Carry");
                 w.WriteLine("MENU_TRAUMA_TITLE=Trauma");
@@ -494,7 +509,7 @@ namespace EmsPlus
                 w.WriteLine("NOTIF_PATIENT_UNABLE_TO_ANSWER=~r~Patient is unresponsive and cannot answer.");
                 w.WriteLine("NOTIF_POSITION_COPIED=~g~Position copied to clipboard!");
                 w.WriteLine("NOTIF_PULSE_RESTORED=~g~PULSE RESTORED!~w~ Keep monitoring.");
-                w.WriteLine("NOTIF_SCENE_SECURED=~r~Scene Secured:~w~ Traffic stopped and pedestrians blocked.");
+                w.WriteLine("NOTIF_SCENE_SECURED=~r~Scene Secured:~w~ Traffic slowed and pedestrians blocked.");
                 w.WriteLine("NOTIF_SCENE_UNSECURED=~g~Scene Unsecured:~w~ Traffic and pedestrians returning to normal.");
                 w.WriteLine("NOTIF_SETTINGS_SAVED_GENERIC=Settings saved successfully.");
                 w.WriteLine("NOTIF_SETTINGS_SAVED_VEHICLE=Settings saved successfully for {0}.");
@@ -541,8 +556,6 @@ namespace EmsPlus
                 w.WriteLine("TASK_IV_STEP_FIX=Secure the IV with tape.");
                 w.WriteLine("TASK_IV_STEP_VEIN=Locate the vein.");
                 w.WriteLine("TASK_IV_TITLE=IV PLACEMENT");
-                w.WriteLine("TEXT_OFF_DUTY=~r~Off Duty");
-                w.WriteLine("TEXT_ON_DUTY=~g~On Duty");
                 w.WriteLine("TITLE_DIAGNOSTICS=DIAGNOSTICS");
                 w.WriteLine("TITLE_INSPECTION=PATIENT INSPECTION");
                 w.WriteLine("TITLE_PATIENT_DATA=PATIENT DATA");
