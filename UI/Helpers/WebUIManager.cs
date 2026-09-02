@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using Rage;
 using Rage.Native;
 
-namespace EmsPlus.UI
+namespace EmsPlus.UI.Helpers
 {
     public static class WebUIManager
     {
@@ -144,6 +144,27 @@ namespace EmsPlus.UI
                         if (ActiveMenu != null)
                         {
                             SetMouseUnlocked(!ActiveMenu.MouseUnlocked);
+                        }
+                    }
+                    else if (action.StartsWith("set_dimensions:"))
+                    {
+                        string dimStr = action.Substring(15);
+                        string[] parts = dimStr.Split(',');
+                        if (parts.Length == 2 && int.TryParse(parts[0], out int w) && int.TryParse(parts[1], out int h))
+                        {
+                            if (ActiveMenu != null)
+                            {
+                                ActiveMenu.CustomWidth = w;
+                                ActiveMenu.CustomHeight = h;
+
+                                int finalW = (int)(w * ActiveMenu.Scale);
+                                int finalH = (int)(h * ActiveMenu.Scale);
+                                _overlayForm?.SetDimensions(finalW, finalH, System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle);
+                            }
+                            else
+                            {
+                                _overlayForm?.SetDimensions(w, h, System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle);
+                            }
                         }
                     }
                     else if (action.StartsWith("drag_window:"))

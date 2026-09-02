@@ -1,7 +1,7 @@
 ﻿using EmsPlus.Configuration;
 using EmsPlus.Core;
 using EmsPlus.Managers;
-using EmsPlus.UI;
+using EmsPlus.UI.Helpers;
 using EmsPlus.UI.Native;
 using EmsPlus.UI.Custom.InspectMenu;
 using IPT.Common.API;

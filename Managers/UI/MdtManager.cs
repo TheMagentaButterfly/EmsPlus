@@ -2,7 +2,7 @@
 using System.Linq;
 using EmsPlus.Callouts;
 using EmsPlus.Core;
-using EmsPlus.UI;
+using EmsPlus.UI.Helpers;
 using Rage;
 using Rage.Native;
 
@@ -16,8 +16,7 @@ namespace EmsPlus.Managers
         public override string HtmlFileName => "mdt.html";
 
         public override float Scale => EntryPoint.OffsetConfig != null ? Math.Max(0.3f, EntryPoint.OffsetConfig.MdtScale) : 0.8f;
-        public override int DefaultWidth => (int)(900 * Scale);
-        public override int DefaultHeight => (int)(580 * Scale);
+
 
         public override int OffsetX
         {

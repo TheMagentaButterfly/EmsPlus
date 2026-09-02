@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 
-namespace EmsPlus.UI
+namespace EmsPlus.UI.Helpers
 {
     public class OverlayForm : Form
     {
@@ -57,6 +57,28 @@ namespace EmsPlus.UI
                 CreateParams cp = base.CreateParams;
                 cp.ExStyle |= WS_EX_NOACTIVATE | WS_EX_LAYERED;
                 return cp;
+            }
+        }
+
+        public double ZoomFactor
+        {
+            get => webView != null ? webView.ZoomFactor : 1.0;
+            set
+            {
+                if (this.IsDisposed || !this.IsHandleCreated || webView == null) return;
+
+                if (this.InvokeRequired)
+                {
+                    this.BeginInvoke(new Action(() => ZoomFactor = value));
+                    return;
+                }
+
+                try
+                {
+                    double clamped = Math.Max(0.2, Math.Min(3.0, value));
+                    webView.ZoomFactor = clamped;
+                }
+                catch { }
             }
         }
 
@@ -185,7 +207,7 @@ namespace EmsPlus.UI
             }
             else
             {
-                webView.CoreWebView2.NavigateToString($"<html><body style='background:#141821; color:white;'><h1>{fileName} missing in Plugins/EmsPlus/UI/!</h1></body></html>");
+                webView.CoreWebView2.NavigateToString($"<html><body style='background:transparent; color:white;'><h1>{fileName} missing in Plugins/EmsPlus/UI/</h1></body></html>");
             }
         }
 
@@ -227,28 +249,6 @@ namespace EmsPlus.UI
             if (gameWindowHandle != IntPtr.Zero)
             {
                 SetForegroundWindow(gameWindowHandle);
-            }
-        }
-
-        public double ZoomFactor
-        {
-            get => webView != null ? webView.ZoomFactor : 1.0;
-            set
-            {
-                if (this.IsDisposed || !this.IsHandleCreated || webView == null) return;
-
-                if (this.InvokeRequired)
-                {
-                    this.BeginInvoke(new Action(() => ZoomFactor = value));
-                    return;
-                }
-
-                try
-                {
-                    double clamped = Math.Max(0.2, Math.Min(3.0, value));
-                    webView.ZoomFactor = clamped;
-                }
-                catch { }
             }
         }
 
@@ -306,6 +306,21 @@ namespace EmsPlus.UI
                     }
                 }
             }
+        }
+
+        public void SetDimensions(int width, int height, IntPtr gameWindowHandle)
+        {
+            if (this.IsDisposed || !this.IsHandleCreated) return;
+
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new Action(() => SetDimensions(width, height, gameWindowHandle)));
+                return;
+            }
+
+            CurrentWidth = width;
+            CurrentHeight = height;
+            UpdateOverlayBounds(gameWindowHandle);
         }
 
         public void Shutdown()

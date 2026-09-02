@@ -1,13 +1,17 @@
 ﻿using System;
 
-namespace EmsPlus.UI
+namespace EmsPlus.UI.Helpers
 {
     public abstract class WebMenu
     {
         public abstract string HtmlFileName { get; }
-        public virtual int DefaultWidth => 900;
-        public virtual int DefaultHeight => 580;
+
+        public int CustomWidth { get; set; } = 900;
+        public int CustomHeight { get; set; } = 580;
         public virtual float Scale => 1.0f;
+
+        public virtual int DefaultWidth => (int)(CustomWidth * Scale);
+        public virtual int DefaultHeight => (int)(CustomHeight * Scale);
 
         public abstract int OffsetX { get; set; }
         public abstract int OffsetY { get; set; }
