@@ -29,10 +29,10 @@ namespace EmsPlus.Managers
 
         static InventoryManager()
         {
-            RestockSupplies(false);
+            RestockSupplies();
         }
 
-        public static void RestockSupplies(bool notify = true)
+        public static void RestockSupplies()
         {
             CurrentSupplies.Clear();
             // Trauma
@@ -62,11 +62,6 @@ namespace EmsPlus.Managers
             CurrentSupplies[EmsTreatment.Irrigation] = 1;
             CurrentSupplies[EmsTreatment.EyePatch] = 2;
             CurrentSupplies[EmsTreatment.EyeShield] = 2;
-
-            if (notify)
-            {
-                Game.DisplayNotification(Localization.Get("NOTIF_MEDICALBAGS_RESTOCKED", "~w~Medical bags ~g~restocked~w~."));
-            }
         }
 
         public static bool HasSupply(EmsTreatment treatment)

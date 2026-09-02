@@ -318,6 +318,8 @@ namespace EmsPlus.UI.Helpers
                 return;
             }
 
+            if (CurrentWidth == width && CurrentHeight == height) return;
+
             CurrentWidth = width;
             CurrentHeight = height;
             UpdateOverlayBounds(gameWindowHandle);

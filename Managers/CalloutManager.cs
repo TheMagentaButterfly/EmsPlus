@@ -64,7 +64,6 @@ namespace EmsPlus.Managers
                         if (CurrentCallout.Finished)
                         {
                             CurrentCallout = null;
-                            EmsService.SetStatus(EmsStatus.Available);
                             SetNextCalloutTime(30000, 90000);
                         }
                         else if (CurrentCallout.Accepted)
@@ -84,7 +83,8 @@ namespace EmsPlus.Managers
                         continue;
                     }
 
-                    if (EmsService.CurrentStatus == EmsStatus.Available && Game.GameTime > NextCalloutTime)
+                    bool isAvailable = EmsService.CurrentStatus == EmsStatus.Available || EmsService.CurrentStatus == EmsStatus.AvailableAtStation;
+                    if (isAvailable && Game.GameTime > NextCalloutTime)
                     {
                         if (EntryPoint.EmsPlusConfig.CalloutMultiplier.Value > 0)
                         {
@@ -194,7 +194,6 @@ namespace EmsPlus.Managers
             DialogueManager.Cleanup();
             BodyInspectionManager.Cleanup();
 
-            SceneManager.ClearScene();
             PendingCallout = null;
             DismissCurrent();
 

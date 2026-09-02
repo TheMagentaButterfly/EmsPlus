@@ -56,7 +56,7 @@ namespace EmsPlus.Managers
 
             _dispatchTimerBar = new BarTimerBar(Localization.Get("LBL_FAST_DISPATCH", "FAST DISPATCH"));
             _dispatchTimerBar.BackgroundColor = Color.DarkBlue;
-            _dispatchTimerBar.ForegroundColor = Color.Blue;
+            _dispatchTimerBar.ForegroundColor = Color.LightBlue;
 
             _dismissTimerBar = new BarTimerBar(Localization.Get("LBL_FAST_DISMISS", "FAST DISMISS"));
             _dismissTimerBar.BackgroundColor = Color.DarkRed;
@@ -382,7 +382,6 @@ namespace EmsPlus.Managers
                             GameFiber.Sleep(2500);
                             if (unit.Medic1.Exists()) unit.Medic1.Tasks.GoToOffsetFromEntity(Game.LocalPlayer.Character, 3f, 0f, 1.0f);
                             if (unit.Medic2.Exists()) unit.Medic2.Tasks.GoToOffsetFromEntity(Game.LocalPlayer.Character, -3f, 0f, 1.0f);
-                            Game.DisplayNotification(Localization.Get("NOTIF_BACKUP_ARRIVED", "~b~Dispatch:~w~ Backup unit has arrived on scene."));
                         });
                     }
                 }
@@ -604,8 +603,6 @@ namespace EmsPlus.Managers
             if (unit == null) return;
             ActiveUnits.Remove(unit);
 
-            Game.DisplayNotification($"~b~Unit {unit.UnitID}:~w~ Returning to service.");
-
             GameFiber.StartNew(delegate
             {
                 var amb = unit.Ambulance;
@@ -661,7 +658,6 @@ namespace EmsPlus.Managers
         private static void ForceDismissAllUnits()
         {
             Cleanup();
-            Game.DisplayNotification(Localization.Get("NOTIF_FAST_DISMISS", "~b~Dispatch:~w~ All backup units have been forcefully dismissed."));
         }
 
         public static void Cleanup()

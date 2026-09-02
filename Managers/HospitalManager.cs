@@ -108,13 +108,12 @@ namespace EmsPlus.Managers
             GameState.Clear();
             StretcherManager.Cleanup();
             InventoryManager.Cleanup();
-            InventoryManager.RestockSupplies(true);
+            InventoryManager.RestockSupplies();
             AmbulanceManager.ResetVehicleState(v);
 
             CalloutManager.EndCurrent();
 
             Game.FadeScreenIn(1000);
-            Game.DisplayNotification(Localization.Get("NOTIF_PATIENT_HANDED_OVER", "~g~Transport Complete:~w~ Patient handed over to hospital staff."));
         }
 
         public static void CleanupBlip()

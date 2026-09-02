@@ -159,11 +159,11 @@ namespace EmsPlus.UI.Helpers
 
                                 int finalW = (int)(w * ActiveMenu.Scale);
                                 int finalH = (int)(h * ActiveMenu.Scale);
-                                _overlayForm?.SetDimensions(finalW, finalH, System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle);
-                            }
-                            else
-                            {
-                                _overlayForm?.SetDimensions(w, h, System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle);
+
+                                if (_overlayForm != null && (_overlayForm.CurrentWidth != finalW || _overlayForm.CurrentHeight != finalH))
+                                {
+                                    _overlayForm.SetDimensions(finalW, finalH, System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle);
+                                }
                             }
                         }
                     }

@@ -19,7 +19,7 @@ namespace EmsPlus.Core
             if (IsOnDuty)
             {
                 LoadoutManager.EquipLoadout();
-                InventoryManager.RestockSupplies(false);
+                InventoryManager.RestockSupplies();
 
                 bool shouldApplyOutfit = EntryPoint.EmsPlusConfig?.ApplyDutyOutfit?.Value ?? true;
                 if (CurrentRank != null && shouldApplyOutfit)

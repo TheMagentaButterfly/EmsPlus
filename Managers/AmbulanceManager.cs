@@ -464,9 +464,7 @@ namespace EmsPlus.Managers
 
             if (GameState.CurrentPatient != null && GameState.CurrentPatient.IsOnStretcher)
             {
-                EmsService.SetStatus(EmsStatus.Transporting);
                 HospitalManager.SetWaypointToClosest();
-                Game.DisplaySubtitle(Localization.Get("SUBTITLE_TRANSPORT_PATIENT", "~y~Transport patient to the nearest hospital."), 5000);
             }
 
             InventoryManager.StoreAllKits();
