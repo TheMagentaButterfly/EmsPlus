@@ -103,7 +103,6 @@ namespace EmsPlus.Managers
                 {
                     Vector3 groundPos = new Vector3(candidate.X, candidate.Y, groundZ.Value);
 
-                    // Vertical raycast ensuring 35m of unobstructed sky above the landing spot
                     var hit = World.TraceLine(groundPos + new Vector3(0, 0, 1.5f), groundPos + new Vector3(0, 0, 35f), TraceFlags.IntersectWorld | TraceFlags.IntersectVehicles);
                     if (!hit.Hit)
                     {
@@ -161,7 +160,7 @@ namespace EmsPlus.Managers
                 int currentUnitNumber = _unitCounter++;
                 string unitName = GetUnitDisplayName(serviceType, dept, currentUnitNumber);
 
-                Game.DisplayNotification($"~b~Dispatch:~w~ Copy that, ~y~{unitName}~w~ is en route.");
+                Game.DisplayNotification(Localization.Get("DISPATCH_BACKUP_NOTIF" ,"~g~Requesting ~w~an additional backup unit from dispatch."));
 
                 var vehDef = dept.GetRandomVehicle();
                 var pedDef1 = dept.GetRandomPed();
@@ -178,120 +177,7 @@ namespace EmsPlus.Managers
                 Model pedModel2 = new Model(pedDef2.Model);
                 pedModel2.LoadAndWait();
 
-                if (serviceType.Equals("Helicopter", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Spawn helicopter in a radius high in the sky around the player
-                    Vector3 spawnPos = Game.LocalPlayer.Character.Position.Around(350f, 500f);
-                    spawnPos.Z += 120f;
-
-                    Vehicle heli = new Vehicle(vehModel, spawnPos);
-                    heli.IsPersistent = true;
-
-                    Ped pilot = new Ped(pedModel1, spawnPos, 0f);
-                    Ped flightMedic = new Ped(pedModel2, spawnPos, 0f);
-
-                    pilot.IsPersistent = true; flightMedic.IsPersistent = true;
-                    pilot.BlockPermanentEvents = true; flightMedic.BlockPermanentEvents = true;
-
-                    pilot.WarpIntoVehicle(heli, -1);
-                    flightMedic.WarpIntoVehicle(heli, 0);
-
-                    NativeFunction.Natives.SET_PED_CONFIG_FLAG(pilot, 34, true);
-                    NativeFunction.Natives.SET_PED_CONFIG_FLAG(flightMedic, 34, true);
-
-                    pedDef1.ApplyTo(pilot);
-                    pedDef2.ApplyTo(flightMedic);
-
-                    Blip unitBlip = new Blip(heli);
-                    unitBlip.Color = Color.Red;
-                    unitBlip.Name = unitName;
-
-                    Vector3 landingPos = FindClearLandingZone(Game.LocalPlayer.Character.Position);
-
-                    var unit = new AIUnit
-                    {
-                        UnitID = currentUnitNumber,
-                        UnitDisplayName = unitName,
-                        Ambulance = heli,
-                        Medic1 = pilot,
-                        Medic2 = flightMedic,
-                        State = AIUnitState.Responding,
-                        UnitBlip = unitBlip,
-                        ServiceType = "Helicopter",
-                        SceneParkingLocation = landingPos
-                    };
-                    ActiveUnits.Add(unit);
-
-                    NativeFunction.Natives.SET_DRIVER_ABILITY(pilot, 1.0f);
-                    NativeFunction.Natives.SET_DRIVER_AGGRESSIVENESS(pilot, 0.0f);
-                    NativeFunction.Natives.SET_HELI_BLADES_FULL_SPEED(heli);
-
-                    // Initial approach task
-                    NativeFunction.CallByHash<int>(0xDAD029E187A2BEB4, pilot, heli, 0, 0, landingPos.X, landingPos.Y, landingPos.Z, 20, 30.0f, 8.0f, 0.0f, -1, -1, -1f, 32);
-
-                    GameFiber.StartNew(delegate
-                    {
-                        uint approachStartTime = Game.GameTime;
-
-                        // 1. Wait until helicopter reaches the landing zone vicinity (2D check)
-                        while (heli.Exists() && heli.Position.DistanceTo2D(landingPos) > 40f && (Game.GameTime - approachStartTime) < 45000)
-                        {
-                            GameFiber.Sleep(500);
-                        }
-
-                        // 2. Issue precision land command
-                        if (heli.Exists() && pilot.Exists())
-                        {
-                            NativeFunction.CallByHash<int>(0xDAD029E187A2BEB4, pilot, heli, 0, 0, landingPos.X, landingPos.Y, landingPos.Z, 4, 15.0f, 2.0f, 0.0f, -1, -1, -1f, 32);
-                        }
-
-                        // 3. Monitor descent & assist touchdown if AI stalls in a hover
-                        uint descentStartTime = Game.GameTime;
-                        while (heli.Exists() && heli.HeightAboveGround > 1.2f && (Game.GameTime - descentStartTime) < 25000)
-                        {
-                            if (heli.Position.DistanceTo2D(landingPos) < 25f && (Game.GameTime - descentStartTime) > 3500)
-                            {
-                                if (heli.Speed < 4.0f && heli.HeightAboveGround > 1.2f)
-                                {
-                                    heli.Velocity = new Vector3(heli.Velocity.X * 0.7f, heli.Velocity.Y * 0.7f, -1.8f);
-                                }
-                            }
-                            GameFiber.Sleep(100);
-                        }
-
-                        // 4. Touchdown stabilization & engine idle
-                        if (heli.Exists())
-                        {
-                            heli.Velocity = Vector3.Zero;
-                            float? finalGz = World.GetGroundZ(heli.Position, true, true);
-                            if (finalGz.HasValue && heli.HeightAboveGround > 0.6f && heli.HeightAboveGround < 4.0f)
-                            {
-                                heli.Position = new Vector3(heli.Position.X, heli.Position.Y, finalGz.Value + 0.3f);
-                            }
-
-                            if (pilot.Exists())
-                            {
-                                pilot.Tasks.Clear();
-                                NativeFunction.Natives.SET_VEHICLE_ENGINE_ON(heli, true, true, false);
-                                NativeFunction.Natives.SET_HELI_BLADES_FULL_SPEED(heli);
-                            }
-                        }
-
-                        unit.State = AIUnitState.Idle;
-
-                        // 5. Flight medic disembarks to assist
-                        if (flightMedic.Exists())
-                        {
-                            flightMedic.Tasks.Clear();
-                            flightMedic.Tasks.LeaveVehicle(heli, LeaveVehicleFlags.None);
-                            GameFiber.Sleep(2000);
-                            if (flightMedic.Exists()) flightMedic.Tasks.GoToOffsetFromEntity(Game.LocalPlayer.Character, 3f, 0f, 1.0f);
-                        }
-                    });
-                }
-                else
-                {
-                    // Spawn land vehicles within a 200m–400m radius
                     Vector3 spawnPos = GetSpawnLocationInRadius(Game.LocalPlayer.Character.Position, 200f, 400f);
                     Vehicle vehicle = new Vehicle(vehModel, spawnPos);
                     vehicle.IsPersistent = true;
@@ -375,7 +261,6 @@ namespace EmsPlus.Managers
         {
             if (ActiveUnits.Count == 0) return;
 
-            // 1. FAST DISPATCH (Hold Backspace)
             bool hasRespondingUnits = ActiveUnits.Any(u => u.State == AIUnitState.Responding);
             if (hasRespondingUnits && Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Back))
             {

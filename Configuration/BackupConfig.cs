@@ -269,16 +269,6 @@ namespace EmsPlus.Configuration
         <Ped chance=""100"">s_m_y_fireman_01</Ped>
       </Peds>
     </Department>
-
-    <!-- Air Medevac Service -->
-    <Department name=""Medevac Air Unit"" chance=""100"" service=""Helicopter"">
-      <Vehicles>
-        <Vehicle chance=""100"">polmav</Vehicle>
-      </Vehicles>
-      <Peds>
-        <Ped chance=""100"">s_m_m_paramedic_01</Ped>
-      </Peds>
-    </Department>
   </Departments>
 </EmsPlusBackup>";
 

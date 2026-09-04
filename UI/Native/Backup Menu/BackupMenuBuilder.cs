@@ -8,10 +8,14 @@ namespace EmsPlus.UI.Native.BackupMenu
     public static class BackupMenuBuilder
     {
         public static UIMenu BackupMenu;
-        private static UIMenuListItem _requestEmsItem;
-        private static UIMenuListItem _requestFireItem;
-        private static UIMenuListItem _requestPoliceItem;
-        private static UIMenuItem _requestHeliItem;
+
+        private static UIMenuListItem _responseTypeItem;
+        private static UIMenuItem _btnAmbulance;
+        private static UIMenuItem _btnLocalPatrol;
+        private static UIMenuItem _btnStatePatrol;
+        private static UIMenuItem _btnFire;
+        private static UIMenuItem _btnHeli;
+
         private static List<string> _codeDescs;
 
         public static void Build()
@@ -19,7 +23,7 @@ namespace EmsPlus.UI.Native.BackupMenu
             BackupMenu = new UIMenu(Localization.Get("MENU_BACKUP_COLORED", "Backup"), Localization.Get("SUBTITLE_BACKUP", "Request Resources"));
             MenuCore.AddMenu(BackupMenu);
 
-            List<dynamic> codes = new List<dynamic>
+            List<dynamic> responseCodes = new List<dynamic>
             {
                 Localization.Get("LBL_CODE_1", "Code 1"),
                 Localization.Get("LBL_CODE_2", "Code 2"),
@@ -33,44 +37,44 @@ namespace EmsPlus.UI.Native.BackupMenu
                 Localization.Get("DESC_CODE_3", "Emergency response (lights and sirens).")
             };
 
-            _requestEmsItem = new UIMenuListItem(Localization.Get("ACT_REQ_AMBULANCE", "Request Ambulance"), codes, 2, _codeDescs[2]);
-            BackupMenu.AddItem(_requestEmsItem);
+            _responseTypeItem = new UIMenuListItem(Localization.Get("LBL_RESPONSE_TYPE", "Response Type"), responseCodes, 2, _codeDescs[2]);
+            BackupMenu.AddItem(_responseTypeItem);
 
-            _requestFireItem = new UIMenuListItem(Localization.Get("ACT_REQ_FIRE", "Request Fire"), codes, 2, _codeDescs[2]);
-            BackupMenu.AddItem(_requestFireItem);
+            _btnAmbulance = new UIMenuItem(Localization.Get("LBL_AMBULANCE", "Ambulance"), Localization.Get("DESC_AMBULANCE", "Request a ground ambulance unit."));
+            _btnLocalPatrol = new UIMenuItem(Localization.Get("LBL_LOCAL_PATROL", "Local Patrol"), Localization.Get("DESC_LOCAL_PATROL", "Request a local police patrol unit."));
+            _btnFire = new UIMenuItem(Localization.Get("LBL_FIRE_DEPARTMENT", "Fire Department"), Localization.Get("DESC_FIRE_DEPARTMENT", "Request a fire engine unit."));
 
-            _requestPoliceItem = new UIMenuListItem(Localization.Get("ACT_REQ_POLICE", "Request Police"), codes, 2, _codeDescs[2]);
-            BackupMenu.AddItem(_requestPoliceItem);
-
-            _requestHeliItem = new UIMenuItem(Localization.Get("ACT_REQ_HELI", "Request Air Medevac"));
-            BackupMenu.AddItem(_requestHeliItem);
+            BackupMenu.AddItem(_btnAmbulance);
+            BackupMenu.AddItem(_btnLocalPatrol);
+            BackupMenu.AddItem(_btnFire);
 
             BackupMenu.OnListChange += (s, item, index) =>
             {
-                if (item == _requestEmsItem) _requestEmsItem.Description = _codeDescs[index];
-                else if (item == _requestFireItem) _requestFireItem.Description = _codeDescs[index];
-                else if (item == _requestPoliceItem) _requestPoliceItem.Description = _codeDescs[index];
+                if (item == _responseTypeItem && index < _codeDescs.Count)
+                {
+                    _responseTypeItem.Description = _codeDescs[index];
+                }
             };
 
             BackupMenu.OnItemSelect += (s, item, index) =>
             {
+                if (item == _responseTypeItem) return;
+
+                int responseCode = _responseTypeItem.Index + 1; // 1 = Code 1, 2 = Code 2, 3 = Code 3
+
                 MenuCore.CloseAll();
 
-                if (item == _requestEmsItem)
+                if (item == _btnAmbulance)
                 {
-                    BackupManager.RequestBackup("Ambulance", _requestEmsItem.Index + 1);
+                    BackupManager.RequestBackup("Ambulance", responseCode);
                 }
-                else if (item == _requestFireItem)
+                else if (item == _btnLocalPatrol)
                 {
-                    BackupManager.RequestBackup("Fire", _requestFireItem.Index + 1);
+                    BackupManager.RequestBackup("Police", responseCode);
                 }
-                else if (item == _requestPoliceItem)
+                else if (item == _btnFire)
                 {
-                    BackupManager.RequestBackup("Police", _requestPoliceItem.Index + 1);
-                }
-                else if (item == _requestHeliItem)
-                {
-                    BackupManager.RequestBackup("Helicopter", 3);
+                    BackupManager.RequestBackup("Fire", responseCode);
                 }
             };
         }
