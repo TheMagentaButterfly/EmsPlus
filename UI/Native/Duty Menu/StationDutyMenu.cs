@@ -23,7 +23,7 @@ namespace EmsPlus.UI.Native.DutyMenu
         {
             if (DutyMenu != null) return;
 
-            DutyMenu = new UIMenu(Localization.Get("MENU_STATION_TITLE", "~b~Station Services"), Localization.Get("MENU_STATION_SUBTITLE", "~b~Select Station & Rank"));
+            DutyMenu = new UIMenu(Localization.Get("MENU_STATION_TITLE", "Station Services"), Localization.Get("MENU_STATION_SUBTITLE", "Select Station & Rank"));
             MenuCore.AddMenu(DutyMenu);
 
             DutyMenu.OnItemSelect += OnMenuItemSelected;
@@ -63,14 +63,14 @@ namespace EmsPlus.UI.Native.DutyMenu
             int defaultStationIdx = currentStation != null ? _availableStations.IndexOf(currentStation) : 0;
             if (defaultStationIdx == -1) defaultStationIdx = 0;
 
-            _stationList = new UIMenuListItem(Localization.Get("MENU_STATION_LABEL", "~b~Station"), stationNames, defaultStationIdx, Localization.Get("MENU_STATION_DESC", "Select the station you are operating out of."));
+            _stationList = new UIMenuListItem(Localization.Get("MENU_STATION_LABEL", "Station"), stationNames, defaultStationIdx, Localization.Get("MENU_STATION_DESC", "Select the station you are operating out of."));
             DutyMenu.AddItem(_stationList);
 
             List<dynamic> rankNames = _availableRanks.Select(r => (dynamic)$"{r.Name} ({r.ShortName})").ToList();
             int currentRankIdx = EmsService.CurrentRank != null ? _availableRanks.IndexOf(EmsService.CurrentRank) : 0;
             if (currentRankIdx == -1) currentRankIdx = 0;
 
-            _rankList = new UIMenuListItem(Localization.Get("MENU_RANK_LABEL", "~y~Title / Rank"), rankNames, currentRankIdx, Localization.Get("MENU_RANK_DESC", "Select your active title/rank and uniform."));
+            _rankList = new UIMenuListItem(Localization.Get("MENU_RANK_LABEL", "Title / Rank"), rankNames, currentRankIdx, Localization.Get("MENU_RANK_DESC", "Select your active title/rank and uniform."));
             DutyMenu.AddItem(_rankList);
 
             string dutyLabel = EmsService.IsOnDuty ? Localization.Get("MENU_DUTY_OFF_LABEL", "~r~Go Off Duty") : Localization.Get("MENU_DUTY_ON_LABEL", "~g~Go On Duty");

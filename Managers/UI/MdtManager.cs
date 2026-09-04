@@ -51,16 +51,73 @@ namespace EmsPlus.Managers
 
         public static void Toggle(bool? state = null)
         {
-            if (state.HasValue)
+            bool targetState = state ?? !IsVisible;
+
+            if (targetState)
             {
-                if (state.Value)
-                    WebUIManager.OpenMenu(Instance);
-                else
-                    WebUIManager.CloseMenu();
+                if (EntryPoint.EmsPlusConfig.RequireAmbulanceForMdt.Value && !AmbulanceManager.IsPlayerInsideAmbulance())
+                {
+                    return;
+                }
+
+                WebUIManager.OpenMenu(Instance);
             }
             else
             {
-                WebUIManager.ToggleMenu(Instance);
+                WebUIManager.CloseMenu();
+            }
+        }
+
+        public static void ShowCalloutPage()
+        {
+            if (EntryPoint.EmsPlusConfig.RequireAmbulanceForMdt.Value && !AmbulanceManager.IsPlayerInsideAmbulance())
+            {
+                return;
+            }
+
+            Instance.MouseUnlocked = false;
+            WebUIManager.OpenMenu(Instance);
+        }
+
+        public override void OnProcess()
+        {
+            if (EntryPoint.EmsPlusConfig.RequireAmbulanceForMdt.Value && !AmbulanceManager.IsPlayerInsideAmbulance())
+            {
+                Close();
+                return;
+            }
+
+            if (IsMouseUnlocked)
+            {
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 1, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 2, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 3, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 4, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 5, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 6, true);
+
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 66, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 67, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 106, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 107, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 108, true);
+
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 24, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 25, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 140, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 141, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 142, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 257, true);
+
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 68, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 69, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 70, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 91, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 92, true);
+
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 199, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 200, true);
+                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 85, true);
             }
         }
 
@@ -69,11 +126,6 @@ namespace EmsPlus.Managers
             WebUIManager.SetMouseUnlocked(unlocked);
         }
 
-        public static void ShowCalloutPage()
-        {
-            Instance.MouseUnlocked = false;
-            WebUIManager.OpenMenu(Instance);
-        }
 
         public static void ForceUpdateLayout()
         {
@@ -120,42 +172,6 @@ namespace EmsPlus.Managers
                     EmsService.SetStatus(parsedStatus);
                     PushCurrentStateToWeb();
                 }
-            }
-        }
-
-        public override void OnProcess()
-        {
-            if (IsMouseUnlocked)
-            {
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 1, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 2, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 3, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 4, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 5, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 6, true);
-
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 66, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 67, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 106, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 107, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 108, true);
-
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 24, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 25, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 140, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 141, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 142, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 257, true);
-
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 68, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 69, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 70, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 91, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 92, true);
-
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 199, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 200, true);
-                NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, 85, true);
             }
         }
 

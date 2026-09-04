@@ -15,7 +15,7 @@ namespace EmsPlus.UI.Native.BackupMenu
 
         public static void Build()
         {
-            BackupManagerMenu = new UIMenu(Localization.Get("MENU_COMMAND_COLORED", "~b~Backup Manager"), Localization.Get("SUBTITLE_COMMAND", "~b~Manage AI Resources"));
+            BackupManagerMenu = new UIMenu(Localization.Get("MENU_COMMAND_COLORED", "Backup Manager"), Localization.Get("SUBTITLE_COMMAND", "Manage AI Resources"));
             MenuCore.AddMenu(BackupManagerMenu);
 
             BackupManagerMenu.OnMenuOpen += (s) => RefreshMenu();
@@ -37,7 +37,7 @@ namespace EmsPlus.UI.Native.BackupMenu
                 return;
             }
 
-            List<dynamic> unitNames = idleUnits.Select(u => (dynamic)$"Unit {u.UnitID} ({u.State})").ToList();
+            List<dynamic> unitNames = idleUnits.Select(u => (dynamic)$"{u.UnitDisplayName} ({u.State})").ToList();
             _unitList = new UIMenuListItem(Localization.Get("ITEM_SELECT_UNIT", "Select Unit"), unitNames, 0, Localization.Get("DESC_SELECT_UNIT", "Choose which AI unit to give orders to."));
             BackupManagerMenu.AddItem(_unitList);
 
@@ -54,17 +54,15 @@ namespace EmsPlus.UI.Native.BackupMenu
                 BackupManagerMenu.AddItem(noPat);
             }
 
-            var btnTreat = new UIMenuItem(Localization.Get("ACT_DELEGATE_TREATMENT", "~y~Order: Delegate Treatment"), Localization.Get("DESC_DELEGATE_TREATMENT", "Unit will approach the patient and stabilize their vitals."));
+            var btnTreat = new UIMenuItem(Localization.Get("ACT_DELEGATE_TREATMENT", "Order: Delegate Treatment"), Localization.Get("DESC_DELEGATE_TREATMENT", "Unit will approach the patient and stabilize their vitals."));
             var selectedUnit = idleUnits[_unitList.Index];
             string transLabel = (selectedUnit?.State == AIUnitState.LoadedOnScene)
-                ? Localization.Get("ACT_DRIVE_TO_HOSPITAL", "~o~Order: Drive to Hospital")
-                : Localization.Get("ACT_ORDER_TRANSPORT", "~o~Order: Transport Patient");
-
+                ? Localization.Get("ACT_DRIVE_TO_HOSPITAL", "Order: Drive to Hospital")
+                : Localization.Get("ACT_ORDER_TRANSPORT", "Order: Transport Patient");
             var btnTransport = new UIMenuItem(transLabel, Localization.Get("DESC_ORDER_TRANSPORT", "Unit will load the patient and transport them to the hospital."));
 
-            var btnLoadOnly = new UIMenuItem(Localization.Get("ACT_ORDER_LOAD_ONLY", "~p~Order: Load Patient Only"), "Load patient into ambulance but stay on scene.");
+            var btnLoadOnly = new UIMenuItem(Localization.Get("ACT_ORDER_LOAD_ONLY", "Order: Load Patient Only"), "Load patient into ambulance but stay on scene.");
             var btnDismiss = new UIMenuItem(Localization.Get("ACT_DISMISS_UNIT", "~r~Dismiss Unit"), Localization.Get("DESC_DISMISS_UNIT", "Unit will return to their ambulance and leave the scene."));
-
             if (activePatients.Count == 0 && selectedUnit?.State != AIUnitState.LoadedOnScene)
             {
                 btnTreat.Enabled = false;

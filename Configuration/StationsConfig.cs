@@ -62,7 +62,7 @@ namespace EmsPlus.Configuration
                     new XComment(" Customize your Stations here. Delete lines to remove default Stations."),
 
                     // Default GTA V Stations
-                    new XElement("Location", new XAttribute("x", "-633.115"), new XAttribute("y", "-121.875"), new XAttribute("z", "39.014"), new XAttribute("id", "ROCKFORD"), new XAttribute("name", "Rockford Hill Fire Station Entrance 1")),
+                    new XElement("Location", new XAttribute("x", "-633.115"), new XAttribute("y", "-121.875"), new XAttribute("z", "39.014"), new XAttribute("id", "ROCKFORD"), new XAttribute("name", "Rockford Hill Fire Station 1")),
                     new XElement("Location", new XAttribute("x", "1690.086"), new XAttribute("y", "3581.570"), new XAttribute("z", "35.621"), new XAttribute("id", "SANDY"), new XAttribute("name", "Sandy Shores Fire Station 2")),
                     new XElement("Location", new XAttribute("x", "-379.563"), new XAttribute("y", "6118.247"), new XAttribute("z", "31.848"), new XAttribute("id", "PALETO"), new XAttribute("name", "Paleto Bay Fire Station 3")),
                     new XElement("Location", new XAttribute("x", "-2095.190"), new XAttribute("y", "2829.382"), new XAttribute("z", "32.961"), new XAttribute("id", "FORTZANCUDO"), new XAttribute("name", "Fort Zancudo Fire Station 4")),

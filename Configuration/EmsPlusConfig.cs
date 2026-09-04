@@ -10,11 +10,13 @@ namespace EmsPlus.Configuration
         
         // General Settings
         public SettingString Language = new SettingString("General", "Language", "The name of the file in the Localization folder (without .ini).", "English");
+        public SettingString Callsign = new SettingString("General", "Callsign", "Your unit callsign shown in dispatch notifications and MDT.", "5-83-1");
         public SettingString AllowedVehicles = new SettingString("General", "AllowedVehicles", "Comma separated list of model names allowed to be used as ambulances.", "ambulance");
         public SettingBool ShowAmbulancePrompts = new SettingBool("General", "ShowAmbulancePrompts", "If true, interaction circles will show around ambulances.", false);
         public SettingBool UseCustomInteractionPoints = new SettingBool("General", "UseCustomInteractionPoints", "If true, uses the configurable points. If false, uses default rear door logic.", false);
         public SettingBool UseNativeUIPatientMenu = new SettingBool("General", "UseNativeUIPatientMenu", "If true, uses standard NativeUI instead of the custom 3D inspection menu.", false);
         public SettingBool ApplyDutyOutfit = new SettingBool("General", "ApplyDutyOutfit", "If true, equips the rank outfit when going on duty. If false, keeps current clothes.", true);
+        public SettingBool RequireAmbulanceForMdt = new SettingBool("General", "RequireAmbulanceForMdt", "If true, the MDT can only be opened while inside an ambulance vehicle or cabin.", true);
         public List<string> ValidAmbulanceModels { get; private set; } = new List<string>();
 
         // Callout Settings
@@ -103,6 +105,9 @@ namespace EmsPlus.Configuration
                     writer.WriteLine("[General]");
                     writer.WriteLine("; The name of the file in the Localization folder (without .ini).");
                     writer.WriteLine($"Language={Language.Value}");
+                    writer.WriteLine("");
+                    writer.WriteLine("; Your unit callsign shown in dispatch notifications and MDT.");
+                    writer.WriteLine($"Callsign={(Callsign.Value ?? "5-83-1")}");
                     writer.WriteLine("");
                     writer.WriteLine("; Define which vehicles allow stretcher/gear interaction (Comma separated).");
                     writer.WriteLine("; You can add/remove vehicles here manually or via the in-game menu.");

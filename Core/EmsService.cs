@@ -119,10 +119,13 @@ namespace EmsPlus.Core
             }
 
             string statusNameKey = $"STATUS_{newStatus.ToString().ToUpperInvariant()}";
-
             string localizedStatus = Localization.Get(statusNameKey, defaultText);
 
-            Game.DisplayNotification(Localization.GetFormat("NOTIF_STATUS_UPDATE", "~b~Status Update:~w~ {0}", localizedStatus));
+            string callsign = EntryPoint.EmsPlusConfig?.Callsign?.Value ?? "SAM-44";
+
+            string notificationBody = $"Callsign: ~g~{callsign}~w~\nStatus: {localizedStatus}";
+
+            Game.DisplayNotification("char_call911", "char_call911", "DISPATCH", "Status Update", notificationBody);
         }
     }
 }

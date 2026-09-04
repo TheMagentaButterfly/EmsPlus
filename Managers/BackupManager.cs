@@ -2,6 +2,7 @@
 using Rage;
 using Rage.Native;
 using RAGENativeUI.Elements;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace EmsPlus.Managers
     public class AIUnit
     {
         public int UnitID { get; set; }
+        public string UnitDisplayName { get; set; }
         public AIUnitState State { get; set; } = AIUnitState.Responding;
         public Vehicle Ambulance { get; set; }
         public Ped Medic1 { get; set; }
@@ -56,7 +58,7 @@ namespace EmsPlus.Managers
 
             _dispatchTimerBar = new BarTimerBar(Localization.Get("LBL_FAST_DISPATCH", "FAST DISPATCH"));
             _dispatchTimerBar.BackgroundColor = Color.DarkBlue;
-            _dispatchTimerBar.ForegroundColor = Color.LightBlue;
+            _dispatchTimerBar.ForegroundColor = Color.Blue;
 
             _dismissTimerBar = new BarTimerBar(Localization.Get("LBL_FAST_DISMISS", "FAST DISMISS"));
             _dismissTimerBar.BackgroundColor = Color.DarkRed;
@@ -74,28 +76,67 @@ namespace EmsPlus.Managers
             Cleanup();
         }
 
-        private static Vector3 GetFacilitySpawnLocation(Vector3 playerPos)
+        private static Vector3 GetSpawnLocationInRadius(Vector3 playerPos, float minDistance = 200f, float maxDistance = 400f)
         {
-            List<Vector3> facilities = new List<Vector3>();
-            if (EntryPoint.StationsConfig?.Locations != null)
-                facilities.AddRange(EntryPoint.StationsConfig.Locations.Select(l => l.Position));
-            if (EntryPoint.HospitalsConfig?.Locations != null)
-                facilities.AddRange(EntryPoint.HospitalsConfig.Locations.Select(l => l.Position));
-
-            if (facilities.Count == 0) return World.GetNextPositionOnStreet(playerPos.Around(250f));
-
-            Vector3 closest = facilities.OrderBy(f => f.DistanceTo(playerPos)).First();
-
-            if (playerPos.DistanceTo(closest) > 1000f)
+            for (int i = 0; i < 15; i++)
             {
-                Vector3 dir = (closest - playerPos);
-                dir.Normalize();
-                Vector3 point800mAway = playerPos + (dir * 800f);
-                return World.GetNextPositionOnStreet(point800mAway.Around(50f));
+                Vector3 candidate = World.GetNextPositionOnStreet(playerPos.Around(minDistance, maxDistance));
+                if (candidate != Vector3.Zero && candidate.DistanceTo(playerPos) >= minDistance)
+                {
+                    return candidate;
+                }
             }
 
-            Vector3 spawnNode = World.GetNextPositionOnStreet(closest.Around(20f));
-            return spawnNode != Vector3.Zero ? spawnNode : closest;
+            Vector3 fallback = World.GetNextPositionOnStreet(playerPos.Around(250f));
+            return fallback != Vector3.Zero ? fallback : playerPos.Around(250f);
+        }
+
+        private static Vector3 FindClearLandingZone(Vector3 playerPos)
+        {
+            for (int i = 0; i < 15; i++)
+            {
+                Vector3 candidate = World.GetNextPositionOnStreet(playerPos.Around(35f, 75f));
+                if (candidate == Vector3.Zero) candidate = playerPos.Around(45f);
+
+                float? groundZ = World.GetGroundZ(candidate, true, true);
+                if (groundZ.HasValue)
+                {
+                    Vector3 groundPos = new Vector3(candidate.X, candidate.Y, groundZ.Value);
+
+                    // Vertical raycast ensuring 35m of unobstructed sky above the landing spot
+                    var hit = World.TraceLine(groundPos + new Vector3(0, 0, 1.5f), groundPos + new Vector3(0, 0, 35f), TraceFlags.IntersectWorld | TraceFlags.IntersectVehicles);
+                    if (!hit.Hit)
+                    {
+                        return groundPos;
+                    }
+                }
+            }
+
+            float? fallbackZ = World.GetGroundZ(playerPos.Around(45f), true, true);
+            return new Vector3(playerPos.X + 40f, playerPos.Y + 20f, fallbackZ ?? playerPos.Z);
+        }
+
+        private static string GetUnitDisplayName(string serviceType, Configuration.BackupDepartment dept, int unitId)
+        {
+            if (serviceType.Equals("Helicopter", StringComparison.OrdinalIgnoreCase))
+            {
+                return $"Medevac-{unitId}";
+            }
+            if (serviceType.Equals("Fire", StringComparison.OrdinalIgnoreCase))
+            {
+                return $"FireDepartment-{unitId}";
+            }
+            if (serviceType.Equals("Police", StringComparison.OrdinalIgnoreCase))
+            {
+                string deptName = dept?.Name?.ToLower() ?? "";
+                if (deptName.Contains("sheriff") || deptName.Contains("state") || deptName.Contains("highway") || deptName.Contains("county"))
+                {
+                    return $"State Patrol-{unitId}";
+                }
+                return $"Local Patrol-{unitId}";
+            }
+
+            return $"Ambulance-{unitId}";
         }
 
         private static Vector3 GetNearestHospital(Vector3 position)
@@ -110,14 +151,17 @@ namespace EmsPlus.Managers
         {
             if (!EmsService.IsOnDuty) return;
 
-            Game.DisplayNotification(Localization.Get("NOTIF_BACKUP_ENROUTE", "~b~Dispatch:~w~ Copy that, additional EMS unit is en route."));
-
             GameFiber.StartNew(delegate
             {
                 var dept = EntryPoint.BackupConfig.GetRandomDepartmentForService(serviceType)
                            ?? EntryPoint.BackupConfig.Departments.FirstOrDefault();
 
                 if (dept == null) return;
+
+                int currentUnitNumber = _unitCounter++;
+                string unitName = GetUnitDisplayName(serviceType, dept, currentUnitNumber);
+
+                Game.DisplayNotification($"~b~Dispatch:~w~ Copy that, ~y~{unitName}~w~ is en route.");
 
                 var vehDef = dept.GetRandomVehicle();
                 var pedDef1 = dept.GetRandomPed();
@@ -134,10 +178,11 @@ namespace EmsPlus.Managers
                 Model pedModel2 = new Model(pedDef2.Model);
                 pedModel2.LoadAndWait();
 
-                if (serviceType.Equals("Helicopter", System.StringComparison.OrdinalIgnoreCase))
+                if (serviceType.Equals("Helicopter", StringComparison.OrdinalIgnoreCase))
                 {
-                    Vector3 spawnPos = Game.LocalPlayer.Character.Position.Around(650f);
-                    spawnPos.Z += 400f;
+                    // Spawn helicopter in a radius high in the sky around the player
+                    Vector3 spawnPos = Game.LocalPlayer.Character.Position.Around(350f, 500f);
+                    spawnPos.Z += 120f;
 
                     Vehicle heli = new Vehicle(vehModel, spawnPos);
                     heli.IsPersistent = true;
@@ -151,19 +196,22 @@ namespace EmsPlus.Managers
                     pilot.WarpIntoVehicle(heli, -1);
                     flightMedic.WarpIntoVehicle(heli, 0);
 
+                    NativeFunction.Natives.SET_PED_CONFIG_FLAG(pilot, 34, true);
+                    NativeFunction.Natives.SET_PED_CONFIG_FLAG(flightMedic, 34, true);
+
                     pedDef1.ApplyTo(pilot);
                     pedDef2.ApplyTo(flightMedic);
 
                     Blip unitBlip = new Blip(heli);
                     unitBlip.Color = Color.Red;
-                    unitBlip.Name = $"Medevac {_unitCounter}";
+                    unitBlip.Name = unitName;
 
-                    Vector3 landingPos = World.GetNextPositionOnStreet(Game.LocalPlayer.Character.Position.Around(35f, 65f));
-                    if (landingPos == Vector3.Zero) landingPos = Game.LocalPlayer.Character.Position.Around(45f);
+                    Vector3 landingPos = FindClearLandingZone(Game.LocalPlayer.Character.Position);
 
                     var unit = new AIUnit
                     {
-                        UnitID = _unitCounter++,
+                        UnitID = currentUnitNumber,
+                        UnitDisplayName = unitName,
                         Ambulance = heli,
                         Medic1 = pilot,
                         Medic2 = flightMedic,
@@ -174,30 +222,64 @@ namespace EmsPlus.Managers
                     };
                     ActiveUnits.Add(unit);
 
-                    NativeFunction.CallByHash<uint>(0xDAD029E187A2BEB4, pilot, heli, 0, 0, landingPos.X, landingPos.Y, landingPos.Z, 20, 25.0f, 5.0f, 0.0f, -1, -1, -1f, 32);
+                    NativeFunction.Natives.SET_DRIVER_ABILITY(pilot, 1.0f);
+                    NativeFunction.Natives.SET_DRIVER_AGGRESSIVENESS(pilot, 0.0f);
+                    NativeFunction.Natives.SET_HELI_BLADES_FULL_SPEED(heli);
+
+                    // Initial approach task
+                    NativeFunction.CallByHash<int>(0xDAD029E187A2BEB4, pilot, heli, 0, 0, landingPos.X, landingPos.Y, landingPos.Z, 20, 30.0f, 8.0f, 0.0f, -1, -1, -1f, 32);
 
                     GameFiber.StartNew(delegate
                     {
-                        while (heli.Exists() && heli.Position.DistanceTo(landingPos) > 40f)
-                            GameFiber.Sleep(500);
+                        uint approachStartTime = Game.GameTime;
 
-                        int landingTimeout = 0;
-                        while (heli.Exists() && heli.HeightAboveGround > 1.8f && landingTimeout < 60)
+                        // 1. Wait until helicopter reaches the landing zone vicinity (2D check)
+                        while (heli.Exists() && heli.Position.DistanceTo2D(landingPos) > 40f && (Game.GameTime - approachStartTime) < 45000)
                         {
                             GameFiber.Sleep(500);
-                            landingTimeout++;
                         }
 
-                        if (heli.Exists() && heli.HeightAboveGround > 0.5f && heli.HeightAboveGround < 8.0f)
+                        // 2. Issue precision land command
+                        if (heli.Exists() && pilot.Exists())
                         {
-                            heli.Position = new Vector3(landingPos.X, landingPos.Y, landingPos.Z + 0.3f);
-                            heli.IsPositionFrozen = true;
-                            GameFiber.Yield();
-                            heli.IsPositionFrozen = false;
+                            NativeFunction.CallByHash<int>(0xDAD029E187A2BEB4, pilot, heli, 0, 0, landingPos.X, landingPos.Y, landingPos.Z, 4, 15.0f, 2.0f, 0.0f, -1, -1, -1f, 32);
+                        }
+
+                        // 3. Monitor descent & assist touchdown if AI stalls in a hover
+                        uint descentStartTime = Game.GameTime;
+                        while (heli.Exists() && heli.HeightAboveGround > 1.2f && (Game.GameTime - descentStartTime) < 25000)
+                        {
+                            if (heli.Position.DistanceTo2D(landingPos) < 25f && (Game.GameTime - descentStartTime) > 3500)
+                            {
+                                if (heli.Speed < 4.0f && heli.HeightAboveGround > 1.2f)
+                                {
+                                    heli.Velocity = new Vector3(heli.Velocity.X * 0.7f, heli.Velocity.Y * 0.7f, -1.8f);
+                                }
+                            }
+                            GameFiber.Sleep(100);
+                        }
+
+                        // 4. Touchdown stabilization & engine idle
+                        if (heli.Exists())
+                        {
+                            heli.Velocity = Vector3.Zero;
+                            float? finalGz = World.GetGroundZ(heli.Position, true, true);
+                            if (finalGz.HasValue && heli.HeightAboveGround > 0.6f && heli.HeightAboveGround < 4.0f)
+                            {
+                                heli.Position = new Vector3(heli.Position.X, heli.Position.Y, finalGz.Value + 0.3f);
+                            }
+
+                            if (pilot.Exists())
+                            {
+                                pilot.Tasks.Clear();
+                                NativeFunction.Natives.SET_VEHICLE_ENGINE_ON(heli, true, true, false);
+                                NativeFunction.Natives.SET_HELI_BLADES_FULL_SPEED(heli);
+                            }
                         }
 
                         unit.State = AIUnitState.Idle;
 
+                        // 5. Flight medic disembarks to assist
                         if (flightMedic.Exists())
                         {
                             flightMedic.Tasks.Clear();
@@ -209,7 +291,8 @@ namespace EmsPlus.Managers
                 }
                 else
                 {
-                    Vector3 spawnPos = GetFacilitySpawnLocation(Game.LocalPlayer.Character.Position);
+                    // Spawn land vehicles within a 200m–400m radius
+                    Vector3 spawnPos = GetSpawnLocationInRadius(Game.LocalPlayer.Character.Position, 200f, 400f);
                     Vehicle vehicle = new Vehicle(vehModel, spawnPos);
                     vehicle.IsPersistent = true;
 
@@ -228,11 +311,11 @@ namespace EmsPlus.Managers
                     pedDef1.ApplyTo(driver);
                     pedDef2.ApplyTo(passenger);
 
-                    if (serviceType.Equals("Police", System.StringComparison.OrdinalIgnoreCase))
+                    if (serviceType.Equals("Police", StringComparison.OrdinalIgnoreCase))
                     {
                         driver.RelationshipGroup = "COP"; passenger.RelationshipGroup = "COP";
                     }
-                    else if (serviceType.Equals("Fire", System.StringComparison.OrdinalIgnoreCase))
+                    else if (serviceType.Equals("Fire", StringComparison.OrdinalIgnoreCase))
                     {
                         driver.RelationshipGroup = "FIREMAN"; passenger.RelationshipGroup = "FIREMAN";
                     }
@@ -242,8 +325,8 @@ namespace EmsPlus.Managers
                     }
 
                     Blip unitBlip = new Blip(vehicle);
-                    unitBlip.Color = serviceType.Equals("Police", System.StringComparison.OrdinalIgnoreCase) ? Color.Blue : Color.Orange;
-                    unitBlip.Name = $"{serviceType} Unit {_unitCounter}";
+                    unitBlip.Color = serviceType.Equals("Police", StringComparison.OrdinalIgnoreCase) ? Color.Blue : Color.Orange;
+                    unitBlip.Name = unitName;
 
                     Vector3 parkingNode = World.GetNextPositionOnStreet(Game.LocalPlayer.Character.Position.Around(12f, 25f));
                     if (parkingNode == Vector3.Zero || parkingNode.DistanceTo2D(Game.LocalPlayer.Character.Position) > 45f)
@@ -253,7 +336,8 @@ namespace EmsPlus.Managers
 
                     var unit = new AIUnit
                     {
-                        UnitID = _unitCounter++,
+                        UnitID = currentUnitNumber,
+                        UnitDisplayName = unitName,
                         Ambulance = vehicle,
                         Medic1 = driver,
                         Medic2 = passenger,
@@ -291,6 +375,7 @@ namespace EmsPlus.Managers
         {
             if (ActiveUnits.Count == 0) return;
 
+            // 1. FAST DISPATCH (Hold Backspace)
             bool hasRespondingUnits = ActiveUnits.Any(u => u.State == AIUnitState.Responding);
             if (hasRespondingUnits && Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Back))
             {
@@ -323,6 +408,7 @@ namespace EmsPlus.Managers
                 }
             }
 
+            // 2. FAST DISMISS (Hold Enter)
             if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Enter))
             {
                 if (!_isHoldingFastDismiss)
@@ -382,6 +468,7 @@ namespace EmsPlus.Managers
                             GameFiber.Sleep(2500);
                             if (unit.Medic1.Exists()) unit.Medic1.Tasks.GoToOffsetFromEntity(Game.LocalPlayer.Character, 3f, 0f, 1.0f);
                             if (unit.Medic2.Exists()) unit.Medic2.Tasks.GoToOffsetFromEntity(Game.LocalPlayer.Character, -3f, 0f, 1.0f);
+                            Game.DisplayNotification($"~b~Dispatch:~w~ ~y~{unit.UnitDisplayName}~w~ has arrived on scene.");
                         });
                     }
                 }
@@ -397,7 +484,11 @@ namespace EmsPlus.Managers
                     if (unit.ServiceType == "Helicopter")
                     {
                         Vector3 targetPos = unit.SceneParkingLocation;
-                        unit.Ambulance.Position = new Vector3(targetPos.X, targetPos.Y, targetPos.Z + 45f);
+                        float? gz = World.GetGroundZ(targetPos, true, true);
+                        float groundZ = gz ?? targetPos.Z;
+
+                        unit.Ambulance.Position = new Vector3(targetPos.X, targetPos.Y, groundZ + 20f);
+                        unit.Ambulance.Velocity = new Vector3(0f, 0f, -1.5f);
                         unit.Ambulance.Heading = Game.LocalPlayer.Character.Heading;
                     }
                     else
@@ -603,6 +694,8 @@ namespace EmsPlus.Managers
             if (unit == null) return;
             ActiveUnits.Remove(unit);
 
+            Game.DisplayNotification($"~b~{unit.UnitDisplayName}:~w~ Returning to service.");
+
             GameFiber.StartNew(delegate
             {
                 var amb = unit.Ambulance;
@@ -629,7 +722,7 @@ namespace EmsPlus.Managers
 
                     if (unit.ServiceType == "Helicopter")
                     {
-                        NativeFunction.CallByHash<uint>(0xDAD029E187A2BEB4, m1, amb, 0, 0, amb.Position.X, amb.Position.Y, amb.Position.Z + 150f, 4, 30f, 5f, 0f, 30, 30, -1f, 0);
+                        NativeFunction.CallByHash<int>(0xDAD029E187A2BEB4, m1, amb, 0, 0, amb.Position.X, amb.Position.Y, amb.Position.Z + 150f, 4, 30f, 5f, 0f, 30, 30, -1f, 0);
                     }
                     else
                     {
@@ -658,6 +751,7 @@ namespace EmsPlus.Managers
         private static void ForceDismissAllUnits()
         {
             Cleanup();
+            Game.DisplayNotification(Localization.Get("NOTIF_FAST_DISMISS", "~b~Dispatch:~w~ All backup units have been forcefully dismissed."));
         }
 
         public static void Cleanup()

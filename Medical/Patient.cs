@@ -37,7 +37,9 @@ namespace EmsPlus
         public bool PlayerArrived { get; set; } = false;
         public bool IsStabilized => Conditions.All(c => c.IsTreated);
         public bool IsEcgsConnected { get; set; } = false;
+        public bool IsSpO2Connected { get; set; } = false;
         public bool IsBpCuffConnected { get; set; } = false;
+        public bool IsFullyMonitored => IsEcgsConnected && IsSpO2Connected && IsBpCuffConnected;
         public bool IsOnStretcher { get; set; } = false;
         public bool IsReceivingOxygen { get; set; } = false;
         public bool IsIVEstablished { get; set; } = false;
@@ -155,6 +157,10 @@ namespace EmsPlus
             bool treatmentWasEffective = AnatomicalRegistry.IsUniversalTreatment(treatment);
             bool isLocalized = AnatomicalRegistry.IsLocalizedTreatment(treatment);
 
+            if (treatment == EmsTreatment.ECG) IsEcgsConnected = true;
+            if (treatment == EmsTreatment.SpO2) IsSpO2Connected = true;
+            if (treatment == EmsTreatment.BPCuff) IsBpCuffConnected = true;
+
             if (treatment == EmsTreatment.CPR && IsCardiacArrest)
             {
                 BrainOxygen += 15f;
@@ -189,6 +195,13 @@ namespace EmsPlus
                         treatmentWasEffective = true;
                     }
                 }
+
+                if (condition.RequiredTreatments.Contains(EmsTreatment.Monitoring) && IsFullyMonitored)
+                {
+                    condition.OnTreated(this, EmsTreatment.Monitoring);
+                    treatmentWasEffective = true;
+                }
+
                 condition.ReactToTreatment(this, treatment);
             }
 

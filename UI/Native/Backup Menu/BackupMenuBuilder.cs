@@ -16,7 +16,7 @@ namespace EmsPlus.UI.Native.BackupMenu
 
         public static void Build()
         {
-            BackupMenu = new UIMenu(Localization.Get("MENU_BACKUP_COLORED", "~b~Backup"), Localization.Get("SUBTITLE_BACKUP", "~b~Request Resources"));
+            BackupMenu = new UIMenu(Localization.Get("MENU_BACKUP_COLORED", "Backup"), Localization.Get("SUBTITLE_BACKUP", "Request Resources"));
             MenuCore.AddMenu(BackupMenu);
 
             List<dynamic> codes = new List<dynamic>
@@ -33,16 +33,16 @@ namespace EmsPlus.UI.Native.BackupMenu
                 Localization.Get("DESC_CODE_3", "Emergency response (lights and sirens).")
             };
 
-            _requestEmsItem = new UIMenuListItem(Localization.Get("ACT_REQ_AMBULANCE_COLORED", "~o~Request EMS Unit"), codes, 2, _codeDescs[2]);
+            _requestEmsItem = new UIMenuListItem(Localization.Get("ACT_REQ_AMBULANCE", "Request Ambulance"), codes, 2, _codeDescs[2]);
             BackupMenu.AddItem(_requestEmsItem);
 
-            _requestFireItem = new UIMenuListItem("~r~Request Fire Unit", codes, 2, _codeDescs[2]);
+            _requestFireItem = new UIMenuListItem(Localization.Get("ACT_REQ_FIRE", "Request Fire"), codes, 2, _codeDescs[2]);
             BackupMenu.AddItem(_requestFireItem);
 
-            _requestPoliceItem = new UIMenuListItem("~b~Request Police Unit", codes, 2, _codeDescs[2]);
+            _requestPoliceItem = new UIMenuListItem(Localization.Get("ACT_REQ_POLICE", "Request Police"), codes, 2, _codeDescs[2]);
             BackupMenu.AddItem(_requestPoliceItem);
 
-            _requestHeliItem = new UIMenuItem("~y~Request Air Medevac", "Request a medical evacuation helicopter to land near your position.");
+            _requestHeliItem = new UIMenuItem(Localization.Get("ACT_REQ_HELI", "Request Air Medevac"));
             BackupMenu.AddItem(_requestHeliItem);
 
             BackupMenu.OnListChange += (s, item, index) =>

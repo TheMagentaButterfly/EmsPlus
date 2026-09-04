@@ -1,9 +1,10 @@
-﻿using EmsPlus.UI.Helpers;
+﻿using EmsPlus.Core;
 using EmsPlus.Managers;
 using EmsPlus.Managers.Actions;
+using EmsPlus.Medical;
+using EmsPlus.UI.Helpers;
 using Rage;
 using RAGENativeUI.Elements;
-using EmsPlus.Core;
 
 namespace EmsPlus.UI.Native.PatientMenu
 {
@@ -47,13 +48,73 @@ namespace EmsPlus.UI.Native.PatientMenu
 
                 if (kit.KitID == "DEFIBRILLATOR")
                 {
-                    AddMenuSeparator(KitMenu, Localization.Get("CAT_SEP_DEFIB", "~c~=== DEFIBRILLATOR ==="));
+                    AddMenuSeparator(KitMenu, Localization.Get("CAT_SEP_DEFIB", "~c~=== MONITOR & DEFIBRILLATOR ==="));
 
-                    if (!p.IsEcgsConnected) { AddInteractiveItem(KitMenu, $"~g~{Localization.Get("ACT_ATTACH_MONITOR", "Attach Monitor")}", Localization.Get("DESC_ATTACH_MONITOR", "Connect ECG/SpO2 Leads"), true, () => { ActionsCore.Run(Localization.Get("ACT_ATTACHING_LEADS", "Attaching leads..."), 2000, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsEcgsConnected = true; Game.DisplayNotification(Localization.Get("NOTIF_MONITOR_CONNECTED", "~g~Monitor connected.")); }); MenuCore.CloseAll(); }); }
-                    else { AddInteractiveItem(KitMenu, $"~y~{Localization.Get("ACT_REMOVE_MONITOR", "Remove Monitor")}", Localization.Get("DESC_REMOVE_MONITOR", "Disconnect ECG/SpO2 Leads"), true, () => { ActionsCore.Run(Localization.Get("ACT_REMOVING_LEADS", "Removing leads..."), 1500, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsEcgsConnected = false; Game.DisplayNotification(Localization.Get("NOTIF_MONITOR_DISCONNECTED", "~y~Monitor disconnected.")); }); MenuCore.CloseAll(); }); }
+                    // ECG Leads
+                    if (!p.IsEcgsConnected)
+                    {
+                        AddInteractiveItem(KitMenu, Localization.Get("ACT_ATTACH_ECG_LEADS", "Attach ECG Leads"), Localization.Get("ACT_ATTACH_ECG_LEADS_DESC", "Connect ECG monitoring leads"), true, () => {
+                            ActionsCore.Run("Attaching ECG leads...", 2000, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => {
+                                p.ApplyTreatment(EmsTreatment.ECG);
+                                Game.DisplayNotification("~g~ECG Leads attached.");
+                            });
+                            MenuCore.CloseAll();
+                        });
+                    }
+                    else
+                    {
+                        AddInteractiveItem(KitMenu, Localization.Get("ACT_REMOVE_ECG_LEADS", "Remove ECG Leads"), Localization.Get("ACT_REMOVE_ECG_LEADS_DESC", "Disconnect ECG monitoring leads"), true, () => {
+                            ActionsCore.Run("Removing ECG leads...", 1500, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => {
+                                p.IsEcgsConnected = false;
+                                Game.DisplayNotification("~y~ECG Leads removed.");
+                            });
+                            MenuCore.CloseAll();
+                        });
+                    }
 
-                    if (!p.IsBpCuffConnected) { AddInteractiveItem(KitMenu, $"~g~{Localization.Get("ACT_ATTACH_BP", "Attach BP Cuff")}", Localization.Get("DESC_ATTACH_BP_CUFF", "Auto-Cycle BP"), true, () => { ActionsCore.Run(Localization.Get("ACT_APPLYING_CUFF", "Applying cuff..."), 2000, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsBpCuffConnected = true; Game.DisplayNotification(Localization.Get("NOTIF_BP_CONNECTED", "~g~BP Cuff attached.")); }); MenuCore.CloseAll(); }); }
-                    else { AddInteractiveItem(KitMenu, $"~y~{Localization.Get("ACT_REMOVE_BP", "Remove BP Cuff")}", Localization.Get("DESC_REMOVE_BP_CUFF", "Remove Cuff"), true, () => { ActionsCore.Run(Localization.Get("ACT_REMOVING_CUFF", "Removing cuff..."), 1500, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsBpCuffConnected = false; Game.DisplayNotification(Localization.Get("NOTIF_BP_REMOVED", "~y~BP Cuff removed.")); }); MenuCore.CloseAll(); }); }
+                    // SpO2 Pulse Oximeter Probe
+                    if (!p.IsSpO2Connected)
+                    {
+                        AddInteractiveItem(KitMenu, Localization.Get("ACT_ATTACH_SPO2_PROBE", "Attach SpO2 Probe"), Localization.Get("ACT_ATTACH_SPO2_PROBE_DESC", "Attach pulse oximeter probe"), true, () => {
+                            ActionsCore.Run("Attaching SpO2 probe...", 1500, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => {
+                                p.ApplyTreatment(EmsTreatment.SpO2);
+                                Game.DisplayNotification("~g~SpO2 Probe attached.");
+                            });
+                            MenuCore.CloseAll();
+                        });
+                    }
+                    else
+                    {
+                        AddInteractiveItem(KitMenu, Localization.Get("ACT_REMOVE_SPO2_PROBE", "Remove SpO2 Probe"), Localization.Get("ACT_REMOVE_SPO2_PROBE_DESC", "Remove pulse oximeter probe"), true, () => {
+                            ActionsCore.Run("Removing SpO2 probe...", 1000, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => {
+                                p.IsSpO2Connected = false;
+                                Game.DisplayNotification("~y~SpO2 Probe removed.");
+                            });
+                            MenuCore.CloseAll();
+                        });
+                    }
+
+                    // Blood Pressure Cuff
+                    if (!p.IsBpCuffConnected)
+                    {
+                        AddInteractiveItem(KitMenu, Localization.Get("ACT_ATTACH_BP_CUFF", "Attach BP Cuff"), Localization.Get("ACT_ATTACH_BP_CUFF_DESC", "Apply NIBP cuff"), true, () => {
+                            ActionsCore.Run("Applying BP cuff...", 2000, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => {
+                                p.ApplyTreatment(EmsTreatment.BPCuff);
+                                Game.DisplayNotification("~g~BP Cuff attached.");
+                            });
+                            MenuCore.CloseAll();
+                        });
+                    }
+                    else
+                    {
+                        AddInteractiveItem(KitMenu, Localization.Get("ACT_REMOVE_BP_CUFF", "Remove BP Cuff"), Localization.Get("ACT_REMOVE_BP_CUFF_DESC", "Remove NIBP cuff"), true, () => {
+                            ActionsCore.Run("Removing BP cuff...", 1500, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => {
+                                p.IsBpCuffConnected = false;
+                                Game.DisplayNotification("~y~BP Cuff removed.");
+                            });
+                            MenuCore.CloseAll();
+                        });
+                    }
                 }
             }
 

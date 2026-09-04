@@ -41,7 +41,12 @@
         ActiveRewarming,
         ActiveCooling,
         RecoveryPosition,
+
+        // Monitoring & Diagnostics
         Monitoring,
+        ECG,
+        SpO2,
+        BPCuff,
 
         // Critical Care
         CPR,

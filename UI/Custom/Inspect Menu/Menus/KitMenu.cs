@@ -90,31 +90,55 @@ namespace EmsPlus.UI.Custom.InspectMenu.Menus
             // --- 4. DEFIBRILLATOR RESTORED ---
             if (placedKit.KitID == "DEFIBRILLATOR")
             {
+                // ECG
                 if (!p.IsEcgsConnected)
                 {
-                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_ATTACH_MONITOR", "Attach ECG/SpO2 Monitor"), Localization.Get("ACT_ATTACH_MONITOR_DESC", "Attach ECG/SpO2 Monitor"), Color.LightGreen, true, () => {
-                        ActionsCore.Run("", 2000, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsEcgsConnected = true; });
+                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_ATTACH_ECG_LEADS", "Attach ECG Leads"), Localization.Get("ACT_ATTACH_ECG_LEADS_DESC", "Connect ECG monitoring leads"), Color.LightGreen, true, () => {
+                        ActionsCore.Run("", 2000, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => {
+                            p.ApplyTreatment(EmsTreatment.ECG);
+                        });
                         BodyInspectionManager.StopInspection(false);
                     }));
                 }
                 else
                 {
-                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_REMOVE_MONITOR", "Remove ECG/SpO2 Monitor"), Localization.Get("ACT_REMOVE_MONITOR_DESC", "Remove ECG/SpO2 Monitor"), Color.Orange, true, () => {
+                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_REMOVE_ECG_LEADS", "Remove ECG Leads"), Localization.Get("ACT_REMOVE_ECG_LEADS_DESC", "Disconnect ECG monitoring leads"), Color.Orange, true, () => {
                         ActionsCore.Run("", 1500, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsEcgsConnected = false; });
                         BodyInspectionManager.StopInspection(false);
                     }));
                 }
 
-                if (!p.IsBpCuffConnected)
+                // SpO2
+                if (!p.IsSpO2Connected)
                 {
-                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_ATTACH_BP", "Attach BP Cuff"), Localization.Get("ACT_ATTACH_BP_DESC", "Attach BP Cuff"), Color.LightGreen, true, () => {
-                        ActionsCore.Run("", 2000, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsBpCuffConnected = true; });
+                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_ATTACH_SPO2_PROBE", "Attach SpO2 Probe"), Localization.Get("ACT_ATTACH_SPO2_PROBE_DESC", "Attach pulse oximeter probe"), Color.LightGreen, true, () => {
+                        ActionsCore.Run("", 1500, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => {
+                            p.ApplyTreatment(EmsTreatment.SpO2);
+                        });
                         BodyInspectionManager.StopInspection(false);
                     }));
                 }
                 else
                 {
-                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_REMOVE_BP", "Remove BP Cuff"), Localization.Get("ACT_REMOVE_BP_DESC", "Remove BP Cuff"), Color.Orange, true, () => {
+                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_REMOVE_SPO2_PROBE", "Remove SpO2 Probe"), Localization.Get("ACT_REMOVE_SPO2_PROBE_DESC", "Remove pulse oximeter probe"), Color.Orange, true, () => {
+                        ActionsCore.Run("", 1000, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsSpO2Connected = false; });
+                        BodyInspectionManager.StopInspection(false);
+                    }));
+                }
+
+                // BP Cuff
+                if (!p.IsBpCuffConnected)
+                {
+                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_ATTACH_BP_CUFF", "Attach BP Cuff"), Localization.Get("ACT_ATTACH_BP_CUFF_DESC", "Apply NIBP cuff"), Color.LightGreen, true, () => {
+                        ActionsCore.Run("", 2000, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => {
+                            p.ApplyTreatment(EmsTreatment.BPCuff);
+                        });
+                        BodyInspectionManager.StopInspection(false);
+                    }));
+                }
+                else
+                {
+                    BodyInspectionManager.CurrentPanelActions.Add(new InspectionAction(Localization.Get("ACT_REMOVE_BP_CUFF", "Remove BP Cuff"), Localization.Get("ACT_REMOVE_BP_CUFF_DESC", "Remove NIBP cuff"), Color.Orange, true, () => {
                         ActionsCore.Run("", 1500, EntryPoint.AnimationConfig.MedicTreatDict.Value, EntryPoint.AnimationConfig.MedicTreatName.Value, () => { p.IsBpCuffConnected = false; });
                         BodyInspectionManager.StopInspection(false);
                     }));

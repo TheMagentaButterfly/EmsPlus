@@ -628,6 +628,27 @@ namespace EmsPlus.Managers
             });
         }
 
+        /// <summary>
+        /// Checks if the player is currently sitting inside an allowed ambulance vehicle or inside the patient cabin.
+        /// </summary>
+        public static bool IsPlayerInsideAmbulance()
+        {
+            if (IsPlayerInRearCabin) return true;
+
+            Ped player = Game.LocalPlayer.Character;
+            if (player != null && player.Exists() && player.IsInAnyVehicle(false))
+            {
+                Vehicle veh = player.CurrentVehicle;
+                if (veh != null && veh.Exists())
+                {
+                    string modelName = veh.Model.Name.ToLower();
+                    return EntryPoint.EmsPlusConfig.IsAllowed(modelName);
+                }
+            }
+
+            return false;
+        }
+
         public static void Cleanup()
         {
             if (IsPlayerInRearCabin)

@@ -38,7 +38,15 @@ namespace EmsPlus.Medical
                 case EmsTreatment.NeedleDecomp:
                 case EmsTreatment.CPR:
                 case EmsTreatment.Defibrillation:
+                case EmsTreatment.ECG:
                     return bone == PedBoneId.Spine3 || bone == PedBoneId.Spine2;
+
+                case EmsTreatment.BPCuff:
+                    return bone == PedBoneId.LeftUpperArm || bone == PedBoneId.RightUpperArm;
+
+                case EmsTreatment.SpO2:
+                    return bone == PedBoneId.LeftHand || bone == PedBoneId.RightHand ||
+                           bone == PedBoneId.LeftForeArm || bone == PedBoneId.RightForearm;
 
                 case EmsTreatment.PelvicBinder:
                     return bone == PedBoneId.Pelvis || bone == PedBoneId.SpineRoot;
@@ -75,7 +83,11 @@ namespace EmsPlus.Medical
                    t == EmsTreatment.CPR ||
                    t == EmsTreatment.Defibrillation ||
                    t == EmsTreatment.IVAccess ||
-                   t == EmsTreatment.SalineBag;
+                   t == EmsTreatment.SalineBag ||
+                   t == EmsTreatment.Monitoring ||
+                   t == EmsTreatment.ECG ||
+                   t == EmsTreatment.SpO2 ||
+                   t == EmsTreatment.BPCuff;
         }
     }
 }

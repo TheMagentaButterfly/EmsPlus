@@ -45,26 +45,35 @@ namespace EmsPlus.UI.Custom.InspectMenu
 
             if (p.IsEcgsConnected)
             {
-                // HR
                 string hrText = GetStateText(p.HeartRate);
                 bool hrOk = p.HeartRate == VitalState.Normal;
-                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_HR", "Heart Rate"), hrText, hrOk));
-
-                // SpO2
-                string oxyText = GetStateText(p.SpO2);
-                bool oxyOk = p.SpO2 == VitalState.Normal;
-                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_SPO2", "O2 Saturation"), oxyText, oxyOk));
+                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_HR", "Heart Rate (ECG)"), hrText, hrOk));
             }
             else
             {
-                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_MONITOR", "Monitor"), Localization.Get("DIAG_MONITOR_NOT_CONNECTED", "Not Connected"), true));
+                newItems.Add(new DiagnosticItem("Heart Rate (ECG)", "Not Connected", true));
+            }
+
+            if (p.IsSpO2Connected)
+            {
+                string oxyText = GetStateText(p.SpO2);
+                bool oxyOk = p.SpO2 == VitalState.Normal;
+                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_SPO2", "O2 Saturation (SpO2)"), oxyText, oxyOk));
+            }
+            else
+            {
+                newItems.Add(new DiagnosticItem("O2 Saturation (SpO2)", "Not Connected", true));
             }
 
             if (p.IsBpCuffConnected)
             {
                 string bpText = GetStateText(p.BloodPressure);
                 bool bpOk = p.BloodPressure == VitalState.Normal;
-                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_BP", "Blood Pressure"), bpText, bpOk));
+                newItems.Add(new DiagnosticItem(Localization.Get("DIAG_BP", "Blood Pressure (NIBP)"), bpText, bpOk));
+            }
+            else
+            {
+                newItems.Add(new DiagnosticItem("Blood Pressure (NIBP)", "Not Connected", true));
             }
 
             if (p.IsBglChecked)
