@@ -108,6 +108,10 @@ namespace EmsPlus
 
             BackupManager.Initialize();
 
+            MenuCore.Initialize();
+            _uiLogicFiber = new GameFiber(MenuCore.Process);
+            _uiLogicFiber.Start();
+
             _inputHandler = new InputHandler(KeyConfig);
             _inputHandler.Start();
             Events.OnUserInputChanged += MenuCore.OnUserInputChanged;
