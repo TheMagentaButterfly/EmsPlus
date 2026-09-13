@@ -52,12 +52,16 @@ namespace EmsPlus
             InitializeDirectories();
             LoadConfigurations();
 
-            // Initialize NativeUI and WebUI early so menus can be opened while off duty
-            MenuCore.Initialize();
-            WebUIManager.Initialize();
+            bool systemOk = DependencyChecker.RunStartupChecks();
 
-            _uiLogicFiber = new GameFiber(MenuCore.Process);
-            _uiLogicFiber.Start();
+            if (systemOk)
+            {
+                WebUIManager.Initialize();
+            }
+            else
+            {
+                Game.Console.Print("[EmsPlus] WebUIManager initialization skipped due to failed dependency checks.");
+            }
 
             while (Game.IsLoading)
             {
@@ -70,6 +74,11 @@ namespace EmsPlus
             }
 
             GameFiber.Sleep(2000);
+
+            if (!systemOk)
+            {
+                Game.DisplayNotification("char_call911", "char_call911", "EmsPlus", "~r~Dependency Error", "MDT failed startup checks.\nCheck ~y~RagePluginHook.log~w~ for details.");
+            }
 
             StationManager.Initialize();
             HospitalManager.Initialize();

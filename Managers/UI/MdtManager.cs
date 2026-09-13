@@ -51,6 +51,12 @@ namespace EmsPlus.Managers
 
         public static void Toggle(bool? state = null)
         {
+            if (!DependencyChecker.AreDependenciesValid)
+            {
+                Game.DisplayNotification("~r~MDT Error:~w~ Missing dependencies or compatibility mode active. See ~y~RagePluginHook.log~w~.");
+                return;
+            }
+
             bool targetState = state ?? !IsVisible;
 
             if (targetState)

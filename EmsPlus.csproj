@@ -103,6 +103,7 @@
     <Compile Include="Configuration\OffsetConfig.cs" />
     <Compile Include="Configuration\PropConfig.cs" />
     <Compile Include="Configuration\VehicleConfig.cs" />
+    <Compile Include="Core\DependencyChecker.cs" />
     <Compile Include="Core\EmsPlusAPI.cs" />
     <Compile Include="Managers\Actions\QuestioningActions.cs" />
     <Compile Include="Managers\AddonManager.cs" />
