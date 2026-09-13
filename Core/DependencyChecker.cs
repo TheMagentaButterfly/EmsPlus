@@ -41,6 +41,7 @@ namespace EmsPlus.Core
             {
                 "Microsoft.Web.WebView2.Core.dll",
                 "Microsoft.Web.WebView2.WinForms.dll",
+                "WebView2Loader.dll",
                 "IPT.Common.dll",
                 "RAGENativeUI.dll"
             };
@@ -55,13 +56,45 @@ namespace EmsPlus.Core
                 }
             }
 
-            bool hasLoader = File.Exists(Path.Combine(rootDir, "WebView2Loader.dll")) ||
-                             File.Exists(Path.Combine(rootDir, "runtimes", "win-x64", "native", "WebView2Loader.dll"));
+            string loaderPath = Path.Combine(rootDir, "WebView2Loader.dll");
+            if (!File.Exists(loaderPath))
+            {
+                loaderPath = Path.Combine(rootDir, "runtimes", "win-x64", "native", "WebView2Loader.dll");
+            }
 
-            if (!hasLoader)
+            if (!File.Exists(loaderPath))
             {
                 Game.Console.Print("[EmsPlus] [Dependency Check] MISSING FILE: 'WebView2Loader.dll' not found in main directory or 'runtimes/win-x64/native/'.");
                 allFound = false;
+            }
+            else
+            {
+                try
+                {
+                    using (var stream = new FileStream(loaderPath, FileMode.Open, FileAccess.Read))
+                    using (var reader = new BinaryReader(stream))
+                    {
+                        stream.Seek(0x3C, SeekOrigin.Begin);
+                        int peOffset = reader.ReadInt32();
+
+                        stream.Seek(peOffset + 4, SeekOrigin.Begin);
+                        ushort machineType = reader.ReadUInt16();
+
+                        if (machineType == 0x014c)
+                        {
+                            Game.Console.Print("[EmsPlus] [Dependency Check] CRITICAL: 'WebView2Loader.dll' is 32-bit (x86)! GTA V requires the 64-bit (x64) version.");
+                            allFound = false;
+                        }
+                        else if (machineType != 0x8664)
+                        {
+                            Game.Console.Print($"[EmsPlus] [Dependency Check] WARNING: 'WebView2Loader.dll' machine architecture is 0x{machineType:X4}, expected x64 (0x8664).");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Game.Console.Print($"[EmsPlus] [Dependency Check] Warning: Could not read PE header of WebView2Loader.dll: {ex.Message}");
+                }
             }
 
             string htmlPath = Path.Combine(rootDir, "Plugins", "EmsPlus", "UI", "mdt.html");
@@ -73,7 +106,7 @@ namespace EmsPlus.Core
 
             if (allFound)
             {
-                Game.Console.Print("[EmsPlus] [Dependency Check] Core binaries and HTML files: OK");
+                Game.Console.Print("[EmsPlus] [Dependency Check] Core binaries, architecture (x64), and HTML files: OK");
             }
 
             return allFound;
