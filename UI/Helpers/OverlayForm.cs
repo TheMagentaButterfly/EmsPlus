@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.WinForms;
+using Rage;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Microsoft.Web.WebView2.Core;
-using Microsoft.Web.WebView2.WinForms;
 
 namespace EmsPlus.UI.Helpers
 {
@@ -136,10 +137,14 @@ namespace EmsPlus.UI.Helpers
                 }
 
                 webView.WebMessageReceived += (s, e) => onMessageReceived?.Invoke(e.TryGetWebMessageAsString());
+
+                Game.Console.Print("[EmsPlus] WebView2 initialized successfully.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("[EmsPlus] WebView2 Init Error: " + ex.Message);
+                Game.Console.Print($"[EmsPlus] CRITICAL: WebView2 failed to initialize: {ex.Message}");
+
+                Game.DisplayNotification("~r~MDT Error:~w~ WebView2 runtime failed to start.\nEnsure ~y~Windows 7 compatibility mode~w~ is disabled on GTA5.exe nad RagePluginHook.exe!");
             }
         }
 
