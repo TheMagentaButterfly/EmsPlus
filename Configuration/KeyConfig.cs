@@ -1,4 +1,5 @@
 ﻿using IPT.Common.User.Settings;
+using System;
 using System.IO;
 
 namespace EmsPlus.Configuration
@@ -125,7 +126,9 @@ namespace EmsPlus.Configuration
         {
             if (keyCombo == null) return defaultKey;
             string str = keyCombo.ToString();
-            if (string.IsNullOrEmpty(str)) return defaultKey;
+
+            if (string.IsNullOrEmpty(str) || str.Equals("None", StringComparison.OrdinalIgnoreCase))
+                return defaultKey;
 
             if (str.Contains("+"))
             {
@@ -142,7 +145,23 @@ namespace EmsPlus.Configuration
         {
             if (keyCombo == null) return defaultModifier;
             string str = keyCombo.ToString();
+
             if (string.IsNullOrEmpty(str)) return defaultModifier;
+
+            if (str.Equals("None", StringComparison.OrdinalIgnoreCase) && !defaultModifier.Equals("None", StringComparison.OrdinalIgnoreCase))
+            {
+                return defaultModifier;
+            }
+
+            if (str.Contains("+"))
+            {
+                string[] parts = str.Split('+');
+                if (parts.Length > 1 && !string.IsNullOrWhiteSpace(parts[0]))
+                {
+                    return parts[0].Trim();
+                }
+            }
+
             return str;
         }
     }
