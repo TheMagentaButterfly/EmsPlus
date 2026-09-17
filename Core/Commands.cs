@@ -8,7 +8,7 @@ namespace EmsPlus
 {
     public static class Commands
     {
-        [ConsoleCommand(Name = "ForceDuty", Description = "Go on/off duty as a paramedic.")]
+        [ConsoleCommand(Name = "ForceDuty", Description = "Go on/off duty.")]
         public static void Command_ForceDuty()
         {
             if (!EmsService.IsOnDuty)
@@ -29,14 +29,7 @@ namespace EmsPlus
             }
         }
 
-        [ConsoleCommand(Name = "StartCallout", Description = "Start a specific callout by name (e.g. StartCallout AnimalAttack).")]
-        public static void Command_StartCallout(string calloutName)
-        {
-            if (!EmsService.IsOnDuty) return;
-            CalloutManager.ForceCallout(calloutName);
-        }
-
-        [ConsoleCommand(Name = "EndCallout", Description = "Finish the current callout.")]
+        [ConsoleCommand(Name = "EndCallout", Description = "End the current callout.")]
         public static void Command_EndCallout()
         {
             if (!EmsService.IsOnDuty) return;
@@ -54,7 +47,7 @@ namespace EmsPlus
             EmsService.SetStatus(status);
         }
 
-        [ConsoleCommand(Name = "ReloadEmsPlusConfigs", Description = "Quickly reloads all EmsPlus .ini and .xml configuration files.")]
+        [ConsoleCommand(Name = "ReloadEmsPlusConfigs", Description = "Reloads all EmsPlus .ini and .xml config files.")]
         public static void Command_ReloadConfigs()
         {
             EntryPoint.ReloadAllConfigs();
