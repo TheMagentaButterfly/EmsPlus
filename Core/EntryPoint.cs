@@ -134,7 +134,6 @@ namespace EmsPlus
         {
             try { Game.FrameRender -= OnGameFrameRender; } catch { }
 
-            // Station and Hospital static blips are only deleted when the plugin completely unloads
             if (abortFibers)
             {
                 try { StationManager.Cleanup(); } catch { }
@@ -183,121 +182,11 @@ namespace EmsPlus
             }
         }
 
-        private static void StartUIThread()
-        {
-            try
-            {
-                _overlayForm = new OverlayForm(OnMessageFromWeb);
-                IntPtr forceHandle = _overlayForm.Handle;
-                Application.Run();
-            }
-            catch (Exception ex)
-            {
-                Game.Console.Print($"[EmsPlus] WebView2 UI Thread Error: {ex.Message}");
-            }
-        }
-
-        private static void OnMessageFromWeb(string message)
-        {
-            _incomingMessages.Enqueue(message);
-        }
-
-        public static void ToggleUI(bool? state = null)
-        {
-            if (_overlayForm == null || _overlayForm.IsDisposed) return;
-
-            if (state.HasValue)
-                IsUiOpen = state.Value;
-            else
-                IsUiOpen = !IsUiOpen;
-
-            _overlayForm.SetVisibility(IsUiOpen, Process.GetCurrentProcess().MainWindowHandle);
-        }
-
-        public static void SetMouseUnlocked(bool unlocked)
-        {
-            if (_overlayForm != null && !_overlayForm.IsDisposed)
-            {
-                _overlayForm.SetMouseUnlocked(unlocked, Process.GetCurrentProcess().MainWindowHandle);
-            }
-        }
-
         public static void SetOverlaySuspended(bool suspended)
         {
             if (_overlayForm != null && !_overlayForm.IsDisposed)
             {
                 _overlayForm.SetSuspended(suspended, Process.GetCurrentProcess().MainWindowHandle);
-            }
-        }
-
-        public static void NavigateUI(string fileName)
-        {
-            if (_overlayForm != null && !_overlayForm.IsDisposed)
-            {
-                _overlayForm.NavigateTo(fileName);
-            }
-        }
-
-        public static void ExecuteScriptOnUI(string script)
-        {
-            if (_overlayForm != null && !_overlayForm.IsDisposed)
-            {
-                _overlayForm.ExecuteScript(script);
-            }
-        }
-
-        public static void ProcessIncomingMessages()
-        {
-            while (_incomingMessages.TryDequeue(out string rawAction))
-            {
-                try
-                {
-                    string action = rawAction.Trim('\"', '\'', ' ');
-
-                    if (action == "close")
-                    {
-                        MdtManager.Toggle(false);
-                    }
-                    else if (action == "get_mdt_data" || action == "refresh")
-                    {
-                        MdtManager.PushCurrentStateToWeb();
-                    }
-                    else if (action == "toggle_mouse_lock")
-                    {
-                        MdtManager.SetMouseUnlocked(!MdtManager.IsMouseUnlocked);
-                    }
-                    else if (action == "save_mdt_position")
-                    {
-                        if (_overlayForm != null && !_overlayForm.IsDisposed && OffsetConfig != null)
-                        {
-                            OffsetConfig.MdtOffsetX = _overlayForm.CustomOffsetX;
-                            OffsetConfig.MdtOffsetY = _overlayForm.CustomOffsetY;
-                            OffsetConfig.Save();
-                        }
-                    }
-                    else if (action.StartsWith("drag_window:"))
-                    {
-                        string coords = action.Substring(12);
-                        string[] parts = coords.Split(',');
-                        if (parts.Length == 2 && int.TryParse(parts[0], out int dx) && int.TryParse(parts[1], out int dy))
-                        {
-                            _overlayForm?.DragMove(dx, dy);
-                        }
-                    }
-                    else if (action.StartsWith("set_status:"))
-                    {
-                        string statusString = action.Substring(11);
-                        if (Enum.TryParse(statusString, out EmsStatus parsedStatus))
-                        {
-                            EmsService.SetStatus(parsedStatus);
-                            MdtManager.PushCurrentStateToWeb();
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Game.Console.Print($"[EmsPlus] Web UI Message Error: {ex.Message}");
-                }
             }
         }
 

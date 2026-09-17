@@ -126,20 +126,6 @@ namespace EmsPlus.UI.Native.ConfigMenu
                 }
             };
 
-            PropPosMenu.OnListChange += (s, item, index) =>
-            {
-                if (item != itemKit) return;
-
-                InventoryManager.StowAllKits();
-
-                if (index == 0) _editingKitType = "TRAUMABAG";
-                else if (index == 1) _editingKitType = "OXYGENBAG";
-                else if (index == 2) _editingKitType = "DEFIBRILLATOR";
-
-                InventoryManager.EquipKit(_editingKitType);
-                sync();
-            };
-
             PropPosMenu.OnMenuOpen += (s) =>
             {
                 InventoryManager.StowAllKits();

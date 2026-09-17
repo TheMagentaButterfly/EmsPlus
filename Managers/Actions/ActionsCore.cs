@@ -15,7 +15,6 @@ namespace EmsPlus.Managers.Actions
             GameState.IsPlayerBusy = true;
 
             UIMenu menuToReopen = MenuCore.ActiveMenu;
-
             MenuCore.CloseAll();
 
             GameFiber.StartNew(delegate
@@ -25,40 +24,30 @@ namespace EmsPlus.Managers.Actions
 
                 if (!string.IsNullOrEmpty(animDict))
                 {
+                    NativeFunction.Natives.REQUEST_ANIM_DICT(animDict);
+                    while (!NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>(animDict)) GameFiber.Yield();
+
                     if (inCabin)
-                    {
                         player.Tasks.PlayAnimation(animDict, animName, 8.0f, AnimationFlags.Loop | AnimationFlags.UpperBodyOnly | AnimationFlags.SecondaryTask);
-                    }
                     else
-                    {
                         player.Tasks.PlayAnimation(animDict, animName, 8.0f, AnimationFlags.Loop);
-                    }
                 }
 
                 if (!string.IsNullOrEmpty(subtitle))
-                {
                     Game.DisplaySubtitle(subtitle, durationMs);
-                }
 
                 GameFiber.Sleep(durationMs);
 
                 if (inCabin)
-                {
                     NativeFunction.Natives.CLEAR_PED_SECONDARY_TASK(player);
-                }
                 else
-                {
                     player.Tasks.Clear();
-                }
 
                 onComplete?.Invoke();
-
                 GameState.IsPlayerBusy = false;
 
                 if (menuToReopen != null && EntryPoint.EmsPlusConfig.UseNativeUIPatientMenu.Value)
-                {
                     menuToReopen.Visible = true;
-                }
             });
         }
     }

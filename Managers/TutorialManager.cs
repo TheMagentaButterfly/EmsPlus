@@ -50,7 +50,7 @@ namespace EmsPlus.Managers
 
         private static void AdvanceTutorialStage(TutorialStage newStage)
         {
-            EntryPoint.EmsPlusConfig.TutorialProgress = new SettingInt("Tutorial", "TutorialProgress", "", (int)newStage, 0, 10, 1);
+            EntryPoint.EmsPlusConfig.TutorialProgress.SetValue((int)newStage);
             EntryPoint.EmsPlusConfig.Save();
         }
 

@@ -45,6 +45,7 @@ namespace EmsPlus.Callouts
             p.Consciousness = ConsciousnessLevel.Verbal;
             p.SpO2 = VitalState.Low;
             p.HeartRate = VitalState.Elevated;
+            p.Conditions.Add(new SystemicCondition("Anaphylaxis", EmsTreatment.Adrenaline, EmsTreatment.HighFlowOxygen));
 
             SpawnEmergencyUnit("firetruk", "s_m_y_fireman_01", CalloutPosition);
 
@@ -55,14 +56,6 @@ namespace EmsPlus.Callouts
                 GameState.CurrentBystander.Dialogue.Add(new DialogueLine("Witness", "Please help! They were stung by a bee and now they can't breathe!"));
                 GameState.CurrentBystander.Dialogue.Add(new DialogueLine("Paramedic", "I'm on it. I need you to stay back and keep the area clear."));
             }
-
-            p.DispatchDiagnosis = "Anaphylactic Shock";
-            p.Consciousness = ConsciousnessLevel.Verbal;
-
-            p.SpO2 = VitalState.Low;
-            p.HeartRate = VitalState.Elevated;
-
-            p.Conditions.Add(new SystemicCondition("Anaphylaxis", EmsTreatment.Adrenaline, EmsTreatment.HighFlowOxygen));
 
             patient.Tasks.PlayAnimation("rcmfanatic1out_of_breath", "p_zero_tired_01e", 8.0f, AnimationFlags.Loop);
 
